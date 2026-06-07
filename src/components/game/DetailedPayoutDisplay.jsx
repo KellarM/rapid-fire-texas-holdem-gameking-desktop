@@ -175,9 +175,17 @@ export default function DetailedPayoutDisplay({ winInfo, playerCount = 1 }) {
 
   useEffect(() => { setCurrentPlayerIndex(0); }, [winInfo]);
 
-  if (!winInfo || !winInfo.playerPayouts) return null;
+  const hasAnyWins = winInfo?.playerPayouts?.some(p => p.wins.length > 0) ?? false;
 
-  const hasAnyWins = winInfo.playerPayouts.some(p => p.wins.length > 0);
+  // ── Auto-dismiss No Win after 8 seconds ──
+  useEffect(() => {
+    if (winInfo && !hasAnyWins && currentPlayerIndex !== -1) {
+      const t = setTimeout(() => setCurrentPlayerIndex(-1), 8000);
+      return () => clearTimeout(t);
+    }
+  }, [hasAnyWins, currentPlayerIndex, winInfo]);
+
+  if (!winInfo || !winInfo.playerPayouts) return null;
 
   const getNextWinningPlayer = (startIdx) => {
     for (let i = startIdx; i < winInfo.playerPayouts.length; i++) {
