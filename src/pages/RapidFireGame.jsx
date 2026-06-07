@@ -101,13 +101,6 @@ const PLAYER_TAB_STYLES = [
 { active: 'border-amber-400 bg-amber-500 text-black', inactive: 'border-amber-700/40 bg-amber-900/20 text-amber-400' }];
 
 
-// ── Mobile detection ─────────────────────────────────────────────────────
-
-
-function useIsMobile() {
-  return false; // Desktop repo — always use the full desktop layout
-}
-
 // Phases: 'betting' | 'flop' | 'turn' | 'lowHighBetting' | 'river' | 'settlement' | 'winner'
 const PHASE_LABELS = {
   betting: 'Place Your Bets',
@@ -176,7 +169,6 @@ export default function RapidFireGame() {
   const [showKsStrategyTest, setShowKsStrategyTest] = useState(false);
   const [showObserver, setShowObserver] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
-  const [observerRoundData, setObserverRoundData] = useState(null);
   // Observer persists across refreshes — ON by default, only OFF if user explicitly toggled it off
   const [observeOn, setObserveOn] = useState(
     () => localStorage.getItem('rfth_observer_on') !== 'false'
@@ -200,12 +192,9 @@ export default function RapidFireGame() {
   const [showGameTiming, setShowGameTiming] = useState(false);
   const [showVersions, setShowVersions] = useState(false);
   const [showBellCurve, setShowBellCurve] = useState(false);
-  const [bellCurveConfig, setBellCurveConfig] = useState(null);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [toolbarVisible, setToolbarVisible] = useState(false);
-  const [showPlayerSelector, setShowPlayerSelector] = useState(true);
   const [roundId, setRoundId] = useState(1);
-  const [resetBankVisible, setResetBankVisible] = useState(true);
 
   const [lastWinInfo, setLastWinInfo] = useState(null);
   const [winningRank, setWinningRank] = useState(null);
@@ -223,14 +212,10 @@ export default function RapidFireGame() {
   const [showInsufficientFunds, setShowInsufficientFunds] = useState(false);
   const [showAutoTrimToast, setShowAutoTrimToast] = useState(false);
   const [displayWindowVisible, setDisplayWindowVisible] = useState(false);
-  const [previousBets, setPreviousBets] = useState(null); // { handBets, redBlackBets, rankBets, totalBet }
-  const [repeatUsedThisRound, setRepeatUsedThisRound] = useState(false);
-  const isMobile = useIsMobile();
+  const [previousBets, setPreviousBets] = useState(null);
   const [boardTheme, setBoardTheme] = useState(() => {
     try { return localStorage.getItem('rfth_theme') || 'red'; } catch { return 'red'; }
   });
-  const [showBoardColorPicker, setShowBoardColorPicker] = useState(false);
-
   const {
     hoveredHandId, setHoveredHandId,
     hoveredRiverType, setHoveredRiverType,
@@ -430,8 +415,6 @@ export default function RapidFireGame() {
   // ─────────────────────────────────────────────────────────────────────────
 
   // reloadTiming is passed as onSaved to GameTimingModal — no event listener needed
-  const [countdownTime, setCountdownTime] = useState(0);
-  const [countdownActive, setCountdownActive] = useState(false);
   const timerActiveRef = useRef(false);
   const handleDealRiverRef = useRef(null);
   const settleRef = useRef(null);
@@ -457,7 +440,6 @@ export default function RapidFireGame() {
     const onDown = (e) => {
       p.add(e.key.toLowerCase());
       if (p.has('control') && p.has('alt') && p.has('j') && p.has('l')) { e.preventDefault(); setToolbarVisible(v=>!v); }
-      if (p.has('control') && p.has('alt') && p.has('b') && p.has('m')) { e.preventDefault(); setResetBankVisible(v=>!v); }
     };
     const onUp = (e) => p.delete(e.key.toLowerCase());
     window.addEventListener('keydown', onDown); window.addEventListener('keyup', onUp);
@@ -536,33 +518,12 @@ export default function RapidFireGame() {
     return versions?.maxRankSlots ?? 1;
   })();
 
-  // Phase Lock: exactly 1 hand bet + at least 1 rank bet → finalize selection, lock remaining hands
-  // Hand grid locks when hand count reaches maxCardHands
   const maxHandBetsAllowed = versions?.maxCardHands ?? 1;
-  const phaseLockActive = handBetCount >= maxHandBetsAllowed;
-  const handBetsLockedByRanks = phaseLockActive;
-
-  // Snowball cap values for active player
-  const totalHandBetAmount = getTotalHandBets(pHandBets);
-  const totalRankBetAmount = getTotalRankBets(pRankBets);
-  const totalColorBetAmount = getTotalColorBets(pRedBlackBets);
 
   const totalBet = Object.values(pHandBets).reduce((s, v) => s + v, 0) +
   Object.values(pRedBlackBets).reduce((s, v) => s + v, 0) +
   Object.values(pRankBets).reduce((s, v) => s + v, 0) + (
   pLowHighBet ? pLowHighBet.amount : 0);
-
-  // Total bets across ALL players this round (for casino profit calc)
-  const totalAllBets = () => {
-    let t = 0;
-    for (let i = 0; i < playerCount; i++) {
-      t += Object.values(handBets[i] || {}).reduce((s, v) => s + v, 0);
-      t += Object.values(redBlackBets[i] || {}).reduce((s, v) => s + v, 0);
-      t += Object.values(rankBets[i] || {}).reduce((s, v) => s + v, 0);
-      t += lowHighBets[i]?.amount || 0;
-    }
-    return t;
-  };
 
   // ---- BETTING ----
   const handleHandBet = useCallback((handId) => {
@@ -1049,7 +1010,6 @@ export default function RapidFireGame() {
   const handleDealFlop = useCallback(() => {
     if (gamePhase !== 'betting') return;
     stopTimer();
-    setCountdownActive(false);
     timerActiveRef.current = false;
 
     // ── Phase 2 GLI-19: open AuditRound record (bets now locked) ─────────────
@@ -1147,7 +1107,6 @@ export default function RapidFireGame() {
   const handleDealRiver = useCallback(() => {
     if (gamePhase !== 'lowHighBetting') return;
     stopTimer();
-    setCountdownActive(false);
     timerActiveRef.current = false;
 
     const riverCard = deck[deckIndex];
@@ -1274,14 +1233,7 @@ export default function RapidFireGame() {
         if (i === activePlayer) triggerRiverWin();
       }
 
-      // River hedge is not a real bet type — ignore any flag
-
-      // Rank bets — Open Win Rule (v2, 2026-05-09):
-      // A rank bet pays if ANY hand wins the round by the player's rank bet.
-      // The player does NOT need to have bet on the winning hand.
-      // Payout odds are tied to the ACTUAL winning hand's per-hand rank odds.
       if (leader && !leader.communityBoardWin && Object.keys(prk).length > 0) {
-        // Find the actual winning hand and its rank
         let actualWinnerHandId = null;
         let actualWinnerRankName = null;
         for (const wid of leader.handIds) {
@@ -1354,7 +1306,6 @@ export default function RapidFireGame() {
       });
     }
 
-    // Store previous bets for repeat functionality (excluding low/high)
     setPreviousBets({
       handBets: snapHandBets,
       redBlackBets: snapRedBlackBets,
@@ -1362,13 +1313,9 @@ export default function RapidFireGame() {
       totalBet: totalBetsAllPlayers
     });
 
-    // Update all player balances (add payouts received)
     setBalances((prev) => {
       const n = [...prev];
-      for (let i = 0; i < playerCount; i++) {
-        // Current balance already had bets deducted, so just add payout back
-        n[i] = Math.max(0, n[i] + playerWinnings[i]);
-      }
+      for (let i = 0; i < playerCount; i++) { n[i] = Math.max(0, n[i] + playerWinnings[i]); }
       return n;
     });
 
@@ -1469,23 +1416,9 @@ export default function RapidFireGame() {
       setDisplayWindowVisible(true);
     }, 1000);
 
-    // ── History entry — only real settled outcomes ──────────────────────────
-    // colorResult: show the actual winning color result from winRB
-    // e.g. "5R", "4B", "3R" — whichever key has the highest count from the resolved winners.
-    // If no color bet wins, show the majority color count as informational display only.
     const reds = finalComm.filter((c) => cardColor(c) === 'red').length;
     const blacks = finalComm.length - reds;
-
-    // Build a display string: show all winning color results if any, else show the board split
-    let colorResult;
-    if (winRB && winRB.length > 0) {
-      // Show the highest-tier winning result (e.g. if 5R won, show "5R"; if 3B won show "3B")
-      // winRB is already sorted by resolveRedBlack — last element is highest tier
-      colorResult = winRB[winRB.length - 1];
-    } else {
-      // No color winner: display the board split as informational
-      colorResult = reds >= blacks ? `${reds}R` : `${blacks}B`;
-    }
+    const colorResult = (winRB && winRB.length > 0) ? winRB[winRB.length - 1] : (reds >= blacks ? `${reds}R` : `${blacks}B`);
 
     const isBoardWin = leader?.communityBoardWin === true;
     const winnerHandA = !isBoardWin && leader?.handIds?.length >= 1 ?
@@ -1578,9 +1511,7 @@ export default function RapidFireGame() {
       return next;
     });
 
-    // Auto-progression to new round is handled by useEffect watching gamePhase
     timerActiveRef.current = true;
-    setCountdownActive(false);
   };
   settleRef.current = settle;
 
@@ -1593,22 +1524,6 @@ export default function RapidFireGame() {
     setRoundsPlayed(0);
   };
 
-  const handleResetGame = () => {
-    abandonRound().catch(() => {});
-    resetAllBalances();
-    setHandBets({}); setRedBlackBets({}); setRankBets({}); setLowHighBets({});
-    setCommunityCards([]); setLeadingHandIds([]); setWinnerHandIds([]);
-    setWinningRedBlack([]); setWinningLowHigh(null); setWinningRank(null);
-    setLeadingRank(null); setLastWinInfo(null);
-    setDeck(getSecureRandomBoard()); setDeckIndex(0);
-    setRoundId(1); setRoundsPlayed(0); setCasinoProfit(0);
-    setHistory([]); try { localStorage.removeItem('rfth_history'); } catch {}
-    setPlayerStats({}); setActivePlayer(0); setPlayerCount(1);
-    setShowPlayerSelector(true);
-    setDealerMessage("Bets open — Place Hand, Rank & Color bets now.");
-    setGamePhase('betting');
-  };
-
   const handleNewRound = useCallback(() => {
     stopTimer();
     timerActiveRef.current = false;
@@ -1616,7 +1531,7 @@ export default function RapidFireGame() {
     setCommunityCards([]); setLeadingHandIds([]); setWinnerHandIds([]);
     setWinningRedBlack([]); setWinningLowHigh(null); setWinningRank(null);
     setLeadingRank(null); setLastWinInfo(null);
-    setDisplayWindowVisible(false); setRepeatUsedThisRound(false);
+    setDisplayWindowVisible(false);
     setDeck(getSecureRandomBoard()); setDeckIndex(0);
     setRoundId((r) => r + 1);
     setDealerMessage("Bets open — Place Hand, Rank & Color bets now.");
@@ -1644,35 +1559,12 @@ export default function RapidFireGame() {
     // NOTE: history is intentionally NOT cleared here — it accumulates across rounds
   }, [stopTimer]);
 
-  const handleRepeatBets = () => {
-    if (!previousBets) return;
-    for (let i = 0; i < playerCount; i++) {
-      const pb = Object.values(previousBets.handBets[i]||{}).reduce((s,v)=>s+v,0)
-        + Object.values(previousBets.redBlackBets[i]||{}).reduce((s,v)=>s+v,0)
-        + Object.values(previousBets.rankBets[i]||{}).reduce((s,v)=>s+v,0);
-      if ((balances[i]||10000) < pb) { setShowInsufficientFunds(true); return; }
-    }
-    setHandBets(previousBets.handBets);
-    setRedBlackBets(previousBets.redBlackBets);
-    setRankBets(previousBets.rankBets);
-    setRepeatUsedThisRound(true);
-    setBalances((b) => {
-      const n = [...b];
-      for (let i = 0; i < playerCount; i++) {
-        const pb = Object.values(previousBets.handBets[i]||{}).reduce((s,v)=>s+v,0)
-          + Object.values(previousBets.redBlackBets[i]||{}).reduce((s,v)=>s+v,0)
-          + Object.values(previousBets.rankBets[i]||{}).reduce((s,v)=>s+v,0);
-        n[i] = Math.max(0, n[i] - pb);
-      }
-      return n;
-    });
-  };
-
-  // Flop → Turn is now manual via the DealerButton — no auto-timer.
-
-  // River → New Round is now manual via the DealerButton — no auto-timer.
-
-
+  const handleDealButtonPress = useCallback(() => {
+    if (gamePhase === 'betting' && totalBet > 0) handleDealFlop();
+    else if (gamePhase === 'flop') handleDealTurn();
+    else if (gamePhase === 'lowHighBetting') handleDealRiver();
+    else if (gamePhase === 'winner') handleNewRound();
+  }, [gamePhase, totalBet, handleDealFlop, handleDealTurn, handleDealRiver, handleNewRound]);
 
   // ── Desktop layout ────────────────────────────────────────────────────────
   return (
@@ -1785,7 +1677,7 @@ export default function RapidFireGame() {
       {showBellCurve && (
         <BellCurveModal
           onClose={() => setShowBellCurve(false)}
-          onSave={(cfg) => { setBellCurveConfig(cfg); setShowBellCurve(false); }}
+          onSave={() => setShowBellCurve(false)}
         />
       )}
       <HowToPlayOverlay
@@ -1998,13 +1890,14 @@ export default function RapidFireGame() {
             {/* Spacer */}
             <div className="flex-1" />
 
-            {/* Player Bank display — centered */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Player Bank + Dealer Button */}
+            <div className="flex items-center gap-3 flex-shrink-0">
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black">
                 <span className="text-yellow-400 text-xs font-black leading-none tracking-wider">P{activePlayer + 1}</span>
                 <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${(balances[activePlayer] ?? 10000).toLocaleString()}</span>
                 <span title={dbReady ? 'Balance synced to server' : 'Syncing balance...'} style={{ width: 7, height: 7, borderRadius: '50%', background: dbReady ? '#22c55e' : '#f59e0b', display: 'inline-block', flexShrink: 0 }} />
               </div>
+              <DealerButton gamePhase={gamePhase} totalBet={totalBet} onDeal={handleDealButtonPress} />
             </div>
 
             {/* Spacer */}
