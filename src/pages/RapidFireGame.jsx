@@ -44,21 +44,7 @@ import RegulatoryComplianceReport from '@/components/game/TwoHandRankTest';
 import GameTimingModal from '@/components/game/GameTimingModal';
 import GameVersionsModal from '@/components/game/GameVersionsModal';
 import BellCurveModal from '@/components/game/BellCurveModal';
-import { HAND_BET_REDUCTIONS, RANK_BET_REDUCTIONS } from '@/lib/bellCurveConfig';
-
-function loadBellCurveReductions() {
-  try {
-    const saved = localStorage.getItem('rapidfire_bell_curve_config');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return {
-        hand: parsed.handReductions || HAND_BET_REDUCTIONS,
-        rank: parsed.rankReductions || RANK_BET_REDUCTIONS,
-      };
-    }
-  } catch {}
-  return { hand: HAND_BET_REDUCTIONS, rank: RANK_BET_REDUCTIONS };
-}
+import { useBellCurveConfig } from '@/hooks/useBellCurveConfig';
 import { base44 } from '@/api/base44Client';
 import DealerButton from '@/components/game/DealerButton';
 import HowToPlayOverlay from '@/components/game/HowToPlayOverlay';
@@ -192,6 +178,7 @@ export default function RapidFireGame() {
   const [showGameTiming, setShowGameTiming] = useState(false);
   const [showVersions, setShowVersions] = useState(false);
   const [showBellCurve, setShowBellCurve] = useState(false);
+  const { config: bellCurveConfig, saveConfig: saveBellCurveConfig } = useBellCurveConfig();
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [toolbarVisible, setToolbarVisible] = useState(false);
   const [roundId, setRoundId] = useState(1);
@@ -1156,7 +1143,10 @@ export default function RapidFireGame() {
   handleDealRiverRef.current = handleDealRiver;
 
   const settle = (finalComm, leader, winRB, winLH, leaderHand, handResult, snapHandBets, snapRedBlackBets, snapRankBets, snapLowHighBets) => {
-    const bellCurveReductions = loadBellCurveReductions();
+    const bellCurveReductions = {
+      hand: bellCurveConfig.handReductions,
+      rank: bellCurveConfig.rankReductions,
+    };
     // Use centralized payouts (imported at top of file)
 
     let totalBetsAllPlayers = 0;
@@ -1677,7 +1667,8 @@ export default function RapidFireGame() {
       {showBellCurve && (
         <BellCurveModal
           onClose={() => setShowBellCurve(false)}
-          onSave={(_cfg) => setShowBellCurve(false)}
+          initialConfig={bellCurveConfig}
+          onSave={(cfg) => { saveBellCurveConfig(cfg); setShowBellCurve(false); }}
         />
       )}
       <HowToPlayOverlay

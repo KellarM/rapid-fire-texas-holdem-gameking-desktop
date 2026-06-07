@@ -11,26 +11,13 @@ const RANK_LABELS = ['1 Rank','2 Ranks','3 Ranks','4 Ranks','5 Ranks','6 Ranks',
 const EXPLOIT_ZONE_HAND = [4, 5]; // index 4=5hands, 5=6hands
 const EXPLOIT_ZONE_RANK = [3, 4]; // index 3=4ranks, 4=5ranks
 
-export default function BellCurveModal({ onClose, onSave }) {
-  const BELL_CURVE_STORAGE_KEY = 'rapidfire_bell_curve_config';
-
-  function loadSavedConfig() {
-    try {
-      const saved = localStorage.getItem('rapidfire_bell_curve_config');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return {
-          hand: parsed.handReductions || DEFAULT_HAND_REDUCTIONS,
-          rank: parsed.rankReductions || DEFAULT_RANK_REDUCTIONS,
-        };
-      }
-    } catch {}
-    return { hand: DEFAULT_HAND_REDUCTIONS, rank: DEFAULT_RANK_REDUCTIONS };
-  }
-
-  const savedConfig = loadSavedConfig();
-  const [handReductions, setHandReductions] = useState([...savedConfig.hand]);
-  const [rankReductions, setRankReductions] = useState([...savedConfig.rank]);
+export default function BellCurveModal({ onClose, onSave, initialConfig }) {
+  const [handReductions, setHandReductions] = useState(
+    initialConfig?.handReductions ? [...initialConfig.handReductions] : [...DEFAULT_HAND_REDUCTIONS]
+  );
+  const [rankReductions, setRankReductions] = useState(
+    initialConfig?.rankReductions ? [...initialConfig.rankReductions] : [...DEFAULT_RANK_REDUCTIONS]
+  );
   const [activeTab, setActiveTab] = useState('hand');
   const [saved, setSaved] = useState(false);
 
@@ -62,9 +49,6 @@ export default function BellCurveModal({ onClose, onSave }) {
 
   function handleSave() {
     const config = { handReductions, rankReductions };
-    try {
-      localStorage.setItem('rapidfire_bell_curve_config', JSON.stringify(config));
-    } catch {}
     onSave?.(config);
     setSaved(true);
   }
