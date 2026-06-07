@@ -173,16 +173,15 @@ function Quadrant({ title, wins, placedBets = [], accentColor }) {
 export default function DetailedPayoutDisplay({ winInfo, playerCount = 1 }) {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
 
-  useEffect(() => { setCurrentPlayerIndex(0); }, [winInfo]);
-
   const hasAnyWins = winInfo?.playerPayouts?.some(p => p.wins.length > 0) ?? false;
+
+  useEffect(() => { setCurrentPlayerIndex(0); }, [winInfo]);
 
   // ── Auto-dismiss No Win after 8 seconds ──
   useEffect(() => {
-    if (winInfo && !hasAnyWins && currentPlayerIndex !== -1) {
-      const t = setTimeout(() => setCurrentPlayerIndex(-1), 8000);
-      return () => clearTimeout(t);
-    }
+    if (!winInfo || hasAnyWins || currentPlayerIndex === -1) return;
+    const t = setTimeout(() => setCurrentPlayerIndex(-1), 8000);
+    return () => clearTimeout(t);
   }, [hasAnyWins, currentPlayerIndex, winInfo]);
 
   if (!winInfo || !winInfo.playerPayouts) return null;
