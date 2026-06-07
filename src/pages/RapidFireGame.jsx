@@ -1677,7 +1677,7 @@ export default function RapidFireGame() {
       {showBellCurve && (
         <BellCurveModal
           onClose={() => setShowBellCurve(false)}
-          onSave={() => setShowBellCurve(false)}
+          onSave={(_cfg) => setShowBellCurve(false)}
         />
       )}
       <HowToPlayOverlay
