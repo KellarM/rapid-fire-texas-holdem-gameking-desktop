@@ -59,7 +59,7 @@ import { useDropChip } from '@/hooks/useDropChip';
 import GearMenu from '@/components/game/GearMenu';
 
 
-// STARTING_BALANCE = 10000 (managed server-side via usePlayerSession)
+// STARTING_BALANCE = 100000 (managed server-side via usePlayerSession)
 const CHIP_VALUES = [5, 10, 25, 50, 100, 500];
 const MAX_HAND_BET_AMOUNT = 5000;
 const DEFAULT_CHIP = 5;
