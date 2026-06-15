@@ -61,7 +61,7 @@ import GearMenu from '@/components/game/GearMenu';
 
 // STARTING_BALANCE = 10000 (managed server-side via usePlayerSession)
 const CHIP_VALUES = [5, 10, 25, 50, 100, 500];
-const MAX_HAND_BET_AMOUNT = 500;
+const MAX_HAND_BET_AMOUNT = 5000;
 const DEFAULT_CHIP = 5;
 const PLAYER_COUNT_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
