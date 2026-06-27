@@ -13,6 +13,8 @@ import HandByHandAnalysis from './pages/HandByHandAnalysis';
 import GamingLicenseCalibration from './pages/GamingLicenseCalibration';
 import GameStats from './pages/GameStats';
 import DeckInspector from './pages/DeckInspector';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -47,6 +49,8 @@ const AuthenticatedApp = () => {
       <Route path="/gaming-license" element={<GamingLicenseCalibration />} />
       <Route path="/game-stats" element={<GameStats />} />
       <Route path="/deck-inspector" element={<DeckInspector />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

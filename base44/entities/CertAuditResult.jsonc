@@ -17,6 +17,10 @@
     "progress": {
       "type": "number",
       "description": "Number of bets completed for this module"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 1000
     }
   },
   "required": [

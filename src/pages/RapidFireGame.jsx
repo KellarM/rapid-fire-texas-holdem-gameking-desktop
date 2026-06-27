@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FIXED_HANDS, shuffleDeck, DEALER_DECK, getSecureRandomBoard, findLeadingHand,
@@ -1678,6 +1679,12 @@ export default function RapidFireGame() {
         onClose={() => setShowHowToPlay(false)}
         suppress={recoveryChecking || showRecoveryModal}
       />
+
+      {/* Footer nav */}
+      <div className="flex-shrink-0 flex justify-center gap-6 py-1 border-t border-yellow-900/20 text-xs text-yellow-900/60">
+        <Link to="/about" className="hover:text-yellow-500 transition-colors">About</Link>
+        <Link to="/contact" className="hover:text-yellow-500 transition-colors">Contact</Link>
+      </div>
 
       {/* Main Layout: 3 columns, fills remaining height */}
       <div className="flex gap-1.5 p-1.5 flex-1 min-h-0">
