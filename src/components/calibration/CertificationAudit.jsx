@@ -142,14 +142,16 @@ const MODULES = [
   },
 ];
 
-// Pre-populate localStorage + state with seed data from the May-14 audit run.
-// Called from the "Load Prior Results" button in the UI.
-function loadSeedDataToStorage() {
-  Object.entries(SEED_AUDIT_DATA).forEach(([moduleId, bets]) => {
-    const keys = getStorageKeys(moduleId);
-    localStorage.setItem(keys.results, JSON.stringify(bets));
-    localStorage.setItem(keys.progress, String(Object.keys(bets).length));
-  });
+// Load seed data directly to DB (source of truth) — only if DB is empty for that module
+async function loadSeedDataToDb() {
+  for (const [moduleId, bets] of Object.entries(SEED_AUDIT_DATA)) {
+    const existing = await loadFromDb(moduleId);
+    if (existing && Object.keys(existing.results).length > 0) continue; // already has real data
+    for (const [betKey, result] of Object.entries(bets)) {
+      await saveResultToDb(moduleId, betKey, result);
+    }
+    await saveProgressToDb(moduleId, Object.keys(bets).length);
+  }
 }
 
 function getStorageKeys(moduleId) {
@@ -303,45 +305,45 @@ function SaveToast({ show }) {
 function ModulePanel({ module, bets, onResultsChange, onExportCertificate }) {
   const [running, setRunning] = useState(false);
   const [redoingKey, setRedoingKey] = useState(null);
-  const [progress, setProgress] = useState(() => loadFromStorage(module.id).progress);
-  const [results, setResults] = useState(() => loadFromStorage(module.id).results);
+  const [progress, setProgress] = useState(0);
+  const [results, setResults] = useState({});
+  const [dbLoading, setDbLoading] = useState(true);
   const onResultsChangeRef = useRef(onResultsChange);
   useEffect(() => { onResultsChangeRef.current = onResultsChange; }, [onResultsChange]);
 
-  // On mount: always load from DB (source of truth), fall back to localStorage
+  // On mount: DB is always the source of truth — never read from localStorage first
   useEffect(() => {
     const init = async () => {
+      setDbLoading(true);
       const dbData = await loadFromDb(module.id);
       if (dbData && Object.keys(dbData.results).length > 0) {
-        // DB is the source of truth — always restore from it
         setResults(dbData.results);
         setProgress(Object.keys(dbData.results).length);
-        try {
-          localStorage.setItem(getStorageKeys(module.id).results, JSON.stringify(dbData.results));
-          localStorage.setItem(getStorageKeys(module.id).progress, String(dbData.progress));
-        } catch {}
         onResultsChangeRef.current?.(module.id, dbData.results);
-
-        // Check if there's an orphaned redo checkpoint (interrupted redo after a refresh).
-        // If a checkpoint exists for a bet that already has a result, the row-level
-        // "Resume Redo" button will surface it automatically — just expand the panel.
+        // Check for orphaned checkpoint
         const cp = loadCheckpoint(module.id);
         if (cp && cp.betKey && cp.totalRounds > 0 && cp.totalRounds < module.rounds) {
-          // A partial run was interrupted — auto-expand so the user sees the Resume button
           setExpanded(true);
         }
       } else {
-        // No DB data — check localStorage and migrate it up
+        // DB empty — try migrating localStorage up to DB as a one-time recovery
         const local = loadFromStorage(module.id);
         if (Object.keys(local.results).length > 0) {
-          migrateLocalStorageToDb(module.id);
+          await migrateLocalStorageToDb(module.id);
+          // Re-read from DB after migration
+          const migrated = await loadFromDb(module.id);
+          if (migrated && Object.keys(migrated.results).length > 0) {
+            setResults(migrated.results);
+            setProgress(Object.keys(migrated.results).length);
+            onResultsChangeRef.current?.(module.id, migrated.results);
+          }
         }
-        // Also check for an orphaned checkpoint on a fresh-run interruption
         const cp = loadCheckpoint(module.id);
         if (cp && cp.betKey && cp.totalRounds > 0) {
           setExpanded(true);
         }
       }
+      setDbLoading(false);
     };
     init();
   }, [module.id]);
@@ -632,7 +634,7 @@ function ModulePanel({ module, bets, onResultsChange, onExportCertificate }) {
     <div className={`bg-slate-800/60 border rounded-xl overflow-hidden ${module.accentColor}`}>
       <div
         className="flex items-center justify-between px-5 py-4 cursor-pointer select-none"
-        onClick={() => setExpanded(e => !e)}
+        onClick={() => !dbLoading && setExpanded(e => !e)}
       >
         <div className="flex items-center gap-3">
           {expanded ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
@@ -658,11 +660,12 @@ function ModulePanel({ module, bets, onResultsChange, onExportCertificate }) {
               )}
             </div>
           )}
-          {overallPass && <CheckCircle2 className="w-6 h-6 text-green-400" />}
-          {overallFail && <XCircle className="w-6 h-6 text-red-400" />}
+          {dbLoading && <span className="text-xs text-gray-500 animate-pulse">Loading...</span>}
+          {!dbLoading && overallPass && <CheckCircle2 className="w-6 h-6 text-green-400" />}
+          {!dbLoading && overallFail && <XCircle className="w-6 h-6 text-red-400" />}
 
           <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-            {!running && canContinue && (
+            {!running && !dbLoading && canContinue && (
               <button
               onClick={continueRun}
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-black font-semibold text-sm transition-all whitespace-nowrap"
@@ -671,7 +674,7 @@ function ModulePanel({ module, bets, onResultsChange, onExportCertificate }) {
               Continue ({done}/{bets.length} done)
               </button>
             )}
-            {!running && !canContinue && (
+            {!running && !dbLoading && !canContinue && (
               <button
                 onClick={run}
                 disabled={running}
@@ -964,24 +967,7 @@ function ModulePanel({ module, bets, onResultsChange, onExportCertificate }) {
 export default function CertificationAudit() {
   const [moduleResults, setModuleResults] = useState(() => {
     const out = {};
-    MODULES.forEach(m => {
-      let { results, progress } = loadFromStorage(m.id);
-      // Auto-seed from SEED_AUDIT_DATA — fill any missing keys
-      if (SEED_AUDIT_DATA[m.id]) {
-        let changed = false;
-        Object.entries(SEED_AUDIT_DATA[m.id]).forEach(([key, val]) => {
-          if (!results[key]) { results[key] = val; changed = true; }
-        });
-        if (changed) {
-          progress = Object.keys(results).length;
-          try {
-            localStorage.setItem(getStorageKeys(m.id).results, JSON.stringify(results));
-            localStorage.setItem(getStorageKeys(m.id).progress, String(progress));
-          } catch {}
-        }
-      }
-      out[m.id] = { results, progress };
-    });
+    MODULES.forEach(m => { out[m.id] = { results: {}, progress: 0 }; });
     return out;
   });
 
@@ -1003,17 +989,17 @@ export default function CertificationAudit() {
     });
   };
 
-  const loadPriorResults = () => {
-    loadSeedDataToStorage();
-    // Re-read from storage into state
-    setModuleResults(() => {
-      const out = {};
-      MODULES.forEach(m => {
-        const { results, progress } = loadFromStorage(m.id);
-        out[m.id] = { results, progress };
-      });
-      return out;
-    });
+  const loadPriorResults = async () => {
+    await loadSeedDataToDb();
+    // Re-read from DB into state
+    const out = {};
+    for (const m of MODULES) {
+      const dbData = await loadFromDb(m.id);
+      out[m.id] = dbData && Object.keys(dbData.results).length > 0
+        ? { results: dbData.results, progress: Object.keys(dbData.results).length }
+        : { results: {}, progress: 0 };
+    }
+    setModuleResults(out);
   };
 
   const exportPDF = () => {
