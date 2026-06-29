@@ -396,9 +396,12 @@ function ModulePanel({ module, bets, onResultsChange, onExportCertificate }) {
     savingTimerRef.current = setTimeout(() => setSaving(false), 1200);
   }, []);
 
-  const runFrom = async (startIndex) => {
+  const runFrom = async (startIndex, snapshotResults) => {
     setRunning(true);
     abortRef.current = false;
+    // Use the snapshot passed in (or current results) as the skip-check source.
+    // This prevents stale-closure issues where results state hasn't propagated yet.
+    const completedSnapshot = snapshotResults || results;
 
     for (let i = startIndex; i < bets.length; i++) {
       if (abortRef.current) break;
@@ -406,7 +409,7 @@ function ModulePanel({ module, bets, onResultsChange, onExportCertificate }) {
       const betKey = `${bet.betType}:${bet.betKey}`;
 
       // Skip bets that already have a result (prevents re-running completed bets on continue)
-      if (results[betKey]) {
+      if (completedSnapshot[betKey]) {
         setProgress(i + 1);
         continue;
       }
@@ -588,14 +591,16 @@ function ModulePanel({ module, bets, onResultsChange, onExportCertificate }) {
     setResults({});
     setProgress(0);
     clearFromStorage(module.id); // also clears checkpoint
-    runFrom(0);
+    runFrom(0, {}); // pass empty snapshot — nothing is pre-completed
     setExpanded(true);
   };
 
   const continueRun = () => {
-    // Find the first bet index that doesn't have a result yet
-    const firstMissing = bets.findIndex(b => !results[`${b.betType}:${b.betKey}`]);
-    runFrom(firstMissing >= 0 ? firstMissing : progress);
+    // Snapshot results at this exact moment to pass into runFrom,
+    // preventing stale-closure issues that cause already-completed bets to re-run.
+    const currentResults = { ...results };
+    const firstMissing = bets.findIndex(b => !currentResults[`${b.betType}:${b.betKey}`]);
+    runFrom(firstMissing >= 0 ? firstMissing : bets.length, currentResults);
     setExpanded(true);
   };
 
