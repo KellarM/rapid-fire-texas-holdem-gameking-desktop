@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CARDED_HAND_PAYOUTS, COLOR_BOARD_PAYOUTS, LOW_HIGH_PAYOUT, RIVER_STATE_PAYOUTS } from '@/lib/payoutConstants';
 import { VERSIONS_STORAGE_KEY, DEFAULT_VERSIONS } from '@/hooks/useGameVersions';
 import { HAND_BET_REDUCTIONS, RANK_BET_REDUCTIONS } from '@/lib/bellCurveConfig';
+import { PER_HAND_RANK_PAYOUTS } from '@/lib/perHandRankPayouts';
 
 const BELL_CURVE_STORAGE_KEY = 'rapidfire_bell_curve_config';
 
@@ -55,6 +56,43 @@ const COLOR_BETS = [
   { key: '4 Black', payout: `${COLOR_BOARD_PAYOUTS['4B']}:1` },
   { key: '5 Black', payout: `${COLOR_BOARD_PAYOUTS['5B']}:1` },
 ];
+
+const RANK_ORDER = ['One Pair', 'Two Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House', 'Four of a Kind'];
+const RANK_ORDER_SHORT = ['One Pair', 'Two Pair', '3 of a Kind', 'Straight', 'Flush', 'Full House', '4 of a Kind'];
+
+function RankPayoutMatrix() {
+  return (
+    <div className="overflow-x-auto rounded-lg border border-slate-700">
+      <table className="w-full text-xs border-collapse">
+        <thead>
+          <tr className="bg-slate-800/80">
+            <th className="px-2 py-2 text-left text-gray-400 font-semibold sticky left-0 bg-slate-800/80">Hand</th>
+            {RANK_ORDER_SHORT.map(r => (
+              <th key={r} className="px-2 py-2 text-center text-gray-400 font-semibold whitespace-nowrap">{r}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {FIXED_HANDS.map((h, i) => (
+            <tr key={h.id} className={i % 2 === 0 ? 'bg-slate-900/40' : 'bg-slate-800/30'}>
+              <td className="px-2 py-1.5 text-white font-bold whitespace-nowrap sticky left-0 bg-inherit">{h.label}</td>
+              {RANK_ORDER.map(rank => {
+                const val = PER_HAND_RANK_PAYOUTS[h.id]?.[rank];
+                return (
+                  <td key={rank} className="px-2 py-1.5 text-center">
+                    {val != null
+                      ? <span className="text-yellow-300 font-bold">{val}</span>
+                      : <span className="text-gray-600">N/A</span>}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 function loadVersions() {
   try {
@@ -237,6 +275,10 @@ export default function GameRulesModal({ asMenuItem = false }) {
                       </div>
                     ))}
                   </div>
+                  <p className="text-gray-400 text-xs mt-4 mb-2">
+                    Payout odds by card hand and rank — <span className="text-yellow-300 font-semibold">N/A</span> means that rank isn't achievable for that hand.
+                  </p>
+                  <RankPayoutMatrix />
                 </Section>
 
                 <Section title="Winning">
