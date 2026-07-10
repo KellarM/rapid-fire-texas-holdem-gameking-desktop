@@ -1,11 +1,11 @@
 // ============================================================
 // HAND SIMULATION WORKER
 // RUN generates a fresh set of random rounds and stores the raw
-// outcomes (winners mask + winning rank category) in a persistent
-// buffer. RECALCULATE re-scans that SAME buffer with new bet
-// amounts / % Paid tables — no new randomness — so "Calculate"
-// reflects the exact same simulated rounds until "Run Test" is
-// clicked again (or the buffer is cleared).
+// outcomes (winners mask + winning rank category + raw board cards,
+// up to the export cap) in a persistent buffer. RECALCULATE re-scans
+// that SAME buffer with new bet amounts / % Paid tables — no new
+// randomness — so "Calculate" reflects the exact same simulated
+// rounds until "Run Test" is clicked again (or the buffer is cleared).
 // ============================================================
 
 const RANK_LABELS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
@@ -14,6 +14,12 @@ const SUIT_LABELS = ['clubs','diamonds','hearts','spades'];
 function enc(rankLabel, suitLabel) {
   return RANK_LABELS.indexOf(rankLabel) * 4 + SUIT_LABELS.indexOf(suitLabel);
 }
+
+function decodeCard(c) {
+  return { rank: RANK_LABELS[c >> 2], suit: SUIT_LABELS[c & 3] };
+}
+
+const HAND_LABELS = ['A♦10♥','K♣K♠','Q♣J♠','Q♠10♠','J♣9♣','8♦6♦','7♦7♠','4♥2♥','3♣3♥','A♥5♦'];
 
 const HANDS = [
   [enc('A','diamonds'), enc('10','hearts')],
@@ -153,13 +159,18 @@ function popcount10(mask) {
 }
 
 const PROGRESS_UPDATE_INTERVAL = 50_000;
+const EXPORT_ROUND_CAP = 100_000;
 
 // ── Persistent buffer — single source of truth for the current run ──
-let _buffer = { winnersMask: null, rankCat: null, size: 0 };
+// boards holds the raw 5-card board for only the first EXPORT_ROUND_CAP rounds
+// (memory cap) — enough to fully reproduce the CSV export for up to 100K rounds.
+let _buffer = { winnersMask: null, rankCat: null, boards: null, boardCap: 0, size: 0 };
 
 function generateBuffer(rounds, callId) {
   const winnersMask = new Uint16Array(rounds);
   const rankCat = new Int8Array(rounds);
+  const boardCap = Math.min(rounds, EXPORT_ROUND_CAP);
+  const boards = new Uint8Array(boardCap * 5);
 
   for (let i = 0; i < rounds; i++) {
     if (i > 0 && i % PROGRESS_UPDATE_INTERVAL === 0) {
@@ -175,9 +186,14 @@ function generateBuffer(rounds, callId) {
     }
     winnersMask[i] = mask;
     rankCat[i] = winnerCount === 10 ? -1 : (firstWinner >= 0 ? rankCatFromStrength(strengths[firstWinner]) : -1);
+
+    if (i < boardCap) {
+      const off = i * 5;
+      boards[off] = b0; boards[off+1] = b1; boards[off+2] = b2; boards[off+3] = b3; boards[off+4] = b4;
+    }
   }
 
-  _buffer = { winnersMask, rankCat, size: rounds };
+  _buffer = { winnersMask, rankCat, boards, boardCap, size: rounds };
 }
 
 function computeFromBuffer(payload) {
@@ -294,11 +310,16 @@ function computeFromBuffer(payload) {
   });
 }
 
-const EXPORT_ROUND_CAP = 100_000;
+// ── Export ────────────────────────────────────────────────────
+// Mirrors the Individual Bet Audit CSV format (board card breakdown + win flags),
+// with the audited-single-bet columns replaced by this tool's combined
+// hand+rank bet financials (Bet / Won / Net / Running Balance) since the
+// Hand Simulation tool scores multiple simultaneous bets per round.
+const CSV_HEADER = 'Seq,Flop_C1_Rank,Flop_C1_Suit,Flop_C2_Rank,Flop_C2_Suit,Flop_C3_Rank,Flop_C3_Suit,Turn_C4_Rank,Turn_C4_Suit,River_C5_Rank,River_C5_Suit,Winning_Hand,Winning_Hand_2,Winning_Rank,Shared_Win,House_Win,Rank_Exception,3_Red,4_Red,5_Red,3_Black,4_Black,5_Black,Low,High,Bet,Won,Net,Running_Balance';
 
 function exportRounds(payload) {
   const { callId, handBets, rankBets, handPayouts, perHandRankPayouts, handPercentPaid, rankPercentPaid } = payload;
-  const { winnersMask, rankCat, size } = _buffer;
+  const { winnersMask, rankCat, boards, boardCap, size } = _buffer;
 
   const rankNames = Object.keys(rankBets).filter(k => rankBets[k] > 0);
   const handBetCount = handBets.filter(b => b > 0).length;
@@ -307,7 +328,7 @@ function exportRounds(payload) {
   const handPct = (handPercentPaid[handBetCount] ?? 100) / 100;
   const rankPct = (rankPercentPaid[rankBetCount] ?? 100) / 100;
 
-  const rowCount = Math.min(size, EXPORT_ROUND_CAP);
+  const rowCount = Math.min(size, boardCap);
   const rows = new Array(rowCount);
   let runningBalance = 0;
 
@@ -316,6 +337,9 @@ function exportRounds(payload) {
     const isBoardWin = mask === 1023;
     let roundWon = 0;
     let winningRankName = null;
+
+    const winnerIndices = [];
+    for (let h = 0; h < 10; h++) { if (mask & (1 << h)) winnerIndices.push(h); }
 
     if (!isBoardWin) {
       const winnerCount = popcount10(mask);
@@ -329,9 +353,7 @@ function exportRounds(payload) {
       const rc = rankCat[i];
       const rn = rc >= 0 ? RANK_NAMES_BY_CAT[rc] : null;
       if (rn) {
-        let firstWinner = -1;
-        for (let h = 0; h < 10; h++) { if (mask & (1 << h)) { firstWinner = h; break; } }
-        const handId = firstWinner + 1;
+        const handId = winnerIndices[0] + 1;
         const payoutsForHand = perHandRankPayouts[handId] ?? perHandRankPayouts[String(handId)];
         const ratio = payoutsForHand ? payoutsForHand[rn] : null;
         if (ratio != null) {
@@ -348,8 +370,42 @@ function exportRounds(payload) {
     const net = roundWon - totalBetPerRound;
     runningBalance += net;
 
+    const off = i * 5;
+    const b0 = boards[off], b1 = boards[off+1], b2 = boards[off+2], b3 = boards[off+3], b4 = boards[off+4];
+    const c0 = decodeCard(b0), c1 = decodeCard(b1), c2 = decodeCard(b2), c3 = decodeCard(b3), c4 = decodeCard(b4);
+
+    const rc = rankCat[i];
+    const rankException = (rc === 0 || rc === 7 || rc === 8) ? 1 : 0;
+    const rankName = rc >= 0 ? RANK_NAMES_BY_CAT[rc] : 'High Card';
+    const sharedWin = (!isBoardWin && winnerIndices.length > 1) ? 1 : 0;
+    const winnerLabelRaw = isBoardWin ? 'House Win' : (winnerIndices.length > 0 ? HAND_LABELS[winnerIndices[0]] : 'None');
+    const winnerLabel2Raw = (!isBoardWin && winnerIndices.length > 1) ? HAND_LABELS[winnerIndices[1]] : '';
+
+    let reds = 0;
+    if ((b0&3)===1||(b0&3)===2) reds++;
+    if ((b1&3)===1||(b1&3)===2) reds++;
+    if ((b2&3)===1||(b2&3)===2) reds++;
+    if ((b3&3)===1||(b3&3)===2) reds++;
+    if ((b4&3)===1||(b4&3)===2) reds++;
+    const blacks = 5 - reds;
+    const isLow = (b4 >> 2) <= 5;
+
     rows[i] = {
       round: i + 1,
+      flopC1Rank: c0.rank, flopC1Suit: c0.suit,
+      flopC2Rank: c1.rank, flopC2Suit: c1.suit,
+      flopC3Rank: c2.rank, flopC3Suit: c2.suit,
+      turnC4Rank: c3.rank, turnC4Suit: c3.suit,
+      riverC5Rank: c4.rank, riverC5Suit: c4.suit,
+      winningHand: winnerLabelRaw,
+      winningHand2: winnerLabel2Raw,
+      winningRank: rankName,
+      sharedWin,
+      houseWin: isBoardWin ? 1 : 0,
+      rankException,
+      red3: reds===3?1:0, red4: reds===4?1:0, red5: reds===5?1:0,
+      black3: blacks===3?1:0, black4: blacks===4?1:0, black5: blacks===5?1:0,
+      low: isLow?1:0, high: isLow?0:1,
       bet: totalBetPerRound,
       won: roundWon,
       net,
@@ -359,7 +415,7 @@ function exportRounds(payload) {
     };
   }
 
-  self.postMessage({ type: 'RESULT', callId, data: { success: true, rows, roundsExported: rowCount, roundsTested: size } });
+  self.postMessage({ type: 'RESULT', callId, data: { success: true, rows, roundsExported: rowCount, roundsTested: size, csvHeader: CSV_HEADER } });
 }
 
 self.onmessage = function(e) {
@@ -382,7 +438,7 @@ self.onmessage = function(e) {
       }
       exportRounds(payload);
     } else if (type === 'CLEAR') {
-      _buffer = { winnersMask: null, rankCat: null, size: 0 };
+      _buffer = { winnersMask: null, rankCat: null, boards: null, boardCap: 0, size: 0 };
       self.postMessage({ type: 'RESULT', callId, data: { success: true, cleared: true } });
     }
   } catch (err) {

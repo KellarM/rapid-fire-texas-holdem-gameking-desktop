@@ -87,17 +87,28 @@ export default function HandSimulation() {
     setExporting(true);
     try {
       const data = await runHandSimulationExport(buildParams());
-      const header = ['Round', 'Bet', 'Won', 'Net', 'Running Balance', 'Board Win', 'Winning Rank'];
-      const csvRows = [header.join(',')];
+      const csvRows = [data.csvHeader];
       data.rows.forEach(row => {
         csvRows.push([
           row.round,
+          row.flopC1Rank, row.flopC1Suit,
+          row.flopC2Rank, row.flopC2Suit,
+          row.flopC3Rank, row.flopC3Suit,
+          row.turnC4Rank, row.turnC4Suit,
+          row.riverC5Rank, row.riverC5Suit,
+          `"${row.winningHand}"`,
+          `"${row.winningHand2}"`,
+          row.winningRank,
+          row.sharedWin,
+          row.houseWin,
+          row.rankException,
+          row.red3, row.red4, row.red5,
+          row.black3, row.black4, row.black5,
+          row.low, row.high,
           row.bet.toFixed(2),
           row.won.toFixed(2),
           row.net.toFixed(2),
           row.runningBalance.toFixed(2),
-          row.isBoardWin ? 'Yes' : 'No',
-          row.winningRankName || '',
         ].join(','));
       });
       const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
