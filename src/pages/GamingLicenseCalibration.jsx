@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, FlaskConical } from 'lucide-react';
+import { Shield, FlaskConical, Dices } from 'lucide-react';
 import IndividualBetAudit from '@/components/calibration/IndividualBetAudit';
 import CertificationAudit from '@/components/calibration/CertificationAudit';
+import HandSimulation from '@/components/calibration/HandSimulation';
 
 export default function GamingLicenseCalibration() {
   const [activeTab, setActiveTab] = useState('certification');
@@ -37,11 +38,20 @@ export default function GamingLicenseCalibration() {
           >
             <FlaskConical className="w-4 h-4" /> Individual Bet Audit
           </button>
+          <button
+            onClick={() => setActiveTab('handSimulation')}
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-semibold border-b-2 transition-all -mb-px
+              ${activeTab === 'handSimulation' ? 'border-yellow-400 text-yellow-300' : 'border-transparent text-gray-400 hover:text-gray-200'}`}
+          >
+            <Dices className="w-4 h-4" /> Hand Simulations
+          </button>
         </div>
 
         {activeTab === 'individual' && <IndividualBetAudit />}
 
         {activeTab === 'certification' && <CertificationAudit />}
+
+        {activeTab === 'handSimulation' && <HandSimulation />}
       </div>
     </div>
   );
