@@ -26,20 +26,25 @@ function getWorker() {
   return _worker;
 }
 
-export function runHandSimulation(params, onProgress) {
+function callWorker(type, params, onProgress) {
   const callId = ++_callId;
   const worker = getWorker();
   return new Promise((resolve, reject) => {
     _pending.set(callId, { resolve, reject, onProgress });
-    worker.postMessage({ type: 'RUN', payload: { ...params, callId } });
+    worker.postMessage({ type, payload: { ...params, callId } });
   });
 }
 
-export function abortHandSimulation() {
-  if (_worker) {
-    _worker.terminate();
-    _worker = null;
-  }
-  for (const p of _pending.values()) p.reject(new Error('Aborted'));
-  _pending.clear();
+// Starts a brand new simulation — generates fresh random rounds.
+export function runHandSimulationRun(params, onProgress) {
+  return callWorker('RUN', params, onProgress);
+}
+
+// Re-scores the EXISTING simulated rounds with new bets / % Paid tables.
+export function runHandSimulationRecalculate(params, onProgress) {
+  return callWorker('RECALCULATE', params, onProgress);
+}
+
+export function clearHandSimulationBuffer() {
+  return callWorker('CLEAR', {});
 }

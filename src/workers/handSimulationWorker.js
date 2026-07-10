@@ -1,8 +1,11 @@
 // ============================================================
 // HAND SIMULATION WORKER
-// Simulates N rounds with fixed Card Hand + Rank bets placed every
-// round, applying the sandboxed "% Paid" bell-curve tables. Card
-// hands + Ranks only (no Color/River) — matches the Hand Simulations tool.
+// RUN generates a fresh set of random rounds and stores the raw
+// outcomes (winners mask + winning rank category) in a persistent
+// buffer. RECALCULATE re-scans that SAME buffer with new bet
+// amounts / % Paid tables — no new randomness — so "Calculate"
+// reflects the exact same simulated rounds until "Run Test" is
+// clicked again (or the buffer is cleared).
 // ============================================================
 
 const RANK_LABELS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
@@ -143,27 +146,59 @@ function calculateTiePayout(originalOdds, numberOfWinners) {
   return ((originalOdds + 1) / 2) * 1.05 - 1;
 }
 
+function popcount10(mask) {
+  let c = 0;
+  while (mask) { c += mask & 1; mask >>= 1; }
+  return c;
+}
+
 const PROGRESS_UPDATE_INTERVAL = 50_000;
 
-function handleRun(payload) {
+// ── Persistent buffer — single source of truth for the current run ──
+let _buffer = { winnersMask: null, rankCat: null, size: 0 };
+
+function generateBuffer(rounds, callId) {
+  const winnersMask = new Uint16Array(rounds);
+  const rankCat = new Int8Array(rounds);
+
+  for (let i = 0; i < rounds; i++) {
+    if (i > 0 && i % PROGRESS_UPDATE_INTERVAL === 0) {
+      self.postMessage({ type: 'PROGRESS', callId, done: i, total: rounds });
+    }
+    const [b0, b1, b2, b3, b4] = shuffleAndDeal();
+    const { strengths, winners, winnerCount } = evalAllHands(b0, b1, b2, b3, b4);
+
+    let mask = 0;
+    let firstWinner = -1;
+    for (let h = 0; h < 10; h++) {
+      if (winners[h]) { mask |= (1 << h); if (firstWinner < 0) firstWinner = h; }
+    }
+    winnersMask[i] = mask;
+    rankCat[i] = winnerCount === 10 ? -1 : (firstWinner >= 0 ? rankCatFromStrength(strengths[firstWinner]) : -1);
+  }
+
+  _buffer = { winnersMask, rankCat, size: rounds };
+}
+
+function computeFromBuffer(payload) {
   const {
-    callId, rounds,
-    handBets,            // array of 10 numbers
-    rankBets,             // { rankName: amount }
-    handPayouts,          // array of 10 (CARDED_HAND_PAYOUTS)
-    perHandRankPayouts,   // { handId: { rankName: ratio } }
-    handPercentPaid,      // array indexed 0-10
-    rankPercentPaid,      // array indexed 0-7
+    callId,
+    handBets, rankBets, handPayouts, perHandRankPayouts,
+    handPercentPaid, rankPercentPaid, roundCheckpoints,
   } = payload;
+
+  const { winnersMask, rankCat, size } = _buffer;
 
   const rankNames = Object.keys(rankBets).filter(k => rankBets[k] > 0);
   const handBetCount = handBets.filter(b => b > 0).length;
   const rankBetCount = rankNames.length;
+  const totalBetPerRound = handBets.reduce((s, b) => s + (b || 0), 0) + rankNames.reduce((s, k) => s + rankBets[k], 0);
 
-  const totalBetPerRound = handBets.reduce((s,b)=>s+(b||0),0) + rankNames.reduce((s,k)=>s+rankBets[k],0);
+  const checkpointNet = new Map();
+  (roundCheckpoints || []).forEach(r => checkpointNet.set(r, null));
 
   if (totalBetPerRound <= 0) {
-    self.postMessage({ type: 'RESULT', callId, data: { success: true, noBets: true } });
+    self.postMessage({ type: 'RESULT', callId, data: { success: true, noBets: true, roundsTested: size, checkpoints: (roundCheckpoints || []).map(r => ({ round: r, net: null })) } });
     return;
   }
 
@@ -176,38 +211,34 @@ function handleRun(payload) {
   let runningBalance = 0;
   let bestRunUp = 0;
   let worstRun = 0;
-  let streakType = 0; // 1 = win streak, -1 = loss streak
+  let streakType = 0;
   let streakStartBalance = 0;
 
-  let roundsDone = 0;
-
-  while (roundsDone < rounds) {
-    if (roundsDone > 0 && roundsDone % PROGRESS_UPDATE_INTERVAL === 0) {
-      self.postMessage({ type: 'PROGRESS', callId, done: roundsDone, total: rounds });
+  for (let i = 0; i < size; i++) {
+    if (i > 0 && i % PROGRESS_UPDATE_INTERVAL === 0) {
+      self.postMessage({ type: 'PROGRESS', callId, done: i, total: size });
     }
 
-    const [b0, b1, b2, b3, b4] = shuffleAndDeal();
-    const { strengths, winners, winnerCount } = evalAllHands(b0, b1, b2, b3, b4);
-    const isBoardWin = winnerCount === 10;
-
+    const mask = winnersMask[i];
+    const isBoardWin = mask === 1023;
     let roundWon = 0;
 
     if (!isBoardWin) {
-      let winningHandIdx = -1;
-      for (let h = 0; h < 10; h++) { if (winners[h] === 1) { winningHandIdx = h; break; } }
-      const winningRankCat = winningHandIdx >= 0 ? rankCatFromStrength(strengths[winningHandIdx]) : -99;
-      const winningRankName = RANK_NAMES_BY_CAT[winningRankCat] ?? null;
-
+      const winnerCount = popcount10(mask);
       for (let h = 0; h < 10; h++) {
         const bet = handBets[h];
-        if (bet > 0 && winners[h] === 1) {
+        if (bet > 0 && (mask & (1 << h))) {
           const odds = calculateTiePayout(handPayouts[h], winnerCount);
           roundWon += bet * (1 + odds * handPct);
         }
       }
 
-      if (winningHandIdx >= 0 && winningRankName) {
-        const handId = winningHandIdx + 1;
+      const rc = rankCat[i];
+      const winningRankName = rc >= 0 ? RANK_NAMES_BY_CAT[rc] : null;
+      if (winningRankName) {
+        let firstWinner = -1;
+        for (let h = 0; h < 10; h++) { if (mask & (1 << h)) { firstWinner = h; break; } }
+        const handId = firstWinner + 1;
         const payoutsForHand = perHandRankPayouts[handId] ?? perHandRankPayouts[String(handId)];
         const ratio = payoutsForHand ? payoutsForHand[winningRankName] : null;
         if (ratio != null) {
@@ -236,15 +267,16 @@ function handleRun(payload) {
       if (runDown < worstRun) worstRun = runDown;
     }
 
-    roundsDone++;
+    const roundNumber = i + 1;
+    if (checkpointNet.has(roundNumber)) checkpointNet.set(roundNumber, runningBalance);
   }
 
-  const totalBet = totalBetPerRound * rounds;
+  const totalBet = totalBetPerRound * size;
   const totalNet = totalWon - totalBet;
   const rtp = totalBet > 0 ? (totalWon / totalBet) * 100 : 0;
   const houseEdge = 100 - rtp;
-  const hitFrequency = rounds > 0 ? (hitCount / rounds) * 100 : 0;
-  const netWinFrequency = rounds > 0 ? (netWinCount / rounds) * 100 : 0;
+  const hitFrequency = size > 0 ? (hitCount / size) * 100 : 0;
+  const netWinFrequency = size > 0 ? (netWinCount / size) * 100 : 0;
 
   self.postMessage({
     type: 'RESULT',
@@ -252,7 +284,7 @@ function handleRun(payload) {
     data: {
       success: true,
       noBets: false,
-      roundsTested: rounds,
+      roundsTested: size,
       totalBet,
       totalWon,
       totalNet,
@@ -262,16 +294,29 @@ function handleRun(payload) {
       netWinFrequency,
       bestRunUp,
       worstRun,
+      checkpoints: (roundCheckpoints || []).map(r => ({ round: r, net: checkpointNet.get(r) ?? null })),
     },
   });
 }
 
 self.onmessage = function(e) {
   const { type, payload } = e.data;
-  if (type === 'RUN') {
-    try { handleRun(payload); }
-    catch (err) {
-      self.postMessage({ type: 'ERROR', callId: payload?.callId, message: err?.message ?? String(err) });
+  const { callId } = payload || {};
+  try {
+    if (type === 'RUN') {
+      generateBuffer(payload.rounds, callId);
+      computeFromBuffer(payload);
+    } else if (type === 'RECALCULATE') {
+      if (!_buffer.size) {
+        self.postMessage({ type: 'ERROR', callId, message: 'No simulation buffer — run a test first.' });
+        return;
+      }
+      computeFromBuffer(payload);
+    } else if (type === 'CLEAR') {
+      _buffer = { winnersMask: null, rankCat: null, size: 0 };
+      self.postMessage({ type: 'RESULT', callId, data: { success: true, cleared: true } });
     }
+  } catch (err) {
+    self.postMessage({ type: 'ERROR', callId, message: err?.message ?? String(err) });
   }
 };
