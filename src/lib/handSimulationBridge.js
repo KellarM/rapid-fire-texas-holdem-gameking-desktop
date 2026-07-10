@@ -48,3 +48,8 @@ export function runHandSimulationRecalculate(params, onProgress) {
 export function clearHandSimulationBuffer() {
   return callWorker('CLEAR', {});
 }
+
+// Exports up to 100,000 rounds of the current simulation buffer, re-scored with current bets/% Paid.
+export function runHandSimulationExport(params, onProgress) {
+  return callWorker('EXPORT', params, onProgress);
+}

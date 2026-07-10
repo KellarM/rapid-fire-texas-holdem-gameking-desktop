@@ -294,6 +294,74 @@ function computeFromBuffer(payload) {
   });
 }
 
+const EXPORT_ROUND_CAP = 100_000;
+
+function exportRounds(payload) {
+  const { callId, handBets, rankBets, handPayouts, perHandRankPayouts, handPercentPaid, rankPercentPaid } = payload;
+  const { winnersMask, rankCat, size } = _buffer;
+
+  const rankNames = Object.keys(rankBets).filter(k => rankBets[k] > 0);
+  const handBetCount = handBets.filter(b => b > 0).length;
+  const rankBetCount = rankNames.length;
+  const totalBetPerRound = handBets.reduce((s, b) => s + (b || 0), 0) + rankNames.reduce((s, k) => s + rankBets[k], 0);
+  const handPct = (handPercentPaid[handBetCount] ?? 100) / 100;
+  const rankPct = (rankPercentPaid[rankBetCount] ?? 100) / 100;
+
+  const rowCount = Math.min(size, EXPORT_ROUND_CAP);
+  const rows = new Array(rowCount);
+  let runningBalance = 0;
+
+  for (let i = 0; i < rowCount; i++) {
+    const mask = winnersMask[i];
+    const isBoardWin = mask === 1023;
+    let roundWon = 0;
+    let winningRankName = null;
+
+    if (!isBoardWin) {
+      const winnerCount = popcount10(mask);
+      for (let h = 0; h < 10; h++) {
+        const bet = handBets[h];
+        if (bet > 0 && (mask & (1 << h))) {
+          const odds = calculateTiePayout(handPayouts[h], winnerCount);
+          roundWon += bet * (1 + odds * handPct);
+        }
+      }
+      const rc = rankCat[i];
+      const rn = rc >= 0 ? RANK_NAMES_BY_CAT[rc] : null;
+      if (rn) {
+        let firstWinner = -1;
+        for (let h = 0; h < 10; h++) { if (mask & (1 << h)) { firstWinner = h; break; } }
+        const handId = firstWinner + 1;
+        const payoutsForHand = perHandRankPayouts[handId] ?? perHandRankPayouts[String(handId)];
+        const ratio = payoutsForHand ? payoutsForHand[rn] : null;
+        if (ratio != null) {
+          for (const rk of rankNames) {
+            if (rk === rn) {
+              roundWon += rankBets[rk] * (1 + ratio * rankPct);
+              winningRankName = rn;
+            }
+          }
+        }
+      }
+    }
+
+    const net = roundWon - totalBetPerRound;
+    runningBalance += net;
+
+    rows[i] = {
+      round: i + 1,
+      bet: totalBetPerRound,
+      won: roundWon,
+      net,
+      runningBalance,
+      isBoardWin,
+      winningRankName,
+    };
+  }
+
+  self.postMessage({ type: 'RESULT', callId, data: { success: true, rows, roundsExported: rowCount, roundsTested: size } });
+}
+
 self.onmessage = function(e) {
   const { type, payload } = e.data;
   const { callId } = payload || {};
@@ -307,6 +375,12 @@ self.onmessage = function(e) {
         return;
       }
       computeFromBuffer(payload);
+    } else if (type === 'EXPORT') {
+      if (!_buffer.size) {
+        self.postMessage({ type: 'ERROR', callId, message: 'No simulation buffer — run a test first.' });
+        return;
+      }
+      exportRounds(payload);
     } else if (type === 'CLEAR') {
       _buffer = { winnersMask: null, rankCat: null, size: 0 };
       self.postMessage({ type: 'RESULT', callId, data: { success: true, cleared: true } });

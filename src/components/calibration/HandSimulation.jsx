@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Play, RefreshCw, Trash2, FlaskConical } from 'lucide-react';
+import { Play, RefreshCw, Trash2, FlaskConical, FileDown } from 'lucide-react';
 import { CARDED_HAND_PAYOUTS } from '@/lib/payoutConstants';
 import { PER_HAND_RANK_PAYOUTS } from '@/lib/perHandRankPayouts';
-import { runHandSimulationRun, runHandSimulationRecalculate, clearHandSimulationBuffer } from '@/lib/handSimulationBridge';
+import { runHandSimulationRun, runHandSimulationRecalculate, clearHandSimulationBuffer, runHandSimulationExport } from '@/lib/handSimulationBridge';
 import HandBetsTable from './handSimulation/HandBetsTable';
 import RankBetsTable, { RANK_KEYS } from './handSimulation/RankBetsTable';
 import PercentPaidTables from './handSimulation/PercentPaidTables';
@@ -29,6 +29,7 @@ export default function HandSimulation() {
   const [progress, setProgress] = useState(null);
   const [results, setResults] = useState(null);
   const [hasRun, setHasRun] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   const buildParams = () => ({
     rounds: numberOfRounds,
@@ -79,6 +80,36 @@ export default function HandSimulation() {
     setRoundCheckpoints(DEFAULT_CHECKPOINTS);
     setResults(null);
     setHasRun(false);
+  };
+
+  const handleExport = async () => {
+    if (!hasRun) return;
+    setExporting(true);
+    try {
+      const data = await runHandSimulationExport(buildParams());
+      const header = ['Round', 'Bet', 'Won', 'Net', 'Running Balance', 'Board Win', 'Winning Rank'];
+      const csvRows = [header.join(',')];
+      data.rows.forEach(row => {
+        csvRows.push([
+          row.round,
+          row.bet.toFixed(2),
+          row.won.toFixed(2),
+          row.net.toFixed(2),
+          row.runningBalance.toFixed(2),
+          row.isBoardWin ? 'Yes' : 'No',
+          row.winningRankName || '',
+        ].join(','));
+      });
+      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `HandSimulation_${data.roundsExported}rounds_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
   };
 
   const checkpointPayouts = results?.checkpoints?.map(c => c.net);
@@ -149,6 +180,15 @@ export default function HandSimulation() {
               <Trash2 className="w-3.5 h-3.5" /> Clear
             </button>
           </div>
+
+          <button
+            onClick={handleExport}
+            disabled={running || exporting || !hasRun}
+            title={!hasRun ? 'Run a test first' : 'Export up to 100,000 rounds as CSV (opens in Excel)'}
+            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-emerald-700 text-emerald-300 hover:bg-emerald-900/30 disabled:opacity-40 text-xs font-semibold transition-all"
+          >
+            <FileDown className="w-3.5 h-3.5" /> {exporting ? 'Exporting…' : 'Export to Excel (CSV)'}
+          </button>
 
           {running && progress && (
             <div className="text-xs text-gray-400 text-center">
