@@ -211,8 +211,6 @@ function computeFromBuffer(payload) {
   let runningBalance = 0;
   let bestRunUp = 0;
   let worstRun = 0;
-  let streakType = 0;
-  let streakStartBalance = 0;
 
   for (let i = 0; i < size; i++) {
     if (i > 0 && i % PROGRESS_UPDATE_INTERVAL === 0) {
@@ -257,15 +255,8 @@ function computeFromBuffer(payload) {
     if (net > 0) netWinCount++;
 
     runningBalance += net;
-    if (net > 0) {
-      if (streakType !== 1) { streakType = 1; streakStartBalance = runningBalance - net; }
-      const runUp = runningBalance - streakStartBalance;
-      if (runUp > bestRunUp) bestRunUp = runUp;
-    } else if (net < 0) {
-      if (streakType !== -1) { streakType = -1; streakStartBalance = runningBalance - net; }
-      const runDown = runningBalance - streakStartBalance;
-      if (runDown < worstRun) worstRun = runDown;
-    }
+    if (runningBalance > bestRunUp) bestRunUp = runningBalance;
+    if (runningBalance < worstRun) worstRun = runningBalance;
 
     const roundNumber = i + 1;
     if (checkpointNet.has(roundNumber)) checkpointNet.set(roundNumber, runningBalance);

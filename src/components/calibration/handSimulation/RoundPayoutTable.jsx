@@ -22,7 +22,7 @@ export default function RoundPayoutTable({ rounds, payouts, onChange }) {
                     className="w-full bg-yellow-100 text-black text-left rounded px-1.5 py-0.5 font-bold outline-none focus:ring-2 focus:ring-yellow-400"
                   />
                 </td>
-                <td className="px-2 py-1 w-1/2 text-right text-amber-200 font-bold">
+                <td className={`px-2 py-1 w-1/2 text-right font-bold ${net < 0 ? 'text-red-400' : 'text-amber-200'}`}>
                   {net === undefined || net === null ? '$0.00' : `$${net.toFixed(2)}`}
                 </td>
               </tr>

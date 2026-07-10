@@ -1,8 +1,9 @@
 function StatBox({ label, value }) {
+  const isNegative = typeof value === 'string' && value.includes('-');
   return (
     <div className="bg-amber-900/20 border border-amber-700/40 rounded px-2 py-1.5 flex justify-between items-center">
       <span className="text-gray-400 text-xs">{label}</span>
-      <span className="text-amber-300 font-bold text-sm">{value}</span>
+      <span className={`font-bold text-sm ${isNegative ? 'text-red-400' : 'text-amber-300'}`}>{value}</span>
     </div>
   );
 }
