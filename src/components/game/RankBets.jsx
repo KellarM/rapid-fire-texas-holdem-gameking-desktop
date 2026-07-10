@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import Chip from './Chip';
+import { getRankOddsRange } from '@/lib/perHandRankPayouts';
 
 export const RANK_BET_OPTIONS = [
   { key: 'Four of a Kind',  label: '4 Of A Kind'  },
@@ -11,6 +12,12 @@ export const RANK_BET_OPTIONS = [
   { key: 'Two Pair',        label: '2 Pair'        },
   { key: 'One Pair',        label: '1 Pair'        },
 ];
+
+// Odds range (lowest–highest across all 10 card hands) shown once the rank board unlocks
+const RANK_ODDS_LABELS = Object.fromEntries(RANK_BET_OPTIONS.map(opt => {
+  const range = getRankOddsRange(opt.key);
+  return [opt.key, range ? `${range.min.toFixed(1)} - ${range.max.toFixed(1)} :1` : null];
+}));
 
 function useUnlockPulse(rankKey, unlockedRanks) {
   const [pulseActive, setPulseActive] = useState(false);
@@ -51,7 +58,7 @@ function RankSlot({
   opt, rankBets, allRankBets, playerCount, canBet,
   isWinner, isLeading, isKillLocked, isSlotLocked,
   onRankBet, onRemoveRankBet, onMoveRankBet, gamePhase, unlockedRanks, killSwitchActive, rankLockThreshold = 1,
-  noHandBets, activePlayerId, activeHandIds,
+  noHandBets, activePlayerId, activeHandIds, oddsLabel,
 }) {
   const bet = rankBets[opt.key] || 0;
   const unlockPulse = useUnlockPulse(opt.key, unlockedRanks);
@@ -117,6 +124,8 @@ function RankSlot({
     buttonStyle = goldDim;
     showDarkLock = true;
   }
+
+  const showOdds = isActive || bet > 0 || (!fullyLocked && canBet);
 
   return (
     <motion.button
@@ -188,16 +197,19 @@ function RankSlot({
       >
         <span
           className={`text-left whitespace-nowrap ${textColor}`}
-          style={{ fontSize: '0.8rem', fontWeight: 900, letterSpacing: '0.01em', lineHeight: 1, flex: 1 }}
+          style={{ fontSize: '0.8rem', fontWeight: 900, letterSpacing: '0.01em', lineHeight: 1, flex: '0 0 auto' }}
         >
           {opt.label}
         </span>
-        <div className="flex items-center justify-center" style={{ minWidth: 28 }}>
-          {(fullyLocked || showDarkLock) && (
+        <div className="flex items-center justify-end flex-1 min-w-0" style={{ paddingLeft: 6 }}>
+          {showOdds && oddsLabel ? (
+            <span className={`whitespace-nowrap ${oddsColor}`} style={{ fontSize: '0.72rem', fontWeight: 900, lineHeight: 1 }}>
+              {oddsLabel}
+            </span>
+          ) : (fullyLocked || showDarkLock) ? (
             <LockIcon dim={hardLocked} onGold={true} />
-          )}
+          ) : null}
         </div>
-        {/* Odds shown in win display only — not on board */}
       </div>
 
       {/* Chip overlay — absolute, floats over text, pointer-events none so clicks pass through */}
@@ -334,6 +346,7 @@ export default function RankBets({
                 killSwitchActive={killSwitchActive}
                 activePlayerId={activePlayerId}
                 activeHandIds={activeHandIds}
+                oddsLabel={RANK_ODDS_LABELS[opt.key]}
               />
             </div>
           );

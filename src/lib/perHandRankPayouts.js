@@ -112,6 +112,22 @@ export function getPerHandRankPayout(handId, rankName) {
 }
 
 /**
+ * Get the min/max payout odds for a rank name across all 10 card hands.
+ * Used to display an odds range on the rank board once it unlocks.
+ * Returns null if no hand offers that rank.
+ */
+export function getRankOddsRange(rankName) {
+  let min = null, max = null;
+  for (const handId of Object.keys(PER_HAND_RANK_PAYOUTS)) {
+    const val = PER_HAND_RANK_PAYOUTS[handId][rankName];
+    if (val === undefined) continue;
+    if (min === null || val < min) min = val;
+    if (max === null || val > max) max = val;
+  }
+  return min === null ? null : { min, max };
+}
+
+/**
  * Get the set of available rank names for a given hand ID.
  */
 export function getAvailableRanksForHand(handId) {
