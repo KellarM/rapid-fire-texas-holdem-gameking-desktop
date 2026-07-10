@@ -210,7 +210,9 @@ function computeFromBuffer(payload) {
   let netWinCount = 0;
   let runningBalance = 0;
   let bestRunUp = 0;
+  let bestRunUpRound = 0;
   let worstRun = 0;
+  let worstRunRound = 0;
 
   for (let i = 0; i < size; i++) {
     if (i > 0 && i % PROGRESS_UPDATE_INTERVAL === 0) {
@@ -255,10 +257,10 @@ function computeFromBuffer(payload) {
     if (net > 0) netWinCount++;
 
     runningBalance += net;
-    if (runningBalance > bestRunUp) bestRunUp = runningBalance;
-    if (runningBalance < worstRun) worstRun = runningBalance;
-
     const roundNumber = i + 1;
+    if (runningBalance > bestRunUp) { bestRunUp = runningBalance; bestRunUpRound = roundNumber; }
+    if (runningBalance < worstRun) { worstRun = runningBalance; worstRunRound = roundNumber; }
+
     if (checkpointNet.has(roundNumber)) checkpointNet.set(roundNumber, runningBalance);
   }
 
@@ -284,7 +286,9 @@ function computeFromBuffer(payload) {
       hitFrequency,
       netWinFrequency,
       bestRunUp,
+      bestRunUpRound,
       worstRun,
+      worstRunRound,
       checkpoints: (roundCheckpoints || []).map(r => ({ round: r, net: checkpointNet.get(r) ?? null })),
     },
   });
