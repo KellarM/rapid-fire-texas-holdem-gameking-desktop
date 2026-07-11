@@ -8,7 +8,7 @@ export default function RoundPayoutTable({ rounds, payouts, onChange }) {
             <th className="px-2 py-1.5 text-right">Win Payout</th>
           </tr>
         </thead>
-        <tbody className="block max-h-[560px] overflow-y-auto w-full">
+        <tbody className="block w-full">
           {rounds.map((round, i) => {
             const net = payouts?.[i];
             return (
