@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { Play, RefreshCw, Trash2, FlaskConical, FileDown } from 'lucide-react';
-import { CARDED_HAND_PAYOUTS } from '@/lib/payoutConstants';
+import { CARDED_HAND_PAYOUTS, COLOR_BOARD_PAYOUTS } from '@/lib/payoutConstants';
 import { PER_HAND_RANK_PAYOUTS } from '@/lib/perHandRankPayouts';
 import { runHandSimulationRun, runHandSimulationRecalculate, clearHandSimulationBuffer, runHandSimulationExport } from '@/lib/handSimulationBridge';
 import HandBetsTable from './handSimulation/HandBetsTable';
 import RankBetsTable, { RANK_KEYS } from './handSimulation/RankBetsTable';
+import ColorBetsTable, { COLOR_KEYS } from './handSimulation/ColorBetsTable';
 import PercentPaidTables from './handSimulation/PercentPaidTables';
 import ResultsSummary from './handSimulation/ResultsSummary';
 import RoundPayoutTable from './handSimulation/RoundPayoutTable';
 
 const DEFAULT_HAND_BETS = Array(10).fill(0);
 const DEFAULT_RANK_BETS = Object.fromEntries(RANK_KEYS.map(r => [r, 0]));
+const DEFAULT_COLOR_BETS = Object.fromEntries(COLOR_KEYS.map(c => [c, 0]));
 const DEFAULT_HAND_PCT = Array(11).fill(100); // index 0-10 (hand count)
 const DEFAULT_RANK_PCT = Array(8).fill(100);  // index 0-7 (rank count)
 const DEFAULT_ROUNDS = 10000;
@@ -19,6 +21,7 @@ const DEFAULT_CHECKPOINTS = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200, 500, 
 export default function HandSimulation() {
   const [handBets, setHandBets] = useState(DEFAULT_HAND_BETS);
   const [rankBets, setRankBets] = useState(DEFAULT_RANK_BETS);
+  const [colorBets, setColorBets] = useState(DEFAULT_COLOR_BETS);
   const [handPercentPaid, setHandPercentPaid] = useState(DEFAULT_HAND_PCT);
   const [rankPercentPaid, setRankPercentPaid] = useState(DEFAULT_RANK_PCT);
   const [targetRTP, setTargetRTP] = useState(96.5);
@@ -35,8 +38,10 @@ export default function HandSimulation() {
     rounds: numberOfRounds,
     handBets,
     rankBets,
+    colorBets,
     handPayouts: CARDED_HAND_PAYOUTS,
     perHandRankPayouts: PER_HAND_RANK_PAYOUTS,
+    colorPayouts: COLOR_BOARD_PAYOUTS,
     handPercentPaid,
     rankPercentPaid,
     roundCheckpoints,
@@ -72,6 +77,7 @@ export default function HandSimulation() {
     await clearHandSimulationBuffer();
     setHandBets(DEFAULT_HAND_BETS);
     setRankBets(DEFAULT_RANK_BETS);
+    setColorBets(DEFAULT_COLOR_BETS);
     setHandPercentPaid(DEFAULT_HAND_PCT);
     setRankPercentPaid(DEFAULT_RANK_PCT);
     setTargetRTP(96.5);
@@ -143,6 +149,7 @@ export default function HandSimulation() {
         <div className="space-y-3">
           <HandBetsTable handBets={handBets} onChange={(i, v) => setHandBets(prev => prev.map((b, idx) => idx === i ? v : b))} />
           <RankBetsTable rankBets={rankBets} onChange={(rank, v) => setRankBets(prev => ({ ...prev, [rank]: v }))} />
+          <ColorBetsTable colorBets={colorBets} onChange={(key, v) => setColorBets(prev => ({ ...prev, [key]: v }))} />
         </div>
 
         <div className="space-y-2">

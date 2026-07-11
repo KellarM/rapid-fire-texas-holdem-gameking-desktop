@@ -164,11 +164,12 @@ const EXPORT_ROUND_CAP = 100_000;
 // ── Persistent buffer — single source of truth for the current run ──
 // boards holds the raw 5-card board for only the first EXPORT_ROUND_CAP rounds
 // (memory cap) — enough to fully reproduce the CSV export for up to 100K rounds.
-let _buffer = { winnersMask: null, rankCat: null, boards: null, boardCap: 0, size: 0 };
+let _buffer = { winnersMask: null, rankCat: null, redsCount: null, boards: null, boardCap: 0, size: 0 };
 
 function generateBuffer(rounds, callId) {
   const winnersMask = new Uint16Array(rounds);
   const rankCat = new Int8Array(rounds);
+  const redsCount = new Int8Array(rounds);
   const boardCap = Math.min(rounds, EXPORT_ROUND_CAP);
   const boards = new Uint8Array(boardCap * 5);
 
@@ -187,28 +188,51 @@ function generateBuffer(rounds, callId) {
     winnersMask[i] = mask;
     rankCat[i] = winnerCount === 10 ? -1 : (firstWinner >= 0 ? rankCatFromStrength(strengths[firstWinner]) : -1);
 
+    let reds = 0;
+    if ((b0&3)===1||(b0&3)===2) reds++;
+    if ((b1&3)===1||(b1&3)===2) reds++;
+    if ((b2&3)===1||(b2&3)===2) reds++;
+    if ((b3&3)===1||(b3&3)===2) reds++;
+    if ((b4&3)===1||(b4&3)===2) reds++;
+    redsCount[i] = reds;
+
     if (i < boardCap) {
       const off = i * 5;
       boards[off] = b0; boards[off+1] = b1; boards[off+2] = b2; boards[off+3] = b3; boards[off+4] = b4;
     }
   }
 
-  _buffer = { winnersMask, rankCat, boards, boardCap, size: rounds };
+  _buffer = { winnersMask, rankCat, redsCount, boards, boardCap, size: rounds };
+}
+
+// Given red-card count out of 5 board cards, returns the winning Color Board key ('3R'/'4R'/'5R'/'3B'/'4B'/'5B') or null.
+function colorWinKey(reds) {
+  const blacks = 5 - reds;
+  if (reds === 3) return '3R';
+  if (reds === 4) return '4R';
+  if (reds === 5) return '5R';
+  if (blacks === 3) return '3B';
+  if (blacks === 4) return '4B';
+  if (blacks === 5) return '5B';
+  return null;
 }
 
 function computeFromBuffer(payload) {
   const {
     callId,
-    handBets, rankBets, handPayouts, perHandRankPayouts,
+    handBets, rankBets, colorBets, handPayouts, perHandRankPayouts, colorPayouts,
     handPercentPaid, rankPercentPaid, roundCheckpoints,
   } = payload;
 
-  const { winnersMask, rankCat, size } = _buffer;
+  const { winnersMask, rankCat, redsCount, size } = _buffer;
 
   const rankNames = Object.keys(rankBets).filter(k => rankBets[k] > 0);
+  const colorNames = Object.keys(colorBets || {}).filter(k => colorBets[k] > 0);
   const handBetCount = handBets.filter(b => b > 0).length;
   const rankBetCount = rankNames.length;
-  const totalBetPerRound = handBets.reduce((s, b) => s + (b || 0), 0) + rankNames.reduce((s, k) => s + rankBets[k], 0);
+  const totalBetPerRound = handBets.reduce((s, b) => s + (b || 0), 0)
+    + rankNames.reduce((s, k) => s + rankBets[k], 0)
+    + colorNames.reduce((s, k) => s + colorBets[k], 0);
 
   const checkpointNet = new Map();
   (roundCheckpoints || []).forEach(r => checkpointNet.set(r, null));
@@ -267,6 +291,13 @@ function computeFromBuffer(payload) {
       }
     }
 
+    // Color Board — resolves independently of card/rank win, exact-match on red/black count
+    const colorKey = colorWinKey(redsCount[i]);
+    if (colorKey && colorBets[colorKey] > 0) {
+      const ratio = colorPayouts[colorKey];
+      roundWon += colorBets[colorKey] * (1 + ratio);
+    }
+
     totalWon += roundWon;
     if (roundWon > 0) hitCount++;
     const net = roundWon - totalBetPerRound;
@@ -318,13 +349,16 @@ function computeFromBuffer(payload) {
 const CSV_HEADER = 'Seq,Flop_C1_Rank,Flop_C1_Suit,Flop_C2_Rank,Flop_C2_Suit,Flop_C3_Rank,Flop_C3_Suit,Turn_C4_Rank,Turn_C4_Suit,River_C5_Rank,River_C5_Suit,Winning_Hand,Winning_Hand_2,Winning_Rank,Shared_Win,House_Win,Rank_Exception,3_Red,4_Red,5_Red,3_Black,4_Black,5_Black,Low,High,Bet,Won,Net,Running_Balance';
 
 function exportRounds(payload) {
-  const { callId, handBets, rankBets, handPayouts, perHandRankPayouts, handPercentPaid, rankPercentPaid } = payload;
+  const { callId, handBets, rankBets, colorBets, handPayouts, perHandRankPayouts, colorPayouts, handPercentPaid, rankPercentPaid } = payload;
   const { winnersMask, rankCat, boards, boardCap, size } = _buffer;
 
   const rankNames = Object.keys(rankBets).filter(k => rankBets[k] > 0);
+  const colorNames = Object.keys(colorBets || {}).filter(k => colorBets[k] > 0);
   const handBetCount = handBets.filter(b => b > 0).length;
   const rankBetCount = rankNames.length;
-  const totalBetPerRound = handBets.reduce((s, b) => s + (b || 0), 0) + rankNames.reduce((s, k) => s + rankBets[k], 0);
+  const totalBetPerRound = handBets.reduce((s, b) => s + (b || 0), 0)
+    + rankNames.reduce((s, k) => s + rankBets[k], 0)
+    + colorNames.reduce((s, k) => s + colorBets[k], 0);
   const handPct = (handPercentPaid[handBetCount] ?? 100) / 100;
   const rankPct = (rankPercentPaid[rankBetCount] ?? 100) / 100;
 
@@ -367,9 +401,6 @@ function exportRounds(payload) {
       }
     }
 
-    const net = roundWon - totalBetPerRound;
-    runningBalance += net;
-
     const off = i * 5;
     const b0 = boards[off], b1 = boards[off+1], b2 = boards[off+2], b3 = boards[off+3], b4 = boards[off+4];
     const c0 = decodeCard(b0), c1 = decodeCard(b1), c2 = decodeCard(b2), c3 = decodeCard(b3), c4 = decodeCard(b4);
@@ -389,6 +420,15 @@ function exportRounds(payload) {
     if ((b4&3)===1||(b4&3)===2) reds++;
     const blacks = 5 - reds;
     const isLow = (b4 >> 2) <= 5;
+
+    // Color Board — resolves independently of card/rank win, exact-match on red/black count
+    const colorKey = colorWinKey(reds);
+    if (colorKey && colorBets[colorKey] > 0) {
+      roundWon += colorBets[colorKey] * (1 + colorPayouts[colorKey]);
+    }
+
+    const net = roundWon - totalBetPerRound;
+    runningBalance += net;
 
     rows[i] = {
       round: i + 1,
@@ -438,7 +478,7 @@ self.onmessage = function(e) {
       }
       exportRounds(payload);
     } else if (type === 'CLEAR') {
-      _buffer = { winnersMask: null, rankCat: null, boards: null, boardCap: 0, size: 0 };
+      _buffer = { winnersMask: null, rankCat: null, redsCount: null, boards: null, boardCap: 0, size: 0 };
       self.postMessage({ type: 'RESULT', callId, data: { success: true, cleared: true } });
     }
   } catch (err) {
