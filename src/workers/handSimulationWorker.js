@@ -231,6 +231,26 @@ function lowHighDecision(mode, low4) {
   return null;
 }
 
+// Resolves the combined wager/win for all active Low/High modes on a single round.
+// Each mode only fires on its own matching split, so both can be active at once
+// without ever double-wagering on the same board.
+function resolveLowHighModes(lowHighModes, low4, isLow, totalBetPerRound, riverStatePayouts) {
+  let wager = 0;
+  let won = 0;
+  for (const mode of (lowHighModes || [])) {
+    const decision = lowHighDecision(mode, low4);
+    if (!decision) continue;
+    const modeWager = mode === '3_1' ? totalBetPerRound / 2 : totalBetPerRound;
+    wager += modeWager;
+    const actualDirection = isLow ? 'LOW' : 'HIGH';
+    if (actualDirection === decision.direction) {
+      const ratio = riverStatePayouts?.[decision.state]?.[decision.direction] ?? 0;
+      won += modeWager * (1 + ratio);
+    }
+  }
+  return { wager, won };
+}
+
 // Given red-card count out of 5 board cards, returns the winning Color Board key ('3R'/'4R'/'5R'/'3B'/'4B'/'5B') or null.
 function colorWinKey(reds) {
   const blacks = 5 - reds;
@@ -246,7 +266,7 @@ function colorWinKey(reds) {
 function computeFromBuffer(payload) {
   const {
     callId,
-    handBets, rankBets, colorBets, lowHighMode, handPayouts, perHandRankPayouts, colorPayouts, riverStatePayouts,
+    handBets, rankBets, colorBets, lowHighModes, handPayouts, perHandRankPayouts, colorPayouts, riverStatePayouts,
     handPercentPaid, rankPercentPaid, roundCheckpoints,
   } = payload;
 
@@ -325,18 +345,10 @@ function computeFromBuffer(payload) {
       roundWon += colorBets[colorKey] * (1 + ratio);
     }
 
-    // Low/High Strategy bet — variable per-round wager, only fires on a matching split
-    let roundBet = totalBetPerRound;
-    const lhDecision = lowHighDecision(lowHighMode, lowCount4[i]);
-    if (lhDecision) {
-      const wager = lowHighMode === '3_1' ? totalBetPerRound / 2 : totalBetPerRound;
-      roundBet += wager;
-      const actualDirection = riverLow[i] === 1 ? 'LOW' : 'HIGH';
-      if (actualDirection === lhDecision.direction) {
-        const ratio = riverStatePayouts?.[lhDecision.state]?.[lhDecision.direction] ?? 0;
-        roundWon += wager * (1 + ratio);
-      }
-    }
+    // Low/High Strategy bets — variable per-round wager, only fires on a matching split
+    const { wager: lhWager, won: lhWon } = resolveLowHighModes(lowHighModes, lowCount4[i], riverLow[i] === 1, totalBetPerRound, riverStatePayouts);
+    const roundBet = totalBetPerRound + lhWager;
+    roundWon += lhWon;
 
     totalWon += roundWon;
     if (roundWon > 0) hitCount++;
@@ -390,7 +402,7 @@ function computeFromBuffer(payload) {
 const CSV_HEADER = 'Seq,Flop_C1_Rank,Flop_C1_Suit,Flop_C2_Rank,Flop_C2_Suit,Flop_C3_Rank,Flop_C3_Suit,Turn_C4_Rank,Turn_C4_Suit,River_C5_Rank,River_C5_Suit,Winning_Hand,Winning_Hand_2,Winning_Rank,Shared_Win,House_Win,Rank_Exception,3_Red,4_Red,5_Red,3_Black,4_Black,5_Black,Low,High,LowHigh_Wager,Bet,Won,Net,Running_Balance';
 
 function exportRounds(payload) {
-  const { callId, handBets, rankBets, colorBets, lowHighMode, handPayouts, perHandRankPayouts, colorPayouts, riverStatePayouts, handPercentPaid, rankPercentPaid } = payload;
+  const { callId, handBets, rankBets, colorBets, lowHighModes, handPayouts, perHandRankPayouts, colorPayouts, riverStatePayouts, handPercentPaid, rankPercentPaid } = payload;
   const { winnersMask, rankCat, boards, boardCap, size } = _buffer;
 
   const rankNames = Object.keys(rankBets).filter(k => rankBets[k] > 0);
@@ -468,20 +480,11 @@ function exportRounds(payload) {
       roundWon += colorBets[colorKey] * (1 + colorPayouts[colorKey]);
     }
 
-    // Low/High Strategy bet — variable per-round wager, only fires on a matching split
-    let roundBet = totalBetPerRound;
-    let lowHighWager = 0;
+    // Low/High Strategy bets — variable per-round wager, only fires on a matching split
     const low4 = ((b0>>2)<=5?1:0) + ((b1>>2)<=5?1:0) + ((b2>>2)<=5?1:0) + ((b3>>2)<=5?1:0);
-    const lhDecision = lowHighDecision(lowHighMode, low4);
-    if (lhDecision) {
-      lowHighWager = lowHighMode === '3_1' ? totalBetPerRound / 2 : totalBetPerRound;
-      roundBet += lowHighWager;
-      const actualDirection = (b4 >> 2) <= 5 ? 'LOW' : 'HIGH';
-      if (actualDirection === lhDecision.direction) {
-        const ratio = riverStatePayouts?.[lhDecision.state]?.[lhDecision.direction] ?? 0;
-        roundWon += lowHighWager * (1 + ratio);
-      }
-    }
+    const { wager: lowHighWager, won: lhWon } = resolveLowHighModes(lowHighModes, low4, (b4 >> 2) <= 5, totalBetPerRound, riverStatePayouts);
+    const roundBet = totalBetPerRound + lowHighWager;
+    roundWon += lhWon;
 
     const net = roundWon - roundBet;
     runningBalance += net;

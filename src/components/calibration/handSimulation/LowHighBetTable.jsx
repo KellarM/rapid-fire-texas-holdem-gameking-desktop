@@ -1,10 +1,15 @@
 const OPTIONS = [
-  { key: 'none', label: 'No Bet' },
   { key: '3_1', label: '3 / 1' },
   { key: '4_0', label: '4 / 0' },
 ];
 
-export default function LowHighBetTable({ mode, onChange }) {
+export default function LowHighBetTable({ modes, onChange }) {
+  const isNoBet = modes.length === 0;
+
+  const toggle = (key) => {
+    onChange(modes.includes(key) ? modes.filter(m => m !== key) : [...modes, key]);
+  };
+
   return (
     <div className="rounded-lg border border-slate-700 overflow-hidden">
       <table className="w-full text-xs">
@@ -15,14 +20,25 @@ export default function LowHighBetTable({ mode, onChange }) {
           </tr>
         </thead>
         <tbody>
+          <tr className="bg-slate-900/40">
+            <td className="px-2 py-1.5 text-white font-bold">No Bet</td>
+            <td className="px-2 py-1.5 text-right">
+              <input
+                type="checkbox"
+                checked={isNoBet}
+                onChange={() => onChange([])}
+                className="w-4 h-4 accent-yellow-400 cursor-pointer"
+              />
+            </td>
+          </tr>
           {OPTIONS.map((opt, i) => (
-            <tr key={opt.key} className={i % 2 === 0 ? 'bg-slate-900/40' : 'bg-slate-800/30'}>
+            <tr key={opt.key} className={i % 2 === 0 ? 'bg-slate-800/30' : 'bg-slate-900/40'}>
               <td className="px-2 py-1.5 text-white font-bold">{opt.label}</td>
               <td className="px-2 py-1.5 text-right">
                 <input
                   type="checkbox"
-                  checked={mode === opt.key}
-                  onChange={() => onChange(opt.key)}
+                  checked={modes.includes(opt.key)}
+                  onChange={() => toggle(opt.key)}
                   className="w-4 h-4 accent-yellow-400 cursor-pointer"
                 />
               </td>
@@ -31,7 +47,7 @@ export default function LowHighBetTable({ mode, onChange }) {
         </tbody>
       </table>
       <p className="text-gray-500 text-[10px] px-2 py-1.5 border-t border-slate-700 leading-snug">
-        3/1: wagers half of the total (Hand+Rank+Color) bets on the likely side whenever the board shows a 3-1 Low/High split. 4/0: wagers the full total whenever the board shows a 4-0 split.
+        3/1: wagers half of the total (Hand+Rank+Color) bets on the likely side whenever the board shows a 3-1 Low/High split. 4/0: wagers the full total whenever the board shows a 4-0 split. Both can be selected together.
       </p>
     </div>
   );

@@ -23,7 +23,7 @@ export default function HandSimulation() {
   const [handBets, setHandBets] = useState(DEFAULT_HAND_BETS);
   const [rankBets, setRankBets] = useState(DEFAULT_RANK_BETS);
   const [colorBets, setColorBets] = useState(DEFAULT_COLOR_BETS);
-  const [lowHighMode, setLowHighMode] = useState('none');
+  const [lowHighModes, setLowHighModes] = useState([]);
   const [handPercentPaid, setHandPercentPaid] = useState(DEFAULT_HAND_PCT);
   const [rankPercentPaid, setRankPercentPaid] = useState(DEFAULT_RANK_PCT);
   const [targetRTP, setTargetRTP] = useState(96.5);
@@ -41,7 +41,7 @@ export default function HandSimulation() {
     handBets,
     rankBets,
     colorBets,
-    lowHighMode,
+    lowHighModes,
     handPayouts: CARDED_HAND_PAYOUTS,
     perHandRankPayouts: PER_HAND_RANK_PAYOUTS,
     colorPayouts: COLOR_BOARD_PAYOUTS,
@@ -82,7 +82,7 @@ export default function HandSimulation() {
     setHandBets(DEFAULT_HAND_BETS);
     setRankBets(DEFAULT_RANK_BETS);
     setColorBets(DEFAULT_COLOR_BETS);
-    setLowHighMode('none');
+    setLowHighModes([]);
     setHandPercentPaid(DEFAULT_HAND_PCT);
     setRankPercentPaid(DEFAULT_RANK_PCT);
     setTargetRTP(96.5);
@@ -180,7 +180,7 @@ export default function HandSimulation() {
 
           <ResultsSummary results={results} targetRTP={targetRTP} warningBuffer={warningBuffer} />
 
-          <LowHighBetTable mode={lowHighMode} onChange={setLowHighMode} />
+          <LowHighBetTable modes={lowHighModes} onChange={setLowHighModes} />
         </div>
 
         <div className="space-y-2">
