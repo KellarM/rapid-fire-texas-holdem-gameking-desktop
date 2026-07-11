@@ -1991,8 +1991,8 @@ export default function RapidFireGame() {
               selectedChip={selectedChip}
               hoveredRankRow={hoveredRankRow}
               isRankBetPlaced={isRankBetPlaced}
-              colorCap={totalHandAmt + totalRankAmt}
-              riverCap={totalHandAmt + totalRankAmt + totalColorAmt}
+              colorCap={Math.max(0, (totalHandAmt + totalRankAmt) - totalColorAmt)}
+              riverCap={Math.max(0, (totalHandAmt + totalRankAmt + totalColorAmt) - (pLowHighBet?.amount || 0))}
               rankLockThreshold={versions?.rankLockThreshold ?? 1} />
             
           </div>

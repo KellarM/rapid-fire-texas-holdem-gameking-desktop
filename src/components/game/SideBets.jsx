@@ -307,7 +307,7 @@ export default function SideBets({
             className="absolute -top-2 right-1 z-30 px-2 py-0.5 rounded-full text-[10px] font-black whitespace-nowrap pointer-events-none"
             style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24' }}
           >
-            Cap: ${colorCap.toLocaleString()}
+            Match Cap: ${colorCap.toLocaleString()}
           </div>
         )}
 
@@ -401,7 +401,7 @@ export default function SideBets({
             className="absolute -top-2 right-1 z-30 px-2 py-0.5 rounded-full text-[10px] font-black whitespace-nowrap pointer-events-none"
             style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24' }}
           >
-            Cap: ${riverCap.toLocaleString()}
+            Match Cap: ${riverCap.toLocaleString()}
           </div>
         )}
 
