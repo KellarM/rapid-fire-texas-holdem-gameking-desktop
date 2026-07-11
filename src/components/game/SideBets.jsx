@@ -70,9 +70,12 @@ export default function SideBets({
   hoveredRankRow,
   isRankBetPlaced,
   compactLandscape,   // landscape mode: hides headers, flips color grid to 3×2
+  colorCap = 0,
+  riverCap = 0,
 }) {
   const colorLocked = killSwitchActive || !rankBetActive;
   const riverLocked = !rankBetActive;
+  const riverBoardOpen = !riverLocked && gamePhase !== 'betting' && gamePhase !== 'flop';
   const canBetRB = (gamePhase === 'betting') && !disabled && !colorLocked;
   // Color side lock: if activeColorSide is set, the opposite side is locked
   const redSideLocked  = colorLocked || activeColorSide === 'black';
@@ -298,6 +301,16 @@ export default function SideBets({
           </div>
         )}
 
+        {/* Snowball Cap HUD pill — max total Color bet, based on Hand + Rank totals */}
+        {!colorLocked && (
+          <div
+            className="absolute -top-2 right-1 z-30 px-2 py-0.5 rounded-full text-[10px] font-black whitespace-nowrap pointer-events-none"
+            style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24' }}
+          >
+            Cap: ${colorCap.toLocaleString()}
+          </div>
+        )}
+
         {/* Kill Switch Overlay */}
         {killSwitchActive && gamePhase === 'betting' && (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl bg-black/80 border-2 border-red-700/60 backdrop-blur-sm">
@@ -379,6 +392,16 @@ export default function SideBets({
             style={{ ...goldEmbossText, fontSize: '0.7rem', letterSpacing: '0.1em' }}
           >
             River — Low / High
+          </div>
+        )}
+
+        {/* Snowball Cap HUD pill — max River bet, based on Hand + Rank + Color totals */}
+        {riverBoardOpen && (
+          <div
+            className="absolute -top-2 right-1 z-30 px-2 py-0.5 rounded-full text-[10px] font-black whitespace-nowrap pointer-events-none"
+            style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24' }}
+          >
+            Cap: ${riverCap.toLocaleString()}
           </div>
         )}
 

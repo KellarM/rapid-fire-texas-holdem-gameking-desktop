@@ -289,6 +289,7 @@ export default function RankBets({
   activePlayerId, activeHandIds,
   onAttemptLockedRank, onHoverRankRow,
   rankLockThreshold = 1,
+  matchCapRemaining = 0,
 }) {
   const canBet = gamePhase === 'betting' && !disabled && !killSwitchActive;
   // hasMathFilter removed: all ranks available when kill-switch is off
@@ -297,6 +298,16 @@ export default function RankBets({
   return (
     <div className="relative flex flex-col h-full" style={{ overflow: 'visible' }}>
       {/* Header removed — space saved for rank rows */}
+
+      {/* Match Capacity HUD pill — how much more you can bet on Rank to match your Hand total */}
+      {!noHandBets && !killSwitchActive && (
+        <div
+          className="absolute -top-2 right-0 z-30 px-2 py-0.5 rounded-full text-[10px] font-black whitespace-nowrap pointer-events-none"
+          style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24' }}
+        >
+          Match Cap: ${matchCapRemaining.toLocaleString()}
+        </div>
+      )}
 
       {/* Kill Switch Overlay */}
       {killSwitchActive && gamePhase === 'betting' && (

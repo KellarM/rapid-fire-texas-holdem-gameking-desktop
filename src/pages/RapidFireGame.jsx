@@ -448,6 +448,11 @@ export default function RapidFireGame() {
   const pRankBets = rankBets[pid] || {};
   const pLowHighBet = lowHighBets[pid] || null;
 
+  // Live bet totals — used for the Match Cap / Snowball Cap HUD pills
+  const totalHandAmt = getTotalHandBets(pHandBets);
+  const totalRankAmt = getTotalRankBets(pRankBets);
+  const totalColorAmt = getTotalColorBets(pRedBlackBets);
+
   // Count bets in each category (always scoped to active player)
   const handBetCount = Object.keys(pHandBets).length;
   const rankBetCount = Object.keys(pRankBets).length;
@@ -1949,6 +1954,7 @@ export default function RapidFireGame() {
               unlockedRanks={new Set()}
               activePlayerId={pid}
               activeHandIds={activeHandIds}
+              matchCapRemaining={Math.max(0, totalHandAmt - totalRankAmt)}
               onAttemptLockedRank={(type) => {
                 setRankAlertType(type);
                 setShowRankLimitAlert(true);
@@ -1985,6 +1991,8 @@ export default function RapidFireGame() {
               selectedChip={selectedChip}
               hoveredRankRow={hoveredRankRow}
               isRankBetPlaced={isRankBetPlaced}
+              colorCap={totalHandAmt + totalRankAmt}
+              riverCap={totalHandAmt + totalRankAmt + totalColorAmt}
               rankLockThreshold={versions?.rankLockThreshold ?? 1} />
             
           </div>
