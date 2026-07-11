@@ -164,12 +164,14 @@ const EXPORT_ROUND_CAP = 100_000;
 // ── Persistent buffer — single source of truth for the current run ──
 // boards holds the raw 5-card board for only the first EXPORT_ROUND_CAP rounds
 // (memory cap) — enough to fully reproduce the CSV export for up to 100K rounds.
-let _buffer = { winnersMask: null, rankCat: null, redsCount: null, boards: null, boardCap: 0, size: 0 };
+let _buffer = { winnersMask: null, rankCat: null, redsCount: null, lowCount4: null, riverLow: null, boards: null, boardCap: 0, size: 0 };
 
 function generateBuffer(rounds, callId) {
   const winnersMask = new Uint16Array(rounds);
   const rankCat = new Int8Array(rounds);
   const redsCount = new Int8Array(rounds);
+  const lowCount4 = new Int8Array(rounds);
+  const riverLow = new Uint8Array(rounds);
   const boardCap = Math.min(rounds, EXPORT_ROUND_CAP);
   const boards = new Uint8Array(boardCap * 5);
 
@@ -196,13 +198,37 @@ function generateBuffer(rounds, callId) {
     if ((b4&3)===1||(b4&3)===2) reds++;
     redsCount[i] = reds;
 
+    let low4 = 0;
+    if ((b0 >> 2) <= 5) low4++;
+    if ((b1 >> 2) <= 5) low4++;
+    if ((b2 >> 2) <= 5) low4++;
+    if ((b3 >> 2) <= 5) low4++;
+    lowCount4[i] = low4;
+    riverLow[i] = (b4 >> 2) <= 5 ? 1 : 0;
+
     if (i < boardCap) {
       const off = i * 5;
       boards[off] = b0; boards[off+1] = b1; boards[off+2] = b2; boards[off+3] = b3; boards[off+4] = b4;
     }
   }
 
-  _buffer = { winnersMask, rankCat, redsCount, boards, boardCap, size: rounds };
+  _buffer = { winnersMask, rankCat, redsCount, lowCount4, riverLow, boards, boardCap, size: rounds };
+}
+
+// Low/High strategy decision given the low-card count among the first 4 community cards (flop + turn).
+// mode '3_1': fires on a 3-1 split, wagering on the side favoured by riverStatePayouts.
+// mode '4_0': fires on a 4-0 split, same favoured-side logic.
+function lowHighDecision(mode, low4) {
+  if (mode !== '3_1' && mode !== '4_0') return null;
+  const high4 = 4 - low4;
+  if (mode === '3_1') {
+    if (low4 === 3 && high4 === 1) return { state: '3L1H', direction: 'HIGH' };
+    if (low4 === 1 && high4 === 3) return { state: '1L3H', direction: 'LOW' };
+  } else {
+    if (low4 === 4 && high4 === 0) return { state: '4L0H', direction: 'HIGH' };
+    if (low4 === 0 && high4 === 4) return { state: '0L4H', direction: 'LOW' };
+  }
+  return null;
 }
 
 // Given red-card count out of 5 board cards, returns the winning Color Board key ('3R'/'4R'/'5R'/'3B'/'4B'/'5B') or null.
@@ -220,11 +246,11 @@ function colorWinKey(reds) {
 function computeFromBuffer(payload) {
   const {
     callId,
-    handBets, rankBets, colorBets, handPayouts, perHandRankPayouts, colorPayouts,
+    handBets, rankBets, colorBets, lowHighMode, handPayouts, perHandRankPayouts, colorPayouts, riverStatePayouts,
     handPercentPaid, rankPercentPaid, roundCheckpoints,
   } = payload;
 
-  const { winnersMask, rankCat, redsCount, size } = _buffer;
+  const { winnersMask, rankCat, redsCount, lowCount4, riverLow, size } = _buffer;
 
   const rankNames = Object.keys(rankBets).filter(k => rankBets[k] > 0);
   const colorNames = Object.keys(colorBets || {}).filter(k => colorBets[k] > 0);
@@ -246,6 +272,7 @@ function computeFromBuffer(payload) {
   const rankPct = (rankPercentPaid[rankBetCount] ?? 100) / 100;
 
   let totalWon = 0;
+  let totalBetAccum = 0;
   let hitCount = 0;
   let netWinCount = 0;
   let runningBalance = 0;
@@ -298,10 +325,24 @@ function computeFromBuffer(payload) {
       roundWon += colorBets[colorKey] * (1 + ratio);
     }
 
+    // Low/High Strategy bet — variable per-round wager, only fires on a matching split
+    let roundBet = totalBetPerRound;
+    const lhDecision = lowHighDecision(lowHighMode, lowCount4[i]);
+    if (lhDecision) {
+      const wager = lowHighMode === '3_1' ? totalBetPerRound / 2 : totalBetPerRound;
+      roundBet += wager;
+      const actualDirection = riverLow[i] === 1 ? 'LOW' : 'HIGH';
+      if (actualDirection === lhDecision.direction) {
+        const ratio = riverStatePayouts?.[lhDecision.state]?.[lhDecision.direction] ?? 0;
+        roundWon += wager * (1 + ratio);
+      }
+    }
+
     totalWon += roundWon;
     if (roundWon > 0) hitCount++;
-    const net = roundWon - totalBetPerRound;
+    const net = roundWon - roundBet;
     if (net > 0) netWinCount++;
+    totalBetAccum += roundBet;
 
     runningBalance += net;
     const roundNumber = i + 1;
@@ -311,7 +352,7 @@ function computeFromBuffer(payload) {
     if (checkpointNet.has(roundNumber)) checkpointNet.set(roundNumber, runningBalance);
   }
 
-  const totalBet = totalBetPerRound * size;
+  const totalBet = totalBetAccum;
   const totalNet = totalWon - totalBet;
   const rtp = totalBet > 0 ? (totalWon / totalBet) * 100 : 0;
   const houseEdge = 100 - rtp;
@@ -346,10 +387,10 @@ function computeFromBuffer(payload) {
 // with the audited-single-bet columns replaced by this tool's combined
 // hand+rank bet financials (Bet / Won / Net / Running Balance) since the
 // Hand Simulation tool scores multiple simultaneous bets per round.
-const CSV_HEADER = 'Seq,Flop_C1_Rank,Flop_C1_Suit,Flop_C2_Rank,Flop_C2_Suit,Flop_C3_Rank,Flop_C3_Suit,Turn_C4_Rank,Turn_C4_Suit,River_C5_Rank,River_C5_Suit,Winning_Hand,Winning_Hand_2,Winning_Rank,Shared_Win,House_Win,Rank_Exception,3_Red,4_Red,5_Red,3_Black,4_Black,5_Black,Low,High,Bet,Won,Net,Running_Balance';
+const CSV_HEADER = 'Seq,Flop_C1_Rank,Flop_C1_Suit,Flop_C2_Rank,Flop_C2_Suit,Flop_C3_Rank,Flop_C3_Suit,Turn_C4_Rank,Turn_C4_Suit,River_C5_Rank,River_C5_Suit,Winning_Hand,Winning_Hand_2,Winning_Rank,Shared_Win,House_Win,Rank_Exception,3_Red,4_Red,5_Red,3_Black,4_Black,5_Black,Low,High,LowHigh_Wager,Bet,Won,Net,Running_Balance';
 
 function exportRounds(payload) {
-  const { callId, handBets, rankBets, colorBets, handPayouts, perHandRankPayouts, colorPayouts, handPercentPaid, rankPercentPaid } = payload;
+  const { callId, handBets, rankBets, colorBets, lowHighMode, handPayouts, perHandRankPayouts, colorPayouts, riverStatePayouts, handPercentPaid, rankPercentPaid } = payload;
   const { winnersMask, rankCat, boards, boardCap, size } = _buffer;
 
   const rankNames = Object.keys(rankBets).filter(k => rankBets[k] > 0);
@@ -427,7 +468,22 @@ function exportRounds(payload) {
       roundWon += colorBets[colorKey] * (1 + colorPayouts[colorKey]);
     }
 
-    const net = roundWon - totalBetPerRound;
+    // Low/High Strategy bet — variable per-round wager, only fires on a matching split
+    let roundBet = totalBetPerRound;
+    let lowHighWager = 0;
+    const low4 = ((b0>>2)<=5?1:0) + ((b1>>2)<=5?1:0) + ((b2>>2)<=5?1:0) + ((b3>>2)<=5?1:0);
+    const lhDecision = lowHighDecision(lowHighMode, low4);
+    if (lhDecision) {
+      lowHighWager = lowHighMode === '3_1' ? totalBetPerRound / 2 : totalBetPerRound;
+      roundBet += lowHighWager;
+      const actualDirection = (b4 >> 2) <= 5 ? 'LOW' : 'HIGH';
+      if (actualDirection === lhDecision.direction) {
+        const ratio = riverStatePayouts?.[lhDecision.state]?.[lhDecision.direction] ?? 0;
+        roundWon += lowHighWager * (1 + ratio);
+      }
+    }
+
+    const net = roundWon - roundBet;
     runningBalance += net;
 
     rows[i] = {
@@ -446,7 +502,8 @@ function exportRounds(payload) {
       red3: reds===3?1:0, red4: reds===4?1:0, red5: reds===5?1:0,
       black3: blacks===3?1:0, black4: blacks===4?1:0, black5: blacks===5?1:0,
       low: isLow?1:0, high: isLow?0:1,
-      bet: totalBetPerRound,
+      lowHighWager,
+      bet: roundBet,
       won: roundWon,
       net,
       runningBalance,
@@ -478,7 +535,7 @@ self.onmessage = function(e) {
       }
       exportRounds(payload);
     } else if (type === 'CLEAR') {
-      _buffer = { winnersMask: null, rankCat: null, redsCount: null, boards: null, boardCap: 0, size: 0 };
+      _buffer = { winnersMask: null, rankCat: null, redsCount: null, lowCount4: null, riverLow: null, boards: null, boardCap: 0, size: 0 };
       self.postMessage({ type: 'RESULT', callId, data: { success: true, cleared: true } });
     }
   } catch (err) {

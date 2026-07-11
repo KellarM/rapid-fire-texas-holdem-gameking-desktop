@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Play, RefreshCw, Trash2, FlaskConical, FileDown } from 'lucide-react';
-import { CARDED_HAND_PAYOUTS, COLOR_BOARD_PAYOUTS } from '@/lib/payoutConstants';
+import { CARDED_HAND_PAYOUTS, COLOR_BOARD_PAYOUTS, RIVER_STATE_PAYOUTS } from '@/lib/payoutConstants';
 import { PER_HAND_RANK_PAYOUTS } from '@/lib/perHandRankPayouts';
 import { runHandSimulationRun, runHandSimulationRecalculate, clearHandSimulationBuffer, runHandSimulationExport } from '@/lib/handSimulationBridge';
 import HandBetsTable from './handSimulation/HandBetsTable';
 import RankBetsTable, { RANK_KEYS } from './handSimulation/RankBetsTable';
 import ColorBetsTable, { COLOR_KEYS } from './handSimulation/ColorBetsTable';
+import LowHighBetTable from './handSimulation/LowHighBetTable';
 import PercentPaidTables from './handSimulation/PercentPaidTables';
 import ResultsSummary from './handSimulation/ResultsSummary';
 import RoundPayoutTable from './handSimulation/RoundPayoutTable';
@@ -22,6 +23,7 @@ export default function HandSimulation() {
   const [handBets, setHandBets] = useState(DEFAULT_HAND_BETS);
   const [rankBets, setRankBets] = useState(DEFAULT_RANK_BETS);
   const [colorBets, setColorBets] = useState(DEFAULT_COLOR_BETS);
+  const [lowHighMode, setLowHighMode] = useState('none');
   const [handPercentPaid, setHandPercentPaid] = useState(DEFAULT_HAND_PCT);
   const [rankPercentPaid, setRankPercentPaid] = useState(DEFAULT_RANK_PCT);
   const [targetRTP, setTargetRTP] = useState(96.5);
@@ -39,9 +41,11 @@ export default function HandSimulation() {
     handBets,
     rankBets,
     colorBets,
+    lowHighMode,
     handPayouts: CARDED_HAND_PAYOUTS,
     perHandRankPayouts: PER_HAND_RANK_PAYOUTS,
     colorPayouts: COLOR_BOARD_PAYOUTS,
+    riverStatePayouts: RIVER_STATE_PAYOUTS,
     handPercentPaid,
     rankPercentPaid,
     roundCheckpoints,
@@ -78,6 +82,7 @@ export default function HandSimulation() {
     setHandBets(DEFAULT_HAND_BETS);
     setRankBets(DEFAULT_RANK_BETS);
     setColorBets(DEFAULT_COLOR_BETS);
+    setLowHighMode('none');
     setHandPercentPaid(DEFAULT_HAND_PCT);
     setRankPercentPaid(DEFAULT_RANK_PCT);
     setTargetRTP(96.5);
@@ -111,6 +116,7 @@ export default function HandSimulation() {
           row.red3, row.red4, row.red5,
           row.black3, row.black4, row.black5,
           row.low, row.high,
+          row.lowHighWager.toFixed(2),
           row.bet.toFixed(2),
           row.won.toFixed(2),
           row.net.toFixed(2),
@@ -174,6 +180,17 @@ export default function HandSimulation() {
 
           <ResultsSummary results={results} targetRTP={targetRTP} warningBuffer={warningBuffer} />
 
+          <LowHighBetTable mode={lowHighMode} onChange={setLowHighMode} />
+        </div>
+
+        <div className="space-y-2">
+          <PercentPaidTables
+            handPercentPaid={handPercentPaid}
+            rankPercentPaid={rankPercentPaid}
+            onHandChange={(count, v) => setHandPercentPaid(prev => prev.map((p, idx) => idx === count ? v : p))}
+            onRankChange={(count, v) => setRankPercentPaid(prev => prev.map((p, idx) => idx === count ? v : p))}
+          />
+
           <div className="flex gap-2">
             <button
               onClick={handleRunTest}
@@ -213,15 +230,6 @@ export default function HandSimulation() {
               {progress.done.toLocaleString()} / {progress.total.toLocaleString()} rounds
             </div>
           )}
-        </div>
-
-        <div>
-          <PercentPaidTables
-            handPercentPaid={handPercentPaid}
-            rankPercentPaid={rankPercentPaid}
-            onHandChange={(count, v) => setHandPercentPaid(prev => prev.map((p, idx) => idx === count ? v : p))}
-            onRankChange={(count, v) => setRankPercentPaid(prev => prev.map((p, idx) => idx === count ? v : p))}
-          />
         </div>
 
         <div>
