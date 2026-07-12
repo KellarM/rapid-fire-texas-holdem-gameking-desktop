@@ -69,6 +69,10 @@ export const CARD_IMAGES = {
   '3_clubs':     'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/de95f3ce0_3Clubs.png',
   '3_hearts':    'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/8aa990eb3_3Hearts.png',
 
+  // Opposite deck: 3♦ / 3♠ (swapped from 3♣ / 3♥)
+  '3_diamonds':  'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/5b67e282f_image.png',
+  '3_spades':    'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/474d698d8_image.png',
+
   // Hand 10: A♥ / 5♦
   'A_hearts':    'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/075308c86_AceHearts.png',
   '5_diamonds':  'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/aac1d390c_5Diamonds.png',
