@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FIXED_HANDS, shuffleDeck, DEALER_DECK, getSecureRandomBoard, findLeadingHand,
+  setActiveDeckSet,
   resolveRedBlack, resolveLowHigh, cardColor, isLowCard,
   SUITS, cardDisplay, evaluateBestHand,
   MAX_HAND_BETS, isKillSwitchActive,
@@ -222,6 +223,12 @@ export default function RapidFireGame() {
     try { localStorage.setItem('rfth_theme', boardTheme); } catch {}
   }, [boardTheme]);
 
+  // Deck Set toggle — alternates every round between the baseline deck (odd rounds)
+  // and the opposite deck (even rounds). Same hand IDs/payouts, only suits swap.
+  useEffect(() => {
+    setActiveDeckSet(roundId % 2 === 0 ? 1 : 0);
+  }, [roundId]);
+
   // Game timing
   const { timing, startTimer, stopTimer, reloadTiming } = useGameTiming();
   const { versions, recordId: versionsRecordId, dbLoaded: versionsReady } = useGameVersions();
@@ -334,6 +341,9 @@ export default function RapidFireGame() {
     // If no boardCards saved (older record pre-fix), fall back to fresh deal.
     const savedBoard = recoveredState.boardCards;
     if (savedBoard && savedBoard.length === 5) {
+      // Ensure the correct deck-set (baseline/opposite) is active for this round BEFORE
+      // evaluating hands — setRoundId below only syncs it asynchronously via useEffect.
+      if (recoveredState.roundNumber) setActiveDeckSet(recoveredState.roundNumber % 2 === 0 ? 1 : 0);
       // Restore the exact 5-card board from the DB
       const flop = [savedBoard[0], savedBoard[1], savedBoard[2]];
       setCommunityCards(flop);

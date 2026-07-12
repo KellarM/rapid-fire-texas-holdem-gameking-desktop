@@ -84,9 +84,16 @@ export const CONST = Object.freeze({
   ]),
 });
 
-// The 10 fixed carded hands (20 locked cards, never in deck)
+// Suit swap: Hearts↔Spades, Diamonds↔Clubs — derives the "Opposite" deck set.
+// Same ranks, same hand IDs, same payouts — only the suits differ, so odds are identical.
+const SUIT_SWAP = { hearts: 'spades', spades: 'hearts', diamonds: 'clubs', clubs: 'diamonds' };
+function swapCardSuit(card) {
+  return Object.freeze({ rank: card.rank, suit: SUIT_SWAP[card.suit] });
+}
+
+// The 10 fixed carded hands (20 locked cards, never in deck) — Baseline deck set
 // Payouts sourced from payoutConstants.js (CARDED_HAND_PAYOUTS) — single source of truth
-export const FIXED_HANDS = [
+const BASE_FIXED_HANDS = [
   { id: 1,  cards: [CONST.PLAYER_HOLE_CARDS[0],  CONST.PLAYER_HOLE_CARDS[1]  ], payout: CARDED_HAND_PAYOUTS[0]  },
   { id: 2,  cards: [CONST.PLAYER_HOLE_CARDS[2],  CONST.PLAYER_HOLE_CARDS[3]  ], payout: CARDED_HAND_PAYOUTS[1]  },
   { id: 3,  cards: [CONST.PLAYER_HOLE_CARDS[4],  CONST.PLAYER_HOLE_CARDS[5]  ], payout: CARDED_HAND_PAYOUTS[2]  },
@@ -99,8 +106,28 @@ export const FIXED_HANDS = [
   { id: 10, cards: [CONST.PLAYER_HOLE_CARDS[18], CONST.PLAYER_HOLE_CARDS[19] ], payout: CARDED_HAND_PAYOUTS[9]  },
 ];
 
-// Legacy alias — always points to the frozen CONST definition
-export const DEALER_DECK = CONST.DEALER_DECK;
+// Opposite deck set — identical hand IDs & payouts, suits swapped (Hearts↔Spades, Diamonds↔Clubs)
+export const OPPOSITE_DEALER_DECK = Object.freeze(CONST.DEALER_DECK.map(swapCardSuit));
+export const OPPOSITE_FIXED_HANDS = BASE_FIXED_HANDS.map(h => ({
+  ...h,
+  cards: h.cards.map(swapCardSuit),
+}));
+
+// ── Active deck-set (toggles every round: baseline ↔ opposite) ─────────────
+// Exported as `let` so FIXED_HANDS / DEALER_DECK are live bindings — every module
+// that imports them always sees whichever set is currently active.
+export let FIXED_HANDS = BASE_FIXED_HANDS;
+export let DEALER_DECK = CONST.DEALER_DECK;
+
+export function setActiveDeckSet(index) {
+  if (index === 1) {
+    FIXED_HANDS = OPPOSITE_FIXED_HANDS;
+    DEALER_DECK = OPPOSITE_DEALER_DECK;
+  } else {
+    FIXED_HANDS = BASE_FIXED_HANDS;
+    DEALER_DECK = CONST.DEALER_DECK;
+  }
+}
 
 // ── Crypto-grade random integer [0, max] using Web Crypto API ──────────────
 // Uses crypto.getRandomValues() — casino-standard CSPRNG available in all
@@ -144,7 +171,7 @@ export function shuffleDeck(deck) {
 //   Burn[0] | Flop[1,2,3] | Burn[4] | Turn[5] | Burn[6] | River[7]
 // Clones the deck → crypto Fisher-Yates shuffle → extract positions [1,2,3,5,7].
 export function getSecureRandomBoard() {
-  const d = [...CONST.DEALER_DECK];
+  const d = [...DEALER_DECK];
   for (let i = d.length - 1; i > 0; i--) {
     const j = secureRandInt(i);
     [d[i], d[j]] = [d[j], d[i]];
