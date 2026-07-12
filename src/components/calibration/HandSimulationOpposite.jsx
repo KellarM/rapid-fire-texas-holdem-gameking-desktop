@@ -3,7 +3,7 @@ import { Play, RefreshCw, Trash2, FlaskConical, FileDown } from 'lucide-react';
 import { CARDED_HAND_PAYOUTS, COLOR_BOARD_PAYOUTS, RIVER_STATE_PAYOUTS } from '@/lib/payoutConstants';
 import { PER_HAND_RANK_PAYOUTS } from '@/lib/perHandRankPayouts';
 import { runHandSimulationRun, runHandSimulationRecalculate, clearHandSimulationBuffer, runHandSimulationExport } from '@/lib/handSimulationBridgeOpposite';
-import HandBetsTable from './handSimulation/HandBetsTable';
+import HandBetsTable from './handSimulation/HandBetsTableOpposite';
 import RankBetsTable, { RANK_KEYS } from './handSimulation/RankBetsTable';
 import ColorBetsTable, { COLOR_KEYS } from './handSimulation/ColorBetsTable';
 import LowHighBetTable from './handSimulation/LowHighBetTable';
