@@ -30,6 +30,9 @@ export const CARD_IMAGES = {
   'Q_spades':    'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/2ed4637f5_QueenSpades.png',
   '10_spades':   'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/7947e0025_10Spades.png',
 
+  // Opposite deck: Q♥ (swapped from Q♠; 10♥ already defined above)
+  'Q_hearts':    'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/673f1ae8c_image.png',
+
   // Hand 5: J♣ / 9♣
   'J_clubs':     'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/af3dce297_JackClubs.png',
   '9_clubs':     'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/a3551efc3_9Clubs.png',
