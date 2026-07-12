@@ -27,8 +27,8 @@ export default function HandSimulation() {
   const [handPercentPaid, setHandPercentPaid] = useState(DEFAULT_HAND_PCT);
   const [rankPercentPaid, setRankPercentPaid] = useState(DEFAULT_RANK_PCT);
   const [targetRTP, setTargetRTP] = useState(96.5);
-  const [upperWarningBuffer, setUpperWarningBuffer] = useState(0.5);
-  const [lowerWarningBuffer, setLowerWarningBuffer] = useState(0.5);
+  const [upperWarningBuffer, setUpperWarningBuffer] = useState(1.5);
+  const [lowerWarningBuffer, setLowerWarningBuffer] = useState(6.5);
   const [numberOfRounds, setNumberOfRounds] = useState(DEFAULT_ROUNDS);
   const [roundCheckpoints, setRoundCheckpoints] = useState(DEFAULT_CHECKPOINTS);
   const [running, setRunning] = useState(false);
@@ -87,8 +87,8 @@ export default function HandSimulation() {
     setHandPercentPaid(DEFAULT_HAND_PCT);
     setRankPercentPaid(DEFAULT_RANK_PCT);
     setTargetRTP(96.5);
-    setUpperWarningBuffer(0.5);
-    setLowerWarningBuffer(0.5);
+    setUpperWarningBuffer(1.5);
+    setLowerWarningBuffer(6.5);
     setNumberOfRounds(DEFAULT_ROUNDS);
     setRoundCheckpoints(DEFAULT_CHECKPOINTS);
     setResults(null);
