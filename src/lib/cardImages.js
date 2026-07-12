@@ -37,6 +37,10 @@ export const CARD_IMAGES = {
   'J_clubs':     'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/af3dce297_JackClubs.png',
   '9_clubs':     'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/a3551efc3_9Clubs.png',
 
+  // Opposite deck: J♦ / 9♦ (swapped from J♣ / 9♣)
+  'J_diamonds':  'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/3eede8b13_image.png',
+  '9_diamonds':  'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/a6bff6843_image.png',
+
   // Hand 6: 8♦ / 6♦
   '8_diamonds':  'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/c330938f9_8Diamonds.png',
   '6_diamonds':  'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/45c3f745e_6Diamonds.png',
