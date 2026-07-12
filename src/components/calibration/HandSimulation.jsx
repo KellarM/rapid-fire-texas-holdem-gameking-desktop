@@ -27,7 +27,8 @@ export default function HandSimulation() {
   const [handPercentPaid, setHandPercentPaid] = useState(DEFAULT_HAND_PCT);
   const [rankPercentPaid, setRankPercentPaid] = useState(DEFAULT_RANK_PCT);
   const [targetRTP, setTargetRTP] = useState(96.5);
-  const [warningBuffer, setWarningBuffer] = useState(0.5);
+  const [upperWarningBuffer, setUpperWarningBuffer] = useState(0.5);
+  const [lowerWarningBuffer, setLowerWarningBuffer] = useState(0.5);
   const [numberOfRounds, setNumberOfRounds] = useState(DEFAULT_ROUNDS);
   const [roundCheckpoints, setRoundCheckpoints] = useState(DEFAULT_CHECKPOINTS);
   const [running, setRunning] = useState(false);
@@ -86,7 +87,8 @@ export default function HandSimulation() {
     setHandPercentPaid(DEFAULT_HAND_PCT);
     setRankPercentPaid(DEFAULT_RANK_PCT);
     setTargetRTP(96.5);
-    setWarningBuffer(0.5);
+    setUpperWarningBuffer(0.5);
+    setLowerWarningBuffer(0.5);
     setNumberOfRounds(DEFAULT_ROUNDS);
     setRoundCheckpoints(DEFAULT_CHECKPOINTS);
     setResults(null);
@@ -166,8 +168,13 @@ export default function HandSimulation() {
                 className="w-20 bg-yellow-100 text-black text-right rounded px-1.5 py-0.5 font-bold text-xs outline-none focus:ring-2 focus:ring-yellow-400" />
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-gray-400 text-xs">Warning Buffer</span>
-              <input type="number" step="0.1" value={warningBuffer} onChange={e => setWarningBuffer(parseFloat(e.target.value) || 0)}
+              <span className="text-gray-400 text-xs">Upper Warning Buffer</span>
+              <input type="number" step="0.1" value={upperWarningBuffer} onChange={e => setUpperWarningBuffer(parseFloat(e.target.value) || 0)}
+                className="w-20 bg-yellow-100 text-black text-right rounded px-1.5 py-0.5 font-bold text-xs outline-none focus:ring-2 focus:ring-yellow-400" />
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-400 text-xs">Lower Warning Buffer</span>
+              <input type="number" step="0.1" value={lowerWarningBuffer} onChange={e => setLowerWarningBuffer(parseFloat(e.target.value) || 0)}
                 className="w-20 bg-yellow-100 text-black text-right rounded px-1.5 py-0.5 font-bold text-xs outline-none focus:ring-2 focus:ring-yellow-400" />
             </div>
             <div className="flex justify-between items-center">
@@ -178,7 +185,7 @@ export default function HandSimulation() {
             </div>
           </div>
 
-          <ResultsSummary results={results} targetRTP={targetRTP} warningBuffer={warningBuffer} />
+          <ResultsSummary results={results} targetRTP={targetRTP} upperWarningBuffer={upperWarningBuffer} lowerWarningBuffer={lowerWarningBuffer} />
 
           <LowHighBetTable modes={lowHighModes} onChange={setLowHighModes} />
         </div>

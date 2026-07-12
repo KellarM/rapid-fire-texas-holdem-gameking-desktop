@@ -11,12 +11,12 @@ function StatBox({ label, value, round }) {
   );
 }
 
-export default function ResultsSummary({ results, targetRTP, warningBuffer, handBetCount, rankBetCount }) {
+export default function ResultsSummary({ results, targetRTP, upperWarningBuffer, lowerWarningBuffer, handBetCount, rankBetCount }) {
   const scenario = (() => {
     if (!results) return 'NO SIMULATION RUN';
     if (results.noBets) return 'NO BETS SELECTED';
-    const low = targetRTP - warningBuffer;
-    const high = targetRTP + warningBuffer;
+    const low = targetRTP - lowerWarningBuffer;
+    const high = targetRTP + upperWarningBuffer;
     if (results.rtp >= low && results.rtp <= high) return 'WITHIN TARGET RANGE';
     return 'OUT OF TARGET RANGE';
   })();
