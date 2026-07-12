@@ -197,13 +197,13 @@ function RankSlot({
       >
         <span
           className={`text-left whitespace-nowrap ${textColor}`}
-          style={{ fontSize: '0.96rem', fontWeight: 900, letterSpacing: '0.01em', lineHeight: 1, flex: '0 0 auto' }}
+          style={{ fontSize: '0.96rem', fontWeight: 900, letterSpacing: '0.01em', lineHeight: 1, flex: '0 0 auto', WebkitTextStroke: '0.4px currentColor' }}
         >
           {opt.label}
         </span>
         <div className="flex items-center justify-end flex-1 min-w-0" style={{ paddingLeft: 6 }}>
           {showOdds && oddsLabel ? (
-            <span className={`whitespace-nowrap ${oddsColor}`} style={{ fontSize: '0.864rem', fontWeight: 900, lineHeight: 1 }}>
+            <span className={`whitespace-nowrap ${oddsColor}`} style={{ fontSize: '0.864rem', fontWeight: 900, lineHeight: 1, WebkitTextStroke: '0.4px currentColor' }}>
               {oddsLabel}
             </span>
           ) : (fullyLocked || showDarkLock) ? (
