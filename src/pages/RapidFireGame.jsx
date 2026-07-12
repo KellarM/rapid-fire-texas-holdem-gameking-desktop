@@ -223,12 +223,6 @@ export default function RapidFireGame() {
     try { localStorage.setItem('rfth_theme', boardTheme); } catch {}
   }, [boardTheme]);
 
-  // Deck Set toggle — alternates every round between the baseline deck (odd rounds)
-  // and the opposite deck (even rounds). Same hand IDs/payouts, only suits swap.
-  useEffect(() => {
-    setActiveDeckSet(roundId % 2 === 0 ? 1 : 0);
-  }, [roundId]);
-
   // Game timing
   const { timing, startTimer, stopTimer, reloadTiming } = useGameTiming();
   const { versions, recordId: versionsRecordId, dbLoaded: versionsReady } = useGameVersions();
@@ -424,7 +418,11 @@ export default function RapidFireGame() {
       const savedGame = localStorage.getItem('rapidFireGameState');
       if (savedGame) {
         const state = JSON.parse(savedGame);
-        if (state.roundId)      setRoundId(state.roundId);
+        if (state.roundId) {
+          // Sync deck set to match the restored round BEFORE the re-render this triggers
+          setActiveDeckSet(state.roundId % 2 === 0 ? 1 : 0);
+          setRoundId(state.roundId);
+        }
         if (state.casinoProfit !== undefined) setCasinoProfit(state.casinoProfit);
         if (state.roundsPlayed !== undefined) setRoundsPlayed(state.roundsPlayed);
       }
@@ -1525,6 +1523,7 @@ export default function RapidFireGame() {
   const handleResetBank = () => {
     abandonRound(); // Phase 2 GLI-19: mark any open AuditRound as abandoned
     resetAllBalances(); // server-authoritative reset via usePlayerSession
+    setActiveDeckSet(0); // reset to baseline deck set to match round 1
     setRoundId(1);
     setCasinoProfit(0);
     setRoundsPlayed(0);
@@ -1538,8 +1537,13 @@ export default function RapidFireGame() {
     setWinningRedBlack([]); setWinningLowHigh(null); setWinningRank(null);
     setLeadingRank(null); setLastWinInfo(null);
     setDisplayWindowVisible(false);
+    setRoundId((r) => {
+      const next = r + 1;
+      // Switch deck set now — synchronously, before this state update re-renders the hand grid
+      setActiveDeckSet(next % 2 === 0 ? 1 : 0);
+      return next;
+    });
     setDeck(getSecureRandomBoard()); setDeckIndex(0);
-    setRoundId((r) => r + 1);
     setDealerMessage("Bets open — Place Hand, Rank & Color bets now.");
     setGamePhase('betting');
     setActivePlayer(0);
