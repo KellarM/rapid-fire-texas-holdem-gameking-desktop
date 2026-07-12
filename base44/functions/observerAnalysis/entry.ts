@@ -28,32 +28,34 @@ Deno.serve(async (req) => {
     }
 
     // ── SAVE A SINGLE ROUND ─────────────────────────────────────
+    // NOTE: the frontend (Observer.jsx) already builds the record using the
+    // ObserverRound entity's own snake_case field names — accept those directly.
     if (action === 'saveRound') {
       const { roundData } = body;
       if (!roundData) return Response.json({ error: 'No roundData provided' }, { status: 400 });
       const record = await base44.asServiceRole.entities.ObserverRound.create({
-        session_id: roundData.sessionId || 'live',
-        round_number: roundData.roundId,
-        community_cards: (roundData.communityCards || []).map((c) => (c?.rank ?? '') + (c?.suit ?? '')),
-        winner_hand_ids: roundData.winnerHandIds || [],
-        winning_rank: roundData.winningRank || null,
-        winning_colors: roundData.winningColors || [],
-        winning_low_high: roundData.winningLowHigh || null,
-        is_board_win: roundData.isBoardWin || false,
-        hand_bets: roundData.handBets || {},
-        rank_bets: roundData.rankBets || {},
-        color_bets: roundData.colorBets || {},
-        low_high_bet: roundData.lowHighBet || null,
-        kill_switch_active: roundData.killSwitchActive || false,
-        hand_bet_count: roundData.handBetCount || 0,
-        total_bet: roundData.totalBet || 0,
-        total_payout: roundData.totalPayout || 0,
-        net_result: roundData.netResult || 0,
-        balance_before: roundData.balanceBefore || 0,
-        balance_after: roundData.balanceAfter || 0,
-        reds_count: roundData.redsCount || 0,
-        blacks_count: roundData.blacksCount || 0,
-        river_card: roundData.riverCard || null,
+        session_id: roundData.session_id || 'live',
+        round_number: roundData.round_number,
+        community_cards: roundData.community_cards || [],
+        winner_hand_ids: roundData.winner_hand_ids || [],
+        winning_rank: roundData.winning_rank || null,
+        winning_colors: roundData.winning_colors || [],
+        winning_low_high: roundData.winning_low_high || null,
+        is_board_win: roundData.is_board_win || false,
+        hand_bets: roundData.hand_bets || {},
+        rank_bets: roundData.rank_bets || {},
+        color_bets: roundData.color_bets || {},
+        low_high_bet: roundData.low_high_bet || null,
+        kill_switch_active: roundData.kill_switch_active || false,
+        hand_bet_count: roundData.hand_bet_count || 0,
+        total_bet: roundData.total_bet || 0,
+        total_payout: roundData.total_payout || 0,
+        net_result: roundData.net_result || 0,
+        balance_before: roundData.balance_before || 0,
+        balance_after: roundData.balance_after || 0,
+        reds_count: roundData.reds_count || 0,
+        blacks_count: roundData.blacks_count || 0,
+        river_card: roundData.river_card || null,
       });
       return Response.json({ success: true, id: record.id });
     }
