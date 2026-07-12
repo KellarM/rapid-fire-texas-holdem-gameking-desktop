@@ -22,6 +22,10 @@ export const CARD_IMAGES = {
   'Q_clubs':     'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/1167af30e_QueenClubs.png',
   'J_spades':    'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/2c1f2cc90_JackSpades.png',
 
+  // Opposite deck: Q♦ / J♥ (swapped from Q♣ / J♠)
+  'Q_diamonds':  'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/b07242364_image.png',
+  'J_hearts':    'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/3a69f0606_image.png',
+
   // Hand 4: Q♠ / 10♠
   'Q_spades':    'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/2ed4637f5_QueenSpades.png',
   '10_spades':   'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/7947e0025_10Spades.png',
