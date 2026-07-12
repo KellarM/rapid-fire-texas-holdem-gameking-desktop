@@ -45,6 +45,10 @@ export const CARD_IMAGES = {
   '8_diamonds':  'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/c330938f9_8Diamonds.png',
   '6_diamonds':  'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/45c3f745e_6Diamonds.png',
 
+  // Opposite deck: 8♣ / 6♣ (swapped from 8♦ / 6♦)
+  '8_clubs':     'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/72008fdf8_image.png',
+  '6_clubs':     'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/45b1fba60_image.png',
+
   // Hand 7: 7♦ / 7♠
   '7_diamonds':  'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/c216c62e6_SevenDiamonds.png',
   '7_spades':    'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/19c0bcf83_7Spades.png',
