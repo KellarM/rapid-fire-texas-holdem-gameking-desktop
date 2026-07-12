@@ -53,6 +53,10 @@ export const CARD_IMAGES = {
   '7_diamonds':  'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/c216c62e6_SevenDiamonds.png',
   '7_spades':    'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/19c0bcf83_7Spades.png',
 
+  // Opposite deck: 7♣ / 7♥ (swapped from 7♦ / 7♠)
+  '7_clubs':     'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/3233de0d0_image.png',
+  '7_hearts':    'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/82d64deae_image.png',
+
   // Hand 8: 4♥ / 2♥
   '4_hearts':    'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/98cfa7eaa_4Hearts.png',
   '2_hearts':    'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/370ab55b9_2Hearts.png',
