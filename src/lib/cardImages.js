@@ -3,6 +3,9 @@
  * Key format: "RANK_suit" (suit is lowercase full string matching gameEngine.js)
  */
 export const CARD_IMAGES = {
+  // Opposite deck: A♣ (swapped from A♦)
+  'A_clubs':     'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/34d29c5a4_image.png',
+
   // Hand 1: A♦ / 10♥
   'A_diamonds':  'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/3949426d1_image.png',
   '10_hearts':   'https://media.base44.com/images/public/69eff22784cd2fbeba98f9be/14779e178_image.png',
