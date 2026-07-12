@@ -14,7 +14,15 @@ Deno.serve(async (req) => {
 
     // ── Summary ────────────────────────────────────────────────────────────
     if (action === 'summary') {
-      const events = await base44.asServiceRole.entities.GameEvent.list('-created_date', 1000);
+      const events = [];
+      let skip = 0;
+      const pageSize = 5000;
+      while (true) {
+        const page = await base44.asServiceRole.entities.GameEvent.list('-created_date', pageSize, skip);
+        events.push(...page);
+        if (page.length < pageSize) break;
+        skip += pageSize;
+      }
       const settled = events.filter(e => e.event_type === 'round_settled');
 
       if (settled.length === 0) return Response.json(null);
@@ -240,7 +248,15 @@ Deno.serve(async (req) => {
 
     // ── Clear ──────────────────────────────────────────────────────────────
     if (action === 'clear') {
-      const events = await base44.asServiceRole.entities.GameEvent.list('-created_date', 1000);
+      const events = [];
+      let skip = 0;
+      const pageSize = 5000;
+      while (true) {
+        const page = await base44.asServiceRole.entities.GameEvent.list('-created_date', pageSize, skip);
+        events.push(...page);
+        if (page.length < pageSize) break;
+        skip += pageSize;
+      }
       await Promise.all(events.map(e => base44.asServiceRole.entities.GameEvent.delete(e.id)));
       return Response.json({ ok: true, deleted: events.length });
     }
