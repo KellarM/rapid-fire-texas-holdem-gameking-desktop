@@ -11,6 +11,7 @@ import SimulationMode from './pages/SimulationMode';
 import DetailedSimulation from './pages/DetailedSimulation';
 import HandByHandAnalysis from './pages/HandByHandAnalysis';
 import GamingLicenseCalibration from './pages/GamingLicenseCalibration';
+import GamingLicenseCalibration2 from './pages/GamingLicenseCalibration2';
 import GameStats from './pages/GameStats';
 import OppositeGameStats from './pages/OppositeGameStats';
 import DeckInspector from './pages/DeckInspector';
@@ -48,6 +49,7 @@ const AuthenticatedApp = () => {
       <Route path="/detailed-simulation" element={<DetailedSimulation />} />
       <Route path="/analysis" element={<HandByHandAnalysis />} />
       <Route path="/gaming-license" element={<GamingLicenseCalibration />} />
+      <Route path="/gaming-license-2" element={<GamingLicenseCalibration2 />} />
       <Route path="/game-stats" element={<GameStats />} />
       <Route path="/opposite-game-stats" element={<OppositeGameStats />} />
       <Route path="/deck-inspector" element={<DeckInspector />} />

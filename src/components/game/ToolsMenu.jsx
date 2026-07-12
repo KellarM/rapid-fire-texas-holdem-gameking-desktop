@@ -6,6 +6,7 @@ const TOOLS = [
   { icon: Eye,        label: 'Observer',                    type: 'observer',         badge: 'NEW', badgeColor: 'bg-cyan-700/60 text-cyan-300 border-cyan-600/40' },
   { icon: LineChart,  label: 'Analytics',                   type: 'analytics',        badge: 'NEW', badgeColor: 'bg-green-700/60 text-green-300 border-green-600/40' },
   { icon: Award,      label: 'Gaming License Calibration', href: '/gaming-license' },
+  { icon: Award,      label: 'Gaming License Calibration 2', href: '/gaming-license-2', badge: 'OPP', badgeColor: 'bg-cyan-700/60 text-cyan-300 border-cyan-600/40' },
   { icon: PieChart,   label: 'Game Stats',                 href: '/game-stats'     },
   { icon: Shuffle,    label: 'Opposite Game Stats',        href: '/opposite-game-stats' },
   { icon: Layers,     label: 'Deck Inspector',             href: '/deck-inspector' },
