@@ -1,3 +1,40 @@
+// Matches card tokens like "9♠", "10♥", "K♦", "A♣" inside the dealer message
+const CARD_TOKEN_REGEX = /(10|[2-9]|[AKQJ])([♠♥♦♣])/g;
+const RED_SUITS = new Set(['♥', '♦']);
+
+function renderColoredMessage(text) {
+  const nodes = [];
+  let lastIndex = 0;
+  let match;
+  let key = 0;
+  CARD_TOKEN_REGEX.lastIndex = 0;
+
+  while ((match = CARD_TOKEN_REGEX.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(<span key={key++}>{text.slice(lastIndex, match.index)}</span>);
+    }
+    const isRed = RED_SUITS.has(match[2]);
+    nodes.push(
+      <span
+        key={key++}
+        style={{
+          color: isRed ? '#ff4d4d' : '#f5f5f5',
+          textShadow: isRed
+            ? '0 1px 2px rgba(0,0,0,0.85), 0 0 6px rgba(255,60,60,0.4)'
+            : '0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.6)',
+        }}
+      >
+        {match[0]}
+      </span>
+    );
+    lastIndex = CARD_TOKEN_REGEX.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    nodes.push(<span key={key++}>{text.slice(lastIndex)}</span>);
+  }
+  return nodes;
+}
+
 export default function DealerAnnouncement({ message }) {
   const text = message || '';
 
@@ -30,7 +67,7 @@ export default function DealerAnnouncement({ message }) {
             textOverflow: 'ellipsis',
           }}
         >
-          {text}
+          {renderColoredMessage(text)}
         </span>
       )}
     </div>
