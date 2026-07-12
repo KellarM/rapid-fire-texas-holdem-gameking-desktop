@@ -18,10 +18,10 @@ function renderColoredMessage(text) {
       <span
         key={key++}
         style={{
-          color: isRed ? '#ff4d4d' : '#f5f5f5',
+          color: isRed ? '#ff4d4d' : '#000',
           textShadow: isRed
             ? '0 1px 2px rgba(0,0,0,0.85), 0 0 6px rgba(255,60,60,0.4)'
-            : '0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.6)',
+            : '0 1px 2px rgba(255,255,255,0.3)',
         }}
       >
         {match[0]}

@@ -189,10 +189,10 @@ export default function SideBets({
         className={`relative flex-1 transition-all duration-300 ${canBetThisCell ? 'hover:brightness-110 lp-magnetic' : ''}`}
       >
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-0 pointer-events-none z-0">
-          <span style={isActive ? { color: '#000', fontWeight: 900, fontSize: '1.25rem', lineHeight: 1 } : { color: isRed ? '#ff4d4d' : '#f5f5f5', textShadow: isRed ? '0 1px 2px rgba(0,0,0,0.85), 0 0 6px rgba(255,60,60,0.4)' : '0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.6)', fontSize: '1.25rem', fontWeight: 900, lineHeight: 1 }}>
+          <span style={isActive ? { color: '#000', fontWeight: 900, fontSize: '1.25rem', lineHeight: 1 } : { ...goldEmbossText, fontSize: '1.25rem', fontWeight: 900, lineHeight: 1 }}>
             {opt.number}
           </span>
-          <span style={isActive ? { color: '#000', fontWeight: 900, fontSize: '0.72rem', lineHeight: 1.1 } : { color: isRed ? '#ff4d4d' : '#f5f5f5', textShadow: isRed ? '0 1px 2px rgba(0,0,0,0.85), 0 0 6px rgba(255,60,60,0.4)' : '0 1px 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.6)', fontSize: '0.72rem', fontWeight: 800, lineHeight: 1.1 }}>
+          <span style={isActive ? { color: '#000', fontWeight: 900, fontSize: '0.72rem', lineHeight: 1.1 } : { ...goldEmbossText, fontSize: '0.72rem', fontWeight: 800, lineHeight: 1.1 }}>
             {opt.payout}
           </span>
         </div>
