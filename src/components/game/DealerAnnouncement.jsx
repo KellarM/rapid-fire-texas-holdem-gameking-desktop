@@ -5,7 +5,7 @@ export default function DealerAnnouncement({ message }) {
     <div
       style={{
         width: '100%',
-        height: '32px',
+        height: '40px',
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
@@ -16,11 +16,11 @@ export default function DealerAnnouncement({ message }) {
         <span
           style={{
             fontFamily: 'Oswald, sans-serif',
-            fontSize: '0.8rem',
+            fontSize: '1rem',
             fontWeight: 700,
             fontStyle: 'italic',
-            lineHeight: '32px',
-            height: '32px',
+            lineHeight: '40px',
+            height: '40px',
             transform: 'skewX(-8deg)',
             display: 'inline',
             color: '#f6d860',
