@@ -242,7 +242,9 @@ export default function HandSimulationOpposite() {
             </div>
           )}
 
-          <LowHighBetTable modes={lowHighModes} onChange={setLowHighModes} />
+          <div className="mt-10">
+            <LowHighBetTable modes={lowHighModes} onChange={setLowHighModes} />
+          </div>
         </div>
 
         <div>
