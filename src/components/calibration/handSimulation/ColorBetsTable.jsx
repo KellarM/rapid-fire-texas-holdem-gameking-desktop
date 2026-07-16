@@ -35,8 +35,8 @@ export default function ColorBetsTable({ colorBets, onChange, disabled }) {
         </tbody>
       </table>
       {disabled && (
-        <p className="text-yellow-400 text-[10px] px-2 py-1.5 border-t border-slate-700 leading-snug">
-          Manual bets locked — a color strategy is active.
+        <p className="text-amber-400 text-[10px] px-2 py-1.5 border-t border-amber-700/60 leading-snug font-semibold">
+          ⛔ Manual bets locked — Rank board cap not met or a color strategy is active.
         </p>
       )}
     </div>

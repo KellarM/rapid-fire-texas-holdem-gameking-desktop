@@ -352,7 +352,7 @@ function computeFromBuffer(payload) {
   const totalRank = rankNames.reduce((s, k) => s + rankBets[k], 0);
   const rankCapMet = totalHand > 0 && totalRank === totalHand;
   const colorStrategy = (payload.colorStrategy && rankCapMet) ? payload.colorStrategy : 'manual';
-  const manualColorTotal = colorStrategy === 'manual' ? colorNames.reduce((s, k) => s + colorBets[k], 0) : 0;
+  const manualColorTotal = (colorStrategy === 'manual' && rankCapMet) ? colorNames.reduce((s, k) => s + colorBets[k], 0) : 0;
   const colorBudget = colorStrategy !== 'manual' ? (totalHand + totalRank) : 0;
   const totalBetPerRound = totalHand + totalRank + manualColorTotal + colorBudget;
   let colorSide = 'R';
@@ -433,7 +433,7 @@ function computeFromBuffer(payload) {
     // Color Board — manual exact-match, or dynamic streak strategy
     if (colorStrategy === 'manual') {
       const colorKey = colorWinKey(redsCount[i]);
-      if (colorKey && colorBets[colorKey] > 0) {
+      if (rankCapMet && colorKey && colorBets[colorKey] > 0) {
         const ratio = colorPayouts[colorKey];
         roundWon += colorBets[colorKey] * (1 + ratio);
       }
@@ -508,7 +508,7 @@ function exportRounds(payload) {
   const totalRank = rankNames.reduce((s, k) => s + rankBets[k], 0);
   const rankCapMet = totalHand > 0 && totalRank === totalHand;
   const colorStrategy = (payload.colorStrategy && rankCapMet) ? payload.colorStrategy : 'manual';
-  const manualColorTotal = colorStrategy === 'manual' ? colorNames.reduce((s, k) => s + colorBets[k], 0) : 0;
+  const manualColorTotal = (colorStrategy === 'manual' && rankCapMet) ? colorNames.reduce((s, k) => s + colorBets[k], 0) : 0;
   const colorBudget = colorStrategy !== 'manual' ? (totalHand + totalRank) : 0;
   const totalBetPerRound = totalHand + totalRank + manualColorTotal + colorBudget;
   let colorSide = 'R';
@@ -591,7 +591,7 @@ function exportRounds(payload) {
 
     if (colorStrategy === 'manual') {
       const colorKey = colorWinKey(reds);
-      if (colorKey && colorBets[colorKey] > 0) {
+      if (rankCapMet && colorKey && colorBets[colorKey] > 0) {
         roundWon += colorBets[colorKey] * (1 + colorPayouts[colorKey]);
       }
     } else if (roundColorBudget > 0) {

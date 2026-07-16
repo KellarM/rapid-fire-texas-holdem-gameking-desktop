@@ -46,6 +46,7 @@ export default function HandSimulation() {
     if (!rankCapMet) {
       if (colorStrategy !== 'manual') setColorStrategy('manual');
       if (lowHighModes.length) setLowHighModes([]);
+      if (colorTotal(colorBets) > 0) setColorBets(DEFAULT_COLOR_BETS);
     }
   }, [rankCapMet]);
 
@@ -173,7 +174,7 @@ export default function HandSimulation() {
         <div className="space-y-3">
           <HandBetsTable handBets={handBets} onChange={(i, v) => setHandBets(prev => prev.map((b, idx) => idx === i ? v : b))} handCandidates={handCandidates} onCandidateChange={(i, v) => setHandCandidates(prev => prev.map((c, idx) => idx === i ? v : c))} />
           <RankBetsTable rankBets={rankBets} onChange={(rank, v) => setRankBets(prev => ({ ...prev, [rank]: clampRankBet(handBets, prev, rank, v) }))} />
-          <ColorBetsTable colorBets={colorBets} disabled={colorStrategy !== 'manual'} onChange={(key, v) => setColorBets(prev => ({ ...prev, [key]: clampColorBet(handBets, rankBets, prev, key, v) }))} />
+          <ColorBetsTable colorBets={colorBets} disabled={colorStrategy !== 'manual' || !rankCapMet} onChange={(key, v) => setColorBets(prev => ({ ...prev, [key]: clampColorBet(handBets, rankBets, prev, key, v) }))} />
         </div>
 
         <div className="space-y-2">
