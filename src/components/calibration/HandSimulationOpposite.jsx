@@ -7,6 +7,7 @@ import HandBetsTable from './handSimulation/HandBetsTableOpposite';
 import RankBetsTable, { RANK_KEYS } from './handSimulation/RankBetsTable';
 import ColorBetsTable, { COLOR_KEYS } from './handSimulation/ColorBetsTable';
 import LowHighBetTable from './handSimulation/LowHighBetTable';
+import ColorStrategySelector from './handSimulation/ColorStrategySelector';
 import PercentPaidTables from './handSimulation/PercentPaidTables';
 import ResultsSummary from './handSimulation/ResultsSummary';
 import RoundPayoutTable from './handSimulation/RoundPayoutTable';
@@ -25,6 +26,7 @@ export default function HandSimulationOpposite() {
   const [rankBets, setRankBets] = useState(DEFAULT_RANK_BETS);
   const [colorBets, setColorBets] = useState(DEFAULT_COLOR_BETS);
   const [lowHighModes, setLowHighModes] = useState([]);
+  const [colorStrategy, setColorStrategy] = useState('manual');
   const [handPercentPaid, setHandPercentPaid] = useState(DEFAULT_HAND_PCT);
   const [rankPercentPaid, setRankPercentPaid] = useState(DEFAULT_RANK_PCT);
   const [targetRTP, setTargetRTP] = useState(96.5);
@@ -44,6 +46,7 @@ export default function HandSimulationOpposite() {
     rankBets,
     colorBets,
     lowHighModes,
+    colorStrategy,
     handPayouts: CARDED_HAND_PAYOUTS,
     perHandRankPayouts: PER_HAND_RANK_PAYOUTS,
     colorPayouts: COLOR_BOARD_PAYOUTS,
@@ -85,6 +88,7 @@ export default function HandSimulationOpposite() {
     setRankBets(DEFAULT_RANK_BETS);
     setColorBets(DEFAULT_COLOR_BETS);
     setLowHighModes([]);
+    setColorStrategy('manual');
     setHandPercentPaid(DEFAULT_HAND_PCT);
     setRankPercentPaid(DEFAULT_RANK_PCT);
     setTargetRTP(96.5);
@@ -158,7 +162,8 @@ export default function HandSimulationOpposite() {
         <div className="space-y-3">
           <HandBetsTable handBets={handBets} onChange={(i, v) => setHandBets(prev => prev.map((b, idx) => idx === i ? v : b))} />
           <RankBetsTable rankBets={rankBets} onChange={(rank, v) => setRankBets(prev => ({ ...prev, [rank]: clampRankBet(handBets, prev, rank, v) }))} />
-          <ColorBetsTable colorBets={colorBets} onChange={(key, v) => setColorBets(prev => ({ ...prev, [key]: clampColorBet(handBets, rankBets, prev, key, v) }))} />
+          <ColorBetsTable colorBets={colorBets} disabled={colorStrategy !== 'manual'} onChange={(key, v) => setColorBets(prev => ({ ...prev, [key]: clampColorBet(handBets, rankBets, prev, key, v) }))} />
+          <ColorStrategySelector value={colorStrategy} onChange={setColorStrategy} />
         </div>
 
         <div className="space-y-2">
@@ -187,8 +192,6 @@ export default function HandSimulationOpposite() {
           </div>
 
           <ResultsSummary results={results} targetRTP={targetRTP} upperWarningBuffer={upperWarningBuffer} lowerWarningBuffer={lowerWarningBuffer} />
-
-          <LowHighBetTable modes={lowHighModes} onChange={setLowHighModes} />
         </div>
 
         <div className="space-y-2">
@@ -238,6 +241,8 @@ export default function HandSimulationOpposite() {
               {progress.done.toLocaleString()} / {progress.total.toLocaleString()} rounds
             </div>
           )}
+
+          <LowHighBetTable modes={lowHighModes} onChange={setLowHighModes} />
         </div>
 
         <div>

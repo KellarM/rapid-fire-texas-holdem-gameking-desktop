@@ -263,6 +263,33 @@ function colorWinKey(reds) {
   return null;
 }
 
+// Color Board strategy resolver — dynamic side (Red/Black) streak betting.
+// When a strategy is active, the manual color inputs are ignored and the
+// budget (the unlocked ceiling = Hand+Rank totals) is split across the active
+// side using the strategy's ratio. After each round the side switches on a
+// loss, otherwise the streak continues. Always starts on Red.
+function colorStrategyBets(strategy, side, budget) {
+  if (budget <= 0) return {};
+  if (strategy === '70_20_10') {
+    return { ['3'+side]: budget * 0.70, ['4'+side]: budget * 0.20, ['5'+side]: budget * 0.10 };
+  }
+  if (strategy === 'three') {
+    return { ['3'+side]: budget };
+  }
+  return {};
+}
+function resolveColorStrategy(strategy, reds, side, budget, colorPayouts) {
+  const bets = colorStrategyBets(strategy, side, budget);
+  const colorKey = colorWinKey(reds);
+  let won = 0;
+  let sideWon = false;
+  if (colorKey && bets[colorKey] != null && bets[colorKey] > 0) {
+    won = bets[colorKey] * (1 + (colorPayouts[colorKey] ?? 0));
+    sideWon = true;
+  }
+  return { wager: budget, won, sideWon };
+}
+
 function computeFromBuffer(payload) {
   const {
     callId,
@@ -276,9 +303,13 @@ function computeFromBuffer(payload) {
   const colorNames = Object.keys(colorBets || {}).filter(k => colorBets[k] > 0);
   const handBetCount = handBets.filter(b => b > 0).length;
   const rankBetCount = rankNames.length;
-  const totalBetPerRound = handBets.reduce((s, b) => s + (b || 0), 0)
-    + rankNames.reduce((s, k) => s + rankBets[k], 0)
-    + colorNames.reduce((s, k) => s + colorBets[k], 0);
+  const colorStrategy = payload.colorStrategy || 'manual';
+  const totalHand = handBets.reduce((s, b) => s + (b || 0), 0);
+  const totalRank = rankNames.reduce((s, k) => s + rankBets[k], 0);
+  const manualColorTotal = colorStrategy === 'manual' ? colorNames.reduce((s, k) => s + colorBets[k], 0) : 0;
+  const colorBudget = colorStrategy !== 'manual' ? (totalHand + totalRank) : 0;
+  const totalBetPerRound = totalHand + totalRank + manualColorTotal + colorBudget;
+  let colorSide = 'R';
 
   const checkpointNet = new Map();
   (roundCheckpoints || []).forEach(r => checkpointNet.set(r, null));
@@ -338,11 +369,17 @@ function computeFromBuffer(payload) {
       }
     }
 
-    // Color Board — resolves independently of card/rank win, exact-match on red/black count
-    const colorKey = colorWinKey(redsCount[i]);
-    if (colorKey && colorBets[colorKey] > 0) {
-      const ratio = colorPayouts[colorKey];
-      roundWon += colorBets[colorKey] * (1 + ratio);
+    // Color Board — manual exact-match, or dynamic streak strategy
+    if (colorStrategy === 'manual') {
+      const colorKey = colorWinKey(redsCount[i]);
+      if (colorKey && colorBets[colorKey] > 0) {
+        const ratio = colorPayouts[colorKey];
+        roundWon += colorBets[colorKey] * (1 + ratio);
+      }
+    } else if (colorBudget > 0) {
+      const res = resolveColorStrategy(colorStrategy, redsCount[i], colorSide, colorBudget, colorPayouts);
+      roundWon += res.won;
+      if (!res.sideWon) colorSide = colorSide === 'R' ? 'B' : 'R';
     }
 
     // Low/High Strategy bets — variable per-round wager, only fires on a matching split
@@ -409,9 +446,13 @@ function exportRounds(payload) {
   const colorNames = Object.keys(colorBets || {}).filter(k => colorBets[k] > 0);
   const handBetCount = handBets.filter(b => b > 0).length;
   const rankBetCount = rankNames.length;
-  const totalBetPerRound = handBets.reduce((s, b) => s + (b || 0), 0)
-    + rankNames.reduce((s, k) => s + rankBets[k], 0)
-    + colorNames.reduce((s, k) => s + colorBets[k], 0);
+  const colorStrategy = payload.colorStrategy || 'manual';
+  const totalHand = handBets.reduce((s, b) => s + (b || 0), 0);
+  const totalRank = rankNames.reduce((s, k) => s + rankBets[k], 0);
+  const manualColorTotal = colorStrategy === 'manual' ? colorNames.reduce((s, k) => s + colorBets[k], 0) : 0;
+  const colorBudget = colorStrategy !== 'manual' ? (totalHand + totalRank) : 0;
+  const totalBetPerRound = totalHand + totalRank + manualColorTotal + colorBudget;
+  let colorSide = 'R';
   const handPct = (handPercentPaid[handBetCount] ?? 100) / 100;
   const rankPct = (rankPercentPaid[rankBetCount] ?? 100) / 100;
 
@@ -475,9 +516,15 @@ function exportRounds(payload) {
     const isLow = (b4 >> 2) <= 5;
 
     // Color Board — resolves independently of card/rank win, exact-match on red/black count
-    const colorKey = colorWinKey(reds);
-    if (colorKey && colorBets[colorKey] > 0) {
-      roundWon += colorBets[colorKey] * (1 + colorPayouts[colorKey]);
+    if (colorStrategy === 'manual') {
+      const colorKey = colorWinKey(reds);
+      if (colorKey && colorBets[colorKey] > 0) {
+        roundWon += colorBets[colorKey] * (1 + colorPayouts[colorKey]);
+      }
+    } else if (colorBudget > 0) {
+      const res = resolveColorStrategy(colorStrategy, reds, colorSide, colorBudget, colorPayouts);
+      roundWon += res.won;
+      if (!res.sideWon) colorSide = colorSide === 'R' ? 'B' : 'R';
     }
 
     // Low/High Strategy bets — variable per-round wager, only fires on a matching split

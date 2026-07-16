@@ -3,9 +3,9 @@ import { COLOR_BOARD_PAYOUTS } from '@/lib/payoutConstants';
 export const COLOR_KEYS = ['3R', '4R', '5R', '3B', '4B', '5B'];
 const COLOR_LABELS = { '3R': '3 Red', '4R': '4 Red', '5R': '5 Red', '3B': '3 Black', '4B': '4 Black', '5B': '5 Black' };
 
-export default function ColorBetsTable({ colorBets, onChange }) {
+export default function ColorBetsTable({ colorBets, onChange, disabled }) {
   return (
-    <div className="rounded-lg border border-slate-700 overflow-hidden">
+    <div className={`rounded-lg border border-slate-700 overflow-hidden ${disabled ? 'opacity-40 pointer-events-none' : ''}`}>
       <table className="w-full text-xs">
         <thead>
           <tr className="bg-slate-800 text-gray-400">
@@ -26,13 +26,19 @@ export default function ColorBetsTable({ colorBets, onChange }) {
                   value={colorBets[key] || ''}
                   onChange={e => onChange(key, parseFloat(e.target.value) || 0)}
                   placeholder="0"
-                  className="w-20 bg-yellow-100 text-black text-right rounded px-1.5 py-0.5 font-bold outline-none focus:ring-2 focus:ring-yellow-400"
+                  disabled={disabled}
+                  className="w-20 bg-yellow-100 text-black text-right rounded px-1.5 py-0.5 font-bold outline-none focus:ring-2 focus:ring-yellow-400 disabled:cursor-not-allowed"
                 />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      {disabled && (
+        <p className="text-yellow-400 text-[10px] px-2 py-1.5 border-t border-slate-700 leading-snug">
+          Manual bets locked — a color strategy is active.
+        </p>
+      )}
     </div>
   );
 }
