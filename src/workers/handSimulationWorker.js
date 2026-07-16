@@ -364,9 +364,10 @@ function computeFromBuffer(payload) {
   const colorNames = Object.keys(colorBets || {}).filter(k => colorBets[k] > 0);
   const handBetCount = handBets.filter(b => b > 0).length;
   const rankBetCount = rankNames.length;
-  const colorStrategy = payload.colorStrategy || 'manual';
   const totalHand = handBets.reduce((s, b) => s + (b || 0), 0);
   const totalRank = rankNames.reduce((s, k) => s + rankBets[k], 0);
+  const rankCapMet = totalHand > 0 && totalRank === totalHand;
+  const colorStrategy = (payload.colorStrategy && rankCapMet) ? payload.colorStrategy : 'manual';
   const manualColorTotal = colorStrategy === 'manual' ? colorNames.reduce((s, k) => s + colorBets[k], 0) : 0;
   const colorBudget = colorStrategy !== 'manual' ? (totalHand + totalRank) : 0;
   const totalBetPerRound = totalHand + totalRank + manualColorTotal + colorBudget;
@@ -459,7 +460,7 @@ function computeFromBuffer(payload) {
     }
 
     // Low/High Strategy bets — variable per-round wager, only fires on a matching split
-    const { wager: lhWager, won: lhWon } = resolveLowHighModes(lowHighModes, lowCount4[i], riverLow[i] === 1, roundTotalBet, riverStatePayouts);
+    const { wager: lhWager, won: lhWon } = resolveLowHighModes(rankCapMet ? lowHighModes : [], lowCount4[i], riverLow[i] === 1, roundTotalBet, riverStatePayouts);
     const roundBet = roundTotalBet + lhWager;
     roundWon += lhWon;
 
@@ -525,9 +526,10 @@ function exportRounds(payload) {
   const colorNames = Object.keys(colorBets || {}).filter(k => colorBets[k] > 0);
   const handBetCount = handBets.filter(b => b > 0).length;
   const rankBetCount = rankNames.length;
-  const colorStrategy = payload.colorStrategy || 'manual';
   const totalHand = handBets.reduce((s, b) => s + (b || 0), 0);
   const totalRank = rankNames.reduce((s, k) => s + rankBets[k], 0);
+  const rankCapMet = totalHand > 0 && totalRank === totalHand;
+  const colorStrategy = (payload.colorStrategy && rankCapMet) ? payload.colorStrategy : 'manual';
   const manualColorTotal = colorStrategy === 'manual' ? colorNames.reduce((s, k) => s + colorBets[k], 0) : 0;
   const colorBudget = colorStrategy !== 'manual' ? (totalHand + totalRank) : 0;
   const totalBetPerRound = totalHand + totalRank + manualColorTotal + colorBudget;
@@ -623,7 +625,7 @@ function exportRounds(payload) {
 
     // Low/High Strategy bets — variable per-round wager, only fires on a matching split
     const low4 = ((b0>>2)<=5?1:0) + ((b1>>2)<=5?1:0) + ((b2>>2)<=5?1:0) + ((b3>>2)<=5?1:0);
-    const { wager: lowHighWager, won: lhWon } = resolveLowHighModes(lowHighModes, low4, (b4 >> 2) <= 5, roundTotalBet, riverStatePayouts);
+    const { wager: lowHighWager, won: lhWon } = resolveLowHighModes(rankCapMet ? lowHighModes : [], low4, (b4 >> 2) <= 5, roundTotalBet, riverStatePayouts);
     const roundBet = roundTotalBet + lowHighWager;
     roundWon += lhWon;
 

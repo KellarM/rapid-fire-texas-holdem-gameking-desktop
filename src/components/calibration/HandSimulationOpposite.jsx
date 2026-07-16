@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Play, RefreshCw, Trash2, FlaskConical, FileDown } from 'lucide-react';
 import { CARDED_HAND_PAYOUTS, COLOR_BOARD_PAYOUTS, RIVER_STATE_PAYOUTS } from '@/lib/payoutConstants';
 import { PER_HAND_RANK_PAYOUTS } from '@/lib/perHandRankPayouts';
@@ -40,6 +40,14 @@ export default function HandSimulationOpposite() {
   const [results, setResults] = useState(null);
   const [hasRun, setHasRun] = useState(false);
   const [exporting, setExporting] = useState(false);
+
+  const rankCapMet = handTotal(handBets) > 0 && rankTotal(rankBets) === handTotal(handBets);
+  useEffect(() => {
+    if (!rankCapMet) {
+      if (colorStrategy !== 'manual') setColorStrategy('manual');
+      if (lowHighModes.length) setLowHighModes([]);
+    }
+  }, [rankCapMet]);
 
   const buildParams = () => ({
     rounds: numberOfRounds,
@@ -194,7 +202,7 @@ export default function HandSimulationOpposite() {
           </div>
 
           <ResultsSummary results={results} targetRTP={targetRTP} upperWarningBuffer={upperWarningBuffer} lowerWarningBuffer={lowerWarningBuffer} />
-          <ColorStrategySelector value={colorStrategy} onChange={setColorStrategy} />
+          <ColorStrategySelector value={colorStrategy} onChange={setColorStrategy} disabled={!rankCapMet} />
         </div>
 
         <div className="space-y-2">
@@ -246,7 +254,7 @@ export default function HandSimulationOpposite() {
           )}
 
           <div className="mt-10">
-            <LowHighBetTable modes={lowHighModes} onChange={setLowHighModes} />
+            <LowHighBetTable modes={lowHighModes} onChange={setLowHighModes} disabled={!rankCapMet} />
           </div>
         </div>
 
