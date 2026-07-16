@@ -27,6 +27,7 @@ export default function HandSimulation() {
   const [colorBets, setColorBets] = useState(DEFAULT_COLOR_BETS);
   const [lowHighModes, setLowHighModes] = useState([]);
   const [colorStrategy, setColorStrategy] = useState('manual');
+  const [handCandidates, setHandCandidates] = useState(Array(10).fill(false));
   const [handPercentPaid, setHandPercentPaid] = useState(DEFAULT_HAND_PCT);
   const [rankPercentPaid, setRankPercentPaid] = useState(DEFAULT_RANK_PCT);
   const [targetRTP, setTargetRTP] = useState(96.5);
@@ -47,6 +48,7 @@ export default function HandSimulation() {
     colorBets,
     lowHighModes,
     colorStrategy,
+    handCandidates,
     handPayouts: CARDED_HAND_PAYOUTS,
     perHandRankPayouts: PER_HAND_RANK_PAYOUTS,
     colorPayouts: COLOR_BOARD_PAYOUTS,
@@ -89,6 +91,7 @@ export default function HandSimulation() {
     setColorBets(DEFAULT_COLOR_BETS);
     setLowHighModes([]);
     setColorStrategy('manual');
+    setHandCandidates(Array(10).fill(false));
     setHandPercentPaid(DEFAULT_HAND_PCT);
     setRankPercentPaid(DEFAULT_RANK_PCT);
     setTargetRTP(96.5);
@@ -160,7 +163,7 @@ export default function HandSimulation() {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
         <div className="space-y-3">
-          <HandBetsTable handBets={handBets} onChange={(i, v) => setHandBets(prev => prev.map((b, idx) => idx === i ? v : b))} />
+          <HandBetsTable handBets={handBets} onChange={(i, v) => setHandBets(prev => prev.map((b, idx) => idx === i ? v : b))} handCandidates={handCandidates} onCandidateChange={(i, v) => setHandCandidates(prev => prev.map((c, idx) => idx === i ? v : c))} />
           <RankBetsTable rankBets={rankBets} onChange={(rank, v) => setRankBets(prev => ({ ...prev, [rank]: clampRankBet(handBets, prev, rank, v) }))} />
           <ColorBetsTable colorBets={colorBets} disabled={colorStrategy !== 'manual'} onChange={(key, v) => setColorBets(prev => ({ ...prev, [key]: clampColorBet(handBets, rankBets, prev, key, v) }))} />
         </div>

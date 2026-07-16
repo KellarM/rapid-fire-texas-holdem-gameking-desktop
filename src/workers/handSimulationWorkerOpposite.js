@@ -274,14 +274,75 @@ function resolveColorStrategy(strategy, reds, side, budget, colorPayouts) {
   return { wager: budget, won, sideWon };
 }
 
+// ── Hand Rotation Strategy ──────────────────────────────────
+// The Carded Hand table exposes a per-hand candidate checkbox. When at least
+// one candidate is checked AND at least one hand has a bet, rotation mode is
+// active. The active set = hands carrying a bet (each with its bet amount).
+// Each round we bet on the active set only. After a round, any active hand that
+// was part of the board's winning set is rotated OUT; its slot is filled by the
+// best-odds candidate (lowest payout ratio = highest win probability) that is
+// not currently active and did not just win. The replacement inherits the
+// rotated-out slot's bet amount, so the per-round hand wager stays constant.
+// When no candidate is checked this returns null and the run is a standard
+// fixed-bet test (bets never change across rounds).
+function createRotationState(handBets, handCandidates, handPayouts) {
+  if (!handCandidates || !handBets || !handPayouts) return null;
+  let hasCandidate = false;
+  let hasBet = false;
+  for (let h = 0; h < 10; h++) {
+    if (handCandidates[h]) hasCandidate = true;
+    if (handBets[h] > 0) hasBet = true;
+  }
+  if (!hasCandidate || !hasBet) return null;
+
+  let activeHands = [];
+  for (let h = 0; h < 10; h++) {
+    if (handBets[h] > 0) activeHands.push({ index: h, bet: handBets[h] });
+  }
+  const candidateIndices = [];
+  for (let h = 0; h < 10; h++) if (handCandidates[h]) candidateIndices.push(h);
+  candidateIndices.sort((a, b) => handPayouts[a] - handPayouts[b]);
+  if (candidateIndices.length === 0) return null;
+
+  const currentBets = new Array(10).fill(0);
+  function rebuild() {
+    currentBets.fill(0);
+    for (const a of activeHands) currentBets[a.index] = a.bet;
+  }
+  rebuild();
+
+  return {
+    currentBets,
+    advance(mask) {
+      const winning = [];
+      const kept = [];
+      for (const a of activeHands) {
+        if ((mask & (1 << a.index)) !== 0) winning.push(a);
+        else kept.push(a);
+      }
+      const justWon = new Set(winning.map(a => a.index));
+      const available = candidateIndices.filter(
+        c => !kept.some(a => a.index === c) && !justWon.has(c)
+      );
+      const nextActive = kept;
+      for (let r = 0; r < winning.length && r < available.length; r++) {
+        nextActive.push({ index: available[r], bet: winning[r].bet });
+      }
+      activeHands = nextActive;
+      rebuild();
+    },
+  };
+}
+
 function computeFromBuffer(payload) {
   const {
     callId,
     handBets, rankBets, colorBets, lowHighModes, handPayouts, perHandRankPayouts, colorPayouts, riverStatePayouts,
-    handPercentPaid, rankPercentPaid, roundCheckpoints,
+    handPercentPaid, rankPercentPaid, roundCheckpoints, handCandidates,
   } = payload;
 
   const { winnersMask, rankCat, redsCount, lowCount4, riverLow, size } = _buffer;
+  const rotState = createRotationState(handBets, handCandidates, handPayouts);
 
   const rankNames = Object.keys(rankBets).filter(k => rankBets[k] > 0);
   const colorNames = Object.keys(colorBets || {}).filter(k => colorBets[k] > 0);
@@ -325,13 +386,28 @@ function computeFromBuffer(payload) {
     const isBoardWin = mask === 1023;
     let roundWon = 0;
 
+    // Per-round effective hand bets — rotation strategy may change the active set each round
+    let roundBets = handBets;
+    let roundHandPct = handPct;
+    let roundColorBudget = colorBudget;
+    let roundTotalBet = totalBetPerRound;
+    if (rotState) {
+      roundBets = rotState.currentBets;
+      let rh = 0;
+      let rhc = 0;
+      for (let h = 0; h < 10; h++) { const b = roundBets[h]; if (b > 0) { rh += b; rhc++; } }
+      roundColorBudget = colorStrategy !== 'manual' ? (rh + totalRank) : 0;
+      roundTotalBet = rh + totalRank + manualColorTotal + roundColorBudget;
+      roundHandPct = (handPercentPaid[rhc] ?? 100) / 100;
+    }
+
     if (!isBoardWin) {
       const winnerCount = popcount10(mask);
       for (let h = 0; h < 10; h++) {
-        const bet = handBets[h];
+        const bet = roundBets[h];
         if (bet > 0 && (mask & (1 << h))) {
           const odds = calculateTiePayout(handPayouts[h], winnerCount);
-          roundWon += bet * (1 + odds * handPct);
+          roundWon += bet * (1 + odds * roundHandPct);
         }
       }
 
@@ -360,14 +436,14 @@ function computeFromBuffer(payload) {
         const ratio = colorPayouts[colorKey];
         roundWon += colorBets[colorKey] * (1 + ratio);
       }
-    } else if (colorBudget > 0) {
-      const res = resolveColorStrategy(colorStrategy, redsCount[i], colorSide, colorBudget, colorPayouts);
+    } else if (roundColorBudget > 0) {
+      const res = resolveColorStrategy(colorStrategy, redsCount[i], colorSide, roundColorBudget, colorPayouts);
       roundWon += res.won;
       if (!res.sideWon) colorSide = colorSide === 'R' ? 'B' : 'R';
     }
 
-    const { wager: lhWager, won: lhWon } = resolveLowHighModes(lowHighModes, lowCount4[i], riverLow[i] === 1, totalBetPerRound, riverStatePayouts);
-    const roundBet = totalBetPerRound + lhWager;
+    const { wager: lhWager, won: lhWon } = resolveLowHighModes(lowHighModes, lowCount4[i], riverLow[i] === 1, roundTotalBet, riverStatePayouts);
+    const roundBet = roundTotalBet + lhWager;
     roundWon += lhWon;
 
     totalWon += roundWon;
@@ -382,6 +458,8 @@ function computeFromBuffer(payload) {
     if (runningBalance < worstRun) { worstRun = runningBalance; worstRunRound = roundNumber; }
 
     if (checkpointNet.has(roundNumber)) checkpointNet.set(roundNumber, runningBalance);
+
+    if (rotState) rotState.advance(mask);
   }
 
   const totalBet = totalBetAccum;
@@ -417,8 +495,9 @@ function computeFromBuffer(payload) {
 const CSV_HEADER = 'Seq,Flop_C1_Rank,Flop_C1_Suit,Flop_C2_Rank,Flop_C2_Suit,Flop_C3_Rank,Flop_C3_Suit,Turn_C4_Rank,Turn_C4_Suit,River_C5_Rank,River_C5_Suit,Winning_Hand,Winning_Hand_2,Winning_Rank,Shared_Win,House_Win,Rank_Exception,3_Red,4_Red,5_Red,3_Black,4_Black,5_Black,Low,High,LowHigh_Wager,Bet,Won,Net,Running_Balance';
 
 function exportRounds(payload) {
-  const { callId, handBets, rankBets, colorBets, lowHighModes, handPayouts, perHandRankPayouts, colorPayouts, riverStatePayouts, handPercentPaid, rankPercentPaid } = payload;
+  const { callId, handBets, rankBets, colorBets, lowHighModes, handPayouts, perHandRankPayouts, colorPayouts, riverStatePayouts, handPercentPaid, rankPercentPaid, handCandidates } = payload;
   const { winnersMask, rankCat, boards, boardCap, size } = _buffer;
+  const rotState = createRotationState(handBets, handCandidates, handPayouts);
 
   const rankNames = Object.keys(rankBets).filter(k => rankBets[k] > 0);
   const colorNames = Object.keys(colorBets || {}).filter(k => colorBets[k] > 0);
@@ -444,16 +523,31 @@ function exportRounds(payload) {
     let roundWon = 0;
     let winningRankName = null;
 
+    // Per-round effective hand bets — rotation strategy may change the active set each round
+    let roundBets = handBets;
+    let roundHandPct = handPct;
+    let roundColorBudget = colorBudget;
+    let roundTotalBet = totalBetPerRound;
+    if (rotState) {
+      roundBets = rotState.currentBets;
+      let rh = 0;
+      let rhc = 0;
+      for (let h = 0; h < 10; h++) { const b = roundBets[h]; if (b > 0) { rh += b; rhc++; } }
+      roundColorBudget = colorStrategy !== 'manual' ? (rh + totalRank) : 0;
+      roundTotalBet = rh + totalRank + manualColorTotal + roundColorBudget;
+      roundHandPct = (handPercentPaid[rhc] ?? 100) / 100;
+    }
+
     const winnerIndices = [];
     for (let h = 0; h < 10; h++) { if (mask & (1 << h)) winnerIndices.push(h); }
 
     if (!isBoardWin) {
       const winnerCount = popcount10(mask);
       for (let h = 0; h < 10; h++) {
-        const bet = handBets[h];
+        const bet = roundBets[h];
         if (bet > 0 && (mask & (1 << h))) {
           const odds = calculateTiePayout(handPayouts[h], winnerCount);
-          roundWon += bet * (1 + odds * handPct);
+          roundWon += bet * (1 + odds * roundHandPct);
         }
       }
       const rc = rankCat[i];
@@ -498,19 +592,21 @@ function exportRounds(payload) {
       if (colorKey && colorBets[colorKey] > 0) {
         roundWon += colorBets[colorKey] * (1 + colorPayouts[colorKey]);
       }
-    } else if (colorBudget > 0) {
-      const res = resolveColorStrategy(colorStrategy, reds, colorSide, colorBudget, colorPayouts);
+    } else if (roundColorBudget > 0) {
+      const res = resolveColorStrategy(colorStrategy, reds, colorSide, roundColorBudget, colorPayouts);
       roundWon += res.won;
       if (!res.sideWon) colorSide = colorSide === 'R' ? 'B' : 'R';
     }
 
     const low4 = ((b0>>2)<=5?1:0) + ((b1>>2)<=5?1:0) + ((b2>>2)<=5?1:0) + ((b3>>2)<=5?1:0);
-    const { wager: lowHighWager, won: lhWon } = resolveLowHighModes(lowHighModes, low4, (b4 >> 2) <= 5, totalBetPerRound, riverStatePayouts);
-    const roundBet = totalBetPerRound + lowHighWager;
+    const { wager: lowHighWager, won: lhWon } = resolveLowHighModes(lowHighModes, low4, (b4 >> 2) <= 5, roundTotalBet, riverStatePayouts);
+    const roundBet = roundTotalBet + lowHighWager;
     roundWon += lhWon;
 
     const net = roundWon - roundBet;
     runningBalance += net;
+
+    if (rotState) rotState.advance(mask);
 
     rows[i] = {
       round: i + 1,
