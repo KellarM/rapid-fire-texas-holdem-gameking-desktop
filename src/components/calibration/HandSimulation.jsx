@@ -163,7 +163,6 @@ export default function HandSimulation() {
           <HandBetsTable handBets={handBets} onChange={(i, v) => setHandBets(prev => prev.map((b, idx) => idx === i ? v : b))} />
           <RankBetsTable rankBets={rankBets} onChange={(rank, v) => setRankBets(prev => ({ ...prev, [rank]: clampRankBet(handBets, prev, rank, v) }))} />
           <ColorBetsTable colorBets={colorBets} disabled={colorStrategy !== 'manual'} onChange={(key, v) => setColorBets(prev => ({ ...prev, [key]: clampColorBet(handBets, rankBets, prev, key, v) }))} />
-          <ColorStrategySelector value={colorStrategy} onChange={setColorStrategy} />
         </div>
 
         <div className="space-y-2">
@@ -192,6 +191,7 @@ export default function HandSimulation() {
           </div>
 
           <ResultsSummary results={results} targetRTP={targetRTP} upperWarningBuffer={upperWarningBuffer} lowerWarningBuffer={lowerWarningBuffer} />
+          <ColorStrategySelector value={colorStrategy} onChange={setColorStrategy} />
         </div>
 
         <div className="space-y-2">
