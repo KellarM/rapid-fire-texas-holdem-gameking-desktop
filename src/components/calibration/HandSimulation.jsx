@@ -10,6 +10,7 @@ import LowHighBetTable from './handSimulation/LowHighBetTable';
 import PercentPaidTables from './handSimulation/PercentPaidTables';
 import ResultsSummary from './handSimulation/ResultsSummary';
 import RoundPayoutTable from './handSimulation/RoundPayoutTable';
+import { clampRankBet, clampColorBet, handTotal, rankTotal, colorTotal } from '@/lib/simBetCaps';
 
 const DEFAULT_HAND_BETS = Array(10).fill(0);
 const DEFAULT_RANK_BETS = Object.fromEntries(RANK_KEYS.map(r => [r, 0]));
@@ -156,8 +157,8 @@ export default function HandSimulation() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
         <div className="space-y-3">
           <HandBetsTable handBets={handBets} onChange={(i, v) => setHandBets(prev => prev.map((b, idx) => idx === i ? v : b))} />
-          <RankBetsTable rankBets={rankBets} onChange={(rank, v) => setRankBets(prev => ({ ...prev, [rank]: v }))} />
-          <ColorBetsTable colorBets={colorBets} onChange={(key, v) => setColorBets(prev => ({ ...prev, [key]: v }))} />
+          <RankBetsTable rankBets={rankBets} onChange={(rank, v) => setRankBets(prev => ({ ...prev, [rank]: clampRankBet(handBets, prev, rank, v) }))} />
+          <ColorBetsTable colorBets={colorBets} onChange={(key, v) => setColorBets(prev => ({ ...prev, [key]: clampColorBet(handBets, rankBets, prev, key, v) }))} />
         </div>
 
         <div className="space-y-2">
