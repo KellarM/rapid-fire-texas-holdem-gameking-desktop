@@ -63,7 +63,7 @@ function Quadrant({ title, wins, placedBets = [], accentColor }) {
       {/* Title */}
       <div
         style={{
-          fontSize: '0.6rem',
+          fontSize: '0.72rem',
           fontFamily: 'Oswald, sans-serif',
           fontWeight: 700,
           letterSpacing: '0.1em',
@@ -81,7 +81,7 @@ function Quadrant({ title, wins, placedBets = [], accentColor }) {
 
       {!hasBet ? (
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.15)', fontStyle: 'italic' }}>No bet</span>
+          <span style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.18)', fontStyle: 'italic' }}>No bet</span>
         </div>
       ) : !hasWin ? (
         /* Lost bets — show what was wagered, no payout */
@@ -99,10 +99,10 @@ function Quadrant({ title, wins, placedBets = [], accentColor }) {
                 gap: 4,
               }}
             >
-              <span style={{ fontSize: '0.63rem', fontWeight: 700, color: 'rgba(255,255,255,0.55)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '60%' }}>
+              <span style={{ fontSize: '0.76rem', fontWeight: 700, color: 'rgba(255,255,255,0.6)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '60%' }}>
                 {b.label && b.label.startsWith('Hand ') ? getCardLabel(b.label) : b.label}
               </span>
-              <span style={{ fontSize: '0.63rem', fontWeight: 800, color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <span style={{ fontSize: '0.76rem', fontWeight: 800, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap', flexShrink: 0 }}>
                 ${b.bet.toFixed(2)}
               </span>
             </div>
@@ -130,32 +130,32 @@ function Quadrant({ title, wins, placedBets = [], accentColor }) {
                 {/* Row 1: label + bet/odds */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 4 }}>
                   <span style={{
-                    fontSize: '0.65rem',
-                    fontWeight: 900,
-                    color: '#fff',
-                    ...blackOutline,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    maxWidth: '50%',
-                  }}>
+                     fontSize: '0.78rem',
+                     fontWeight: 900,
+                     color: '#fff',
+                     ...blackOutline,
+                     whiteSpace: 'nowrap',
+                     overflow: 'hidden',
+                     textOverflow: 'ellipsis',
+                     maxWidth: '50%',
+                   }}>
                     {win.boardType === 'card' ? getCardLabel(win.label) : win.label}
                   </span>
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontSize: '0.6rem', fontWeight: 800, color: '#fff', ...blackOutline, whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#fff', ...blackOutline, whiteSpace: 'nowrap' }}>
                       Bet: ${win.bet.toFixed(2)}
                     </div>
-                    <div style={{ fontSize: '0.6rem', fontWeight: 800, color: '#fff', ...blackOutline, whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#fff', ...blackOutline, whiteSpace: 'nowrap' }}>
                       Odds: {win.odds}
                     </div>
                   </div>
                 </div>
                 {/* Row 2: payout calc */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: '0.58rem', fontWeight: 700, color: '#fde68a', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#fde68a', whiteSpace: 'nowrap' }}>
                     ${profit.toFixed(2)} + ${win.bet.toFixed(2)}
                   </span>
-                  <span style={{ fontSize: '0.65rem', fontWeight: 900, color: accentColor, whiteSpace: 'nowrap' }}>
+                  <span style={{ fontSize: '0.78rem', fontWeight: 900, color: accentColor, whiteSpace: 'nowrap' }}>
                     = ${win.payout.toFixed(2)}
                   </span>
                 </div>
