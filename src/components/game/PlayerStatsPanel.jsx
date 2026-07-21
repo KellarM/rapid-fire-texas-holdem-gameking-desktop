@@ -60,10 +60,10 @@ export default function PlayerStatsPanel({ isOpen, onClose, playerStats, playerC
                     className={`${color.bg} ${color.text} rounded-lg p-4 border ${color.border}`}
                   >
                     {/* Player name */}
-                    <div className="font-bold text-lg mb-3">Player {i + 1}</div>
+                    <div className="font-bold text-xl mb-3">Player {i + 1}</div>
 
                     {/* Stats grid */}
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-3 text-base font-bold">
                       <div className="flex justify-between">
                         <span className="opacity-80">Total Bets</span>
                         <span className="font-bold">${stats.totalBets.toFixed(0)}</span>
@@ -74,13 +74,13 @@ export default function PlayerStatsPanel({ isOpen, onClose, playerStats, playerC
                       </div>
                       <div className="flex justify-between">
                         <span className="opacity-80">Profit/Loss</span>
-                        <span className={`font-bold ${stats.totalWins >= stats.totalBets ? 'text-green-200' : 'text-red-200'}`}>
+                        <span className={`font-bold ${stats.totalWins >= stats.totalBets ? 'text-green-700' : 'text-red-700'}`}>
                           {stats.totalWins >= stats.totalBets ? '+' : ''}${(stats.totalWins - stats.totalBets).toFixed(2)}
                         </span>
                       </div>
                       <div className="flex justify-between border-t border-current border-opacity-30 pt-2">
                         <span className="opacity-80">ROI</span>
-                        <span className={`font-bold ${roi >= 0 ? 'text-green-200' : 'text-red-200'}`}>{roi}%</span>
+                        <span className={`font-bold ${roi >= 0 ? 'text-green-700' : 'text-red-700'}`}>{roi}%</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="opacity-80">Win Rate</span>
@@ -100,16 +100,16 @@ export default function PlayerStatsPanel({ isOpen, onClose, playerStats, playerC
                       </div>
                       <div className="flex justify-between border-t border-current border-opacity-30 pt-2">
                         <span className="opacity-80">Highest Balance</span>
-                        <span className="font-bold text-green-200">
+                        <span className="font-bold text-green-700">
                           {stats.highestBalance !== null ? `$${stats.highestBalance.toFixed(2)}` : '—'}
-                          {stats.highestBalanceRound !== null && <span className="opacity-70 font-normal ml-1 text-xs">(Rnd {stats.highestBalanceRound})</span>}
+                          {stats.highestBalanceRound !== null && <span className="opacity-70 font-bold ml-1 text-sm">(Rnd {stats.highestBalanceRound})</span>}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="opacity-80">Lowest Balance</span>
-                        <span className="font-bold text-red-200">
+                        <span className="font-bold text-red-700">
                           {stats.lowestBalance !== null ? `$${stats.lowestBalance.toFixed(2)}` : '—'}
-                          {stats.lowestBalanceRound !== null && <span className="opacity-70 font-normal ml-1 text-xs">(Rnd {stats.lowestBalanceRound})</span>}
+                          {stats.lowestBalanceRound !== null && <span className="opacity-70 font-bold ml-1 text-sm">(Rnd {stats.lowestBalanceRound})</span>}
                         </span>
                       </div>
                       <div className="flex justify-between">
