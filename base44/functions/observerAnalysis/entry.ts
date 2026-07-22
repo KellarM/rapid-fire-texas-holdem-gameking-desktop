@@ -37,7 +37,9 @@ Deno.serve(async (req) => {
     if (action === 'saveRound') {
       const { roundData } = body;
       if (!roundData) return Response.json({ error: 'No roundData provided' }, { status: 400 });
-      const record = await base44.asServiceRole.entities.ObserverRound.create({
+      // Use the caller's own context so RLS stamps created_by_id — prevents
+      // cross-user injection of fabricated round data into the shared pool.
+      const record = await base44.entities.ObserverRound.create({
         session_id: roundData.session_id || 'live',
         round_number: roundData.round_number,
         community_cards: roundData.community_cards || [],
