@@ -415,11 +415,19 @@ function computeFromBuffer(payload) {
       const rc = rankCat[i];
       const winningRankName = rc >= 0 ? RANK_NAMES_BY_CAT[rc] : null;
       if (winningRankName) {
-        let firstWinner = -1;
-        for (let h = 0; h < 10; h++) { if (mask & (1 << h)) { firstWinner = h; break; } }
-        const handId = firstWinner + 1;
-        const payoutsForHand = perHandRankPayouts[handId] ?? perHandRankPayouts[String(handId)];
-        const ratio = payoutsForHand ? payoutsForHand[winningRankName] : null;
+        // Average per-hand rank odds across ALL winning hands (fairness rule).
+        const winnerOdds = [];
+        for (let h = 0; h < 10; h++) {
+          if (mask & (1 << h)) {
+            const hid = h + 1;
+            const pf = perHandRankPayouts[hid] ?? perHandRankPayouts[String(hid)];
+            const r = pf ? pf[winningRankName] : null;
+            if (r != null) winnerOdds.push(r);
+          }
+        }
+        const ratio = winnerOdds.length > 0
+          ? (winnerOdds.length > 1 ? winnerOdds.reduce((s, r) => s + r, 0) / winnerOdds.length : winnerOdds[0])
+          : null;
         if (ratio != null) {
           for (const rk of rankNames) {
             if (rk === winningRankName) {
@@ -555,9 +563,17 @@ function exportRounds(payload) {
       const rc = rankCat[i];
       const rn = rc >= 0 ? RANK_NAMES_BY_CAT[rc] : null;
       if (rn) {
-        const handId = winnerIndices[0] + 1;
-        const payoutsForHand = perHandRankPayouts[handId] ?? perHandRankPayouts[String(handId)];
-        const ratio = payoutsForHand ? payoutsForHand[rn] : null;
+        // Average per-hand rank odds across ALL winning hands (fairness rule).
+        const winnerOdds = [];
+        for (const wi of winnerIndices) {
+          const hid = wi + 1;
+          const pf = perHandRankPayouts[hid] ?? perHandRankPayouts[String(hid)];
+          const r = pf ? pf[rn] : null;
+          if (r != null) winnerOdds.push(r);
+        }
+        const ratio = winnerOdds.length > 0
+          ? (winnerOdds.length > 1 ? winnerOdds.reduce((s, r) => s + r, 0) / winnerOdds.length : winnerOdds[0])
+          : null;
         if (ratio != null) {
           for (const rk of rankNames) {
             if (rk === rn) {

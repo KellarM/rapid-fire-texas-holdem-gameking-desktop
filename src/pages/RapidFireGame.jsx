@@ -1238,31 +1238,44 @@ export default function RapidFireGame() {
       }
 
       if (leader && !leader.communityBoardWin && Object.keys(prk).length > 0) {
-        let actualWinnerHandId = null;
+        // All tied winners share the same rank — find it from the first winner.
         let actualWinnerRankName = null;
         for (const wid of leader.handIds) {
           const hand = FIXED_HANDS.find((h) => h.id === wid);
           if (!hand) continue;
           const result = evaluateBestHand(hand.cards, finalComm);
-          if (result) { actualWinnerHandId = wid; actualWinnerRankName = result.name; break; }
+          if (result) { actualWinnerRankName = result.name; break; }
         }
 
         if (actualWinnerRankName) {
-          for (const [rankKey, rankBetAmt] of Object.entries(prk)) {
-            if (rankBetAmt <= 0) continue;
-            if (rankKey === actualWinnerRankName) {
-              // Pay at the actual winning hand's per-hand rank odds
-              const playerRankBetCount = Object.values(prk).filter(b => b > 0).length;
-              const rankReductionPct = bellCurveReductions.rank[Math.min(playerRankBetCount - 1, bellCurveReductions.rank.length - 1)] || 0;
-              const baseRankRatio = getPerHandRankPayout(actualWinnerHandId, rankKey);
-              if (baseRankRatio !== null) {
+          // Average the per-hand rank odds across ALL winning hands for fairness.
+          // When 2+ hands share a win, paying only one hand's odds felt arbitrary;
+          // the mean of every winning hand's odds is now the settled Rank payout.
+          const winnerOdds = [];
+          for (const wid of leader.handIds) {
+            const ratio = getPerHandRankPayout(wid, actualWinnerRankName);
+            if (ratio !== null && ratio !== undefined) winnerOdds.push(ratio);
+          }
+          const isAveraged = winnerOdds.length > 1;
+          const baseRankRatio = winnerOdds.length > 0
+            ? (isAveraged ? winnerOdds.reduce((s, r) => s + r, 0) / winnerOdds.length : winnerOdds[0])
+            : null;
+
+          if (baseRankRatio !== null) {
+            for (const [rankKey, rankBetAmt] of Object.entries(prk)) {
+              if (rankBetAmt <= 0) continue;
+              if (rankKey === actualWinnerRankName) {
+                const playerRankBetCount = Object.values(prk).filter(b => b > 0).length;
+                const rankReductionPct = bellCurveReductions.rank[Math.min(playerRankBetCount - 1, bellCurveReductions.rank.length - 1)] || 0;
                 const effectiveRankRatio = baseRankRatio * (1 - rankReductionPct / 100);
                 const payout = calculatePayout(rankBetAmt, effectiveRankRatio);
                 w += payout;
                 wins.push({
                   label: rankKey,
                   bet: rankBetAmt,
-                  odds: rankReductionPct > 0 ? `${effectiveRankRatio.toFixed(2)}:1 (-${rankReductionPct}%)` : `${baseRankRatio}:1`,
+                  odds: rankReductionPct > 0
+                    ? `${effectiveRankRatio.toFixed(2)}:1 (-${rankReductionPct}%)`
+                    : (isAveraged ? `${baseRankRatio.toFixed(2)}:1 (avg/${winnerOdds.length})` : `${baseRankRatio}:1`),
                   payout,
                   boardType: 'rank'
                 });
