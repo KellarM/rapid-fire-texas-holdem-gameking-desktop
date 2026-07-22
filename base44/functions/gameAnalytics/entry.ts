@@ -5,19 +5,21 @@ Deno.serve(async (req) => {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     const body = await req.json();
     const { action, eventData } = body;
 
     // ── Save event ─────────────────────────────────────────────────────────
+    // Use the caller's own context so RLS stamps created_by_id — prevents
+    // cross-user event forgery while keeping live-game analytics working.
     if (action === 'saveEvent') {
-      const record = await base44.asServiceRole.entities.GameEvent.create(eventData);
+      const record = await base44.entities.GameEvent.create(eventData);
       return Response.json({ ok: true, id: record.id });
     }
 
-    // ── Summary ────────────────────────────────────────────────────────────
+    // ── Summary (admin-only) ────────────────────────────────────────────────
     if (action === 'summary') {
+      if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
       const events = [];
       let skip = 0;
       const pageSize = 5000;
@@ -250,8 +252,9 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ── Clear ──────────────────────────────────────────────────────────────
+    // ── Clear (admin-only) ─────────────────────────────────────────────────
     if (action === 'clear') {
+      if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
       const events = [];
       let skip = 0;
       const pageSize = 5000;

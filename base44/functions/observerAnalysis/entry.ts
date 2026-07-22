@@ -15,11 +15,15 @@ const dL = (o, t) => Math.abs(o - t) >= 0.06 ? 'critical' : Math.abs(o - t) >= 0
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+    const user = await base44.auth.me();
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+
     const body = await req.json().catch(() => ({}));
     const { action = 'analyze', question = '' } = body;
 
-    // ── CLEAR ALL ROUNDS ─────────────────────────────────────────
+    // ── CLEAR ALL ROUNDS (admin-only) ────────────────────────────
     if (action === 'clearRounds') {
+      if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
       const all = await base44.asServiceRole.entities.ObserverRound.list('-created_date', 5000);
       if (all.length) {
         await base44.asServiceRole.entities.ObserverRound.deleteMany({ id: { $in: all.map(r => r.id) } });
@@ -60,7 +64,8 @@ Deno.serve(async (req) => {
       return Response.json({ success: true, id: record.id });
     }
 
-    // ── LOAD ROUNDS — all devices, all sessions ─────────────────
+    // ── LOAD ROUNDS — all devices, all sessions (admin-only) ─────
+    if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
     const rounds = await base44.asServiceRole.entities.ObserverRound.list('-created_date', 5000);
     const n = rounds.length;
 
