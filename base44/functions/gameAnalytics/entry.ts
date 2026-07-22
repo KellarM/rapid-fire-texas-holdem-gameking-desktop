@@ -1,5 +1,88 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
+// ── Payload sanitization for GameEvent.saveEvent ─────────────────────────
+// Strict whitelist + type/bounds enforcement so a non-admin caller cannot
+// persist fabricated/absurd round metrics (e.g. fake payouts, junk ranks).
+const ALLOWED_RANKS = new Set([
+  'Royal Flush','Straight Flush','Four of a Kind','Full House','Flush',
+  'Straight','Three of a Kind','Two Pair','One Pair','High Card',
+]);
+const NUM_CAP = 1e9;
+
+function num(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+function clampNum(v, lo, hi) {
+  const n = num(v);
+  if (n < lo) return lo;
+  if (n > hi) return hi;
+  return n;
+}
+function str(v, max) {
+  const s = typeof v === 'string' ? v : String(v ?? '');
+  return s.slice(0, max);
+}
+function bool(v) { return v === true; }
+
+function sanitizeBets(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const out = {};
+  for (const [k, v] of Object.entries(raw)) {
+    if (typeof k !== 'string' || k.length > 48) continue;
+    out[k] = clampNum(v, 0, NUM_CAP);
+  }
+  return out;
+}
+
+function sanitizeLowHighBet(raw) {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const type = str(raw.type, 8);
+  if (type !== 'LOW' && type !== 'HIGH') return null;
+  return { type, amount: clampNum(raw.amount, 0, NUM_CAP) };
+}
+
+function sanitizeGameEvent(raw) {
+  const e = (raw && typeof raw === 'object' && !Array.isArray(raw)) ? raw : {};
+  const event_type = str(e.event_type, 64);
+  if (!event_type) return null; // event_type is required
+  const round_id = Math.trunc(clampNum(e.round_id, 0, NUM_CAP));
+
+  const colorsRaw = Array.isArray(e.winning_colors) ? e.winning_colors : [];
+  const winning_colors = colorsRaw.map(c => str(c, 8)).filter(c => /^[0-9]+[RB]$/.test(c)).slice(0, 6);
+
+  const idsRaw = Array.isArray(e.winner_hand_ids) ? e.winner_hand_ids : [];
+  const winner_hand_ids = idsRaw
+    .map(h => Math.trunc(num(h)))
+    .filter(h => h >= 1 && h <= 10)
+    .slice(0, 10);
+
+  return {
+    event_type,
+    round_id,
+    session_id: str(e.session_id, 100),
+    total_bet: clampNum(e.total_bet, 0, NUM_CAP),
+    total_payout: clampNum(e.total_payout, 0, NUM_CAP),
+    net_result: clampNum(e.net_result, -NUM_CAP, NUM_CAP),
+    card_win: bool(e.card_win),
+    rank_win: bool(e.rank_win),
+    color_win: bool(e.color_win),
+    river_win: bool(e.river_win),
+    winning_rank: ALLOWED_RANKS.has(e.winning_rank) ? e.winning_rank : null,
+    winning_colors,
+    winning_low_high: ['LOW', 'HIGH'].includes(e.winning_low_high) ? e.winning_low_high : null,
+    winner_hand_ids,
+    hand_bets: sanitizeBets(e.hand_bets),
+    rank_bets: sanitizeBets(e.rank_bets),
+    color_bets: sanitizeBets(e.color_bets),
+    low_high_bet: sanitizeLowHighBet(e.low_high_bet),
+    kill_switch_active: bool(e.kill_switch_active),
+    hand_bet_count: Math.trunc(clampNum(e.hand_bet_count, 0, 10)),
+    is_board_win: bool(e.is_board_win),
+    description: str(e.description, 1000),
+  };
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -13,7 +96,9 @@ Deno.serve(async (req) => {
     // Use the caller's own context so RLS stamps created_by_id — prevents
     // cross-user event forgery while keeping live-game analytics working.
     if (action === 'saveEvent') {
-      const record = await base44.entities.GameEvent.create(eventData);
+      const clean = sanitizeGameEvent(eventData);
+      if (!clean) return Response.json({ error: 'Invalid event payload' }, { status: 400 });
+      const record = await base44.entities.GameEvent.create(clean);
       return Response.json({ ok: true, id: record.id });
     }
 
