@@ -15,7 +15,7 @@ function getChipDef(amount) {
   }
 }
 
-// Label: cents show as .01/.05/.10/.25/.50; $1+ shows as $N
+// Label: cents show as 1¢/5¢/10¢/25¢/50¢; $1+ shows as $N
 function formatChipLabel(amount) {
   if (amount === undefined || amount === null) return null;
   if (amount >= 1) {
@@ -24,7 +24,7 @@ function formatChipLabel(amount) {
   }
   const cents = Math.round(amount * 100);
   if (cents <= 0) return '$0';
-  return `.${String(cents).padStart(2, '0')}`;
+  return `${cents}¢`;
 }
 
 export default function Chip({ amount, scale = 1, draggable = false, onDragStart, title, style, className = '', playerId }) {
