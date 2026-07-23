@@ -61,13 +61,13 @@ import { useDropChip } from '@/hooks/useDropChip';
 import GearMenu from '@/components/game/GearMenu';
 
 
-// STARTING_BALANCE = 10000 (managed server-side via usePlayerSession)
-const CHIP_VALUES = [5, 10, 25, 50, 100, 500];
+// STARTING_BALANCE = 100 (managed server-side via usePlayerSession)
+const CHIP_VALUES = [0.01, 0.05, 0.10, 0.25, 0.50, 1];
 const MAX_HAND_BET_AMOUNT = 5000;
-const DEFAULT_CHIP = 5;
+const DEFAULT_CHIP = 0.01;
 const PLAYER_COUNT_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-const MIN_BET = 5;
+const MIN_BET = 0.01;
 
 const LOGO_URLS = {
   red:   'https://media.base44.com/images/public/69f3a45ad82dff5b772d4de2/2667063a3_image.png',
@@ -450,7 +450,7 @@ export default function RapidFireGame() {
 
   // Active player helpers
   const pid = activePlayer;
-  const balance = balances[pid] ?? 10000;
+  const balance = balances[pid] ?? 100;
   const pHandBets = handBets[pid] || {};
   const pRedBlackBets = redBlackBets[pid] || {};
   const pRankBets = rankBets[pid] || {};
@@ -1924,7 +1924,7 @@ export default function RapidFireGame() {
             <div className="flex items-center gap-3 flex-shrink-0">
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black">
                 <span className="text-yellow-400 text-xs font-black leading-none tracking-wider">P{activePlayer + 1}</span>
-                <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${(balances[activePlayer] ?? 10000).toLocaleString()}</span>
+                <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${(balances[activePlayer] ?? 100).toFixed(2)}</span>
                 <span title={dbReady ? 'Balance synced to server' : 'Syncing balance...'} style={{ width: 7, height: 7, borderRadius: '50%', background: dbReady ? '#22c55e' : '#f59e0b', display: 'inline-block', flexShrink: 0 }} />
               </div>
               <DealerButton gamePhase={gamePhase} totalBet={totalBet} onDeal={handleDealButtonPress} />

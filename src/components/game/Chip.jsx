@@ -1,17 +1,30 @@
 function getChipDef(amount) {
-  if (amount <= 5) {
-    return { outer: '#1D4ED8', mid: '#2563EB', edge: '#1E3A8A', rim: '#172554', shine: '#93C5FD' }; // Blue
-  } else if (amount <= 20) {
-    return { outer: '#15803D', mid: '#16A34A', edge: '#166534', rim: '#14532D', shine: '#86EFAC' }; // Green
-  } else if (amount <= 45) {
-    return { outer: '#92400E', mid: '#B45309', edge: '#78350F', rim: '#451A03', shine: '#D97706' }; // Brown
-  } else if (amount <= 95) {
-    return { outer: '#B8860B', mid: '#DAA520', edge: '#8B6914', rim: '#6B4F10', shine: '#FFD700' }; // Gold
-  } else if (amount < 500) {
-    return { outer: '#BE185D', mid: '#EC4899', edge: '#9D174D', rim: '#831843', shine: '#F9A8D4' }; // Bright Pink
+  // Cent-scale denominations: .01 Blue · .05 Green · .10 Orange · .25 Yellow · .50 Pink · $1 Black
+  if (amount <= 0.02) {
+    return { outer: '#1D4ED8', mid: '#2563EB', edge: '#1E3A8A', rim: '#172554', shine: '#93C5FD' }; // Blue (.01)
+  } else if (amount <= 0.07) {
+    return { outer: '#15803D', mid: '#16A34A', edge: '#166534', rim: '#14532D', shine: '#86EFAC' }; // Green (.05)
+  } else if (amount <= 0.20) {
+    return { outer: '#92400E', mid: '#B45309', edge: '#78350F', rim: '#451A03', shine: '#D97706' }; // Orange (.10)
+  } else if (amount <= 0.40) {
+    return { outer: '#B8860B', mid: '#DAA520', edge: '#8B6914', rim: '#6B4F10', shine: '#FFD700' }; // Yellow (.25)
+  } else if (amount <= 0.80) {
+    return { outer: '#BE185D', mid: '#EC4899', edge: '#9D174D', rim: '#831843', shine: '#F9A8D4' }; // Pink (.50)
   } else {
-    return { outer: '#0a0a0a', mid: '#0a0a0a', edge: '#B8860B', rim: '#8B6914', shine: '#0a0a0a', isBlack500: true }; // Pure black $500 with gold trim
+    return { outer: '#0a0a0a', mid: '#0a0a0a', edge: '#B8860B', rim: '#8B6914', shine: '#0a0a0a', isBlack500: true }; // Black ($1+)
   }
+}
+
+// Label: cents show as .01/.05/.10/.25/.50; $1+ shows as $N
+function formatChipLabel(amount) {
+  if (amount === undefined || amount === null) return null;
+  if (amount >= 1) {
+    const rounded = Math.round(amount * 100) / 100;
+    return `$${rounded}`;
+  }
+  const cents = Math.round(amount * 100);
+  if (cents <= 0) return '$0';
+  return `.${String(cents).padStart(2, '0')}`;
 }
 
 export default function Chip({ amount, scale = 1, draggable = false, onDragStart, title, style, className = '', playerId }) {
@@ -24,7 +37,7 @@ export default function Chip({ amount, scale = 1, draggable = false, onDragStart
   const totalH = d + wallH;
 
   // Font size — scale down for large numbers to always fit
-  const label = amount !== undefined ? String(amount) : null;
+  const label = formatChipLabel(amount);
   const charCount = label ? label.length : 1;
   const baseFontSize = Math.round(16 * scale);
   const fontSize = charCount >= 4 ? Math.max(9, Math.round(baseFontSize * 0.7)) : charCount === 3 ? Math.max(11, Math.round(baseFontSize * 0.82)) : baseFontSize;
@@ -135,7 +148,7 @@ export default function Chip({ amount, scale = 1, draggable = false, onDragStart
           textShadow: 'none',
           pointerEvents: 'none', userSelect: 'none', zIndex: 2,
         }}>
-          ${label}
+          {label}
         </span>
       )}
     </span>

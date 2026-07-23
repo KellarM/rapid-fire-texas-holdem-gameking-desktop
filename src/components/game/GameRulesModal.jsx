@@ -227,7 +227,7 @@ export default function GameRulesModal({ asMenuItem = false }) {
 
                 <Section title="How the Game Works">
                   <Rule label="Objective">Bet on which of the 10 hands wins the round.</Rule>
-                  <Rule label="Minimum Bet">$5 per betting spot.</Rule>
+                  <Rule label="Minimum Bet">$0.01 per betting spot.</Rule>
                   <Rule label="Hand Selection">
                     You may select up to <strong className="text-yellow-300">{plural(maxHands, 'card hand')}</strong> per round.
                     Once you reach that limit, all remaining unselected hands lock automatically.

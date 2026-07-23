@@ -35,7 +35,7 @@ export default function PlayerSeat({ playerId, balance, isActive, onSelect, game
         P{playerId + 1}
       </span>
       <span className={`text-[10px] font-bold ${color.balText} leading-none whitespace-nowrap`}>
-        ${balance.toFixed(0)}
+        ${balance.toFixed(2)}
       </span>
       {totalBet > 0 && (
         <span className="text-[9px] text-white/45 leading-none whitespace-nowrap">
