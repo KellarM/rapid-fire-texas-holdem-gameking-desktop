@@ -325,8 +325,8 @@ export default function GameRulesModal({ asMenuItem = false }) {
                       <div key={state} className="flex justify-between items-center bg-slate-800/60 rounded-lg px-3 py-1.5">
                         <span className="text-white font-bold text-xs">{state}</span>
                         <div className="flex gap-3">
-                          <span className="text-blue-300 text-xs">Low: {odds.low}:1</span>
-                          <span className="text-red-300 text-xs">High: {odds.high}:1</span>
+                          <span className="text-blue-300 text-xs">Low: {odds.LOW}:1</span>
+                          <span className="text-red-300 text-xs">High: {odds.HIGH}:1</span>
                         </div>
                       </div>
                     ))}
