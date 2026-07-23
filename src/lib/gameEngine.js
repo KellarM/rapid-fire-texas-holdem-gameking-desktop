@@ -498,29 +498,37 @@ export function hasRankBet(rankBets) {
   return Object.values(rankBets || {}).some(v => v > 0);
 }
 
+// Round a money amount to whole cents (integer), eliminating floating-point drift
+// that accumulates when stacking cent-scale chip values like 0.01, 0.05, 0.10.
+function toCents(v) {
+  return Math.round((Number(v) || 0) * 100);
+}
+
 // Returns true if the rank bet action satisfies the cap.
 // Pass isDecrease=true when the net effect is a removal or move (no new chips added) — cap is always bypassed.
 export function checkRankCap(handBets, rankBets, additionalBet = 0, isDecrease = false) {
   if (isDecrease) return true;
-  const totalHand = getTotalHandBets(handBets);
-  const totalRank = getTotalRankBets(rankBets) + additionalBet;
+  const totalHand = toCents(getTotalHandBets(handBets));
+  const totalRank = toCents(getTotalRankBets(rankBets)) + toCents(additionalBet);
   return totalRank <= totalHand;
 }
 
 // Returns true if adding `additionalBet` to color bets still satisfies the cap
 export function checkColorCap(handBets, rankBets, colorBets, additionalBet = 0) {
-  const ceiling = getTotalHandBets(handBets) + getTotalRankBets(rankBets);
-  const totalColor = getTotalColorBets(colorBets) + additionalBet;
+  const ceiling = toCents(getTotalHandBets(handBets)) + toCents(getTotalRankBets(rankBets));
+  const totalColor = toCents(getTotalColorBets(colorBets)) + toCents(additionalBet);
   return totalColor <= ceiling;
 }
 
 // Returns true if adding `additionalBet` to river bets still satisfies the cap
 // currentRiverBetAmount = what the player has already staked on the river this round
 export function checkRiverCap(handBets, rankBets, colorBets, currentRiverBetAmount, additionalBet = 0) {
-  const ceiling = getTotalHandBets(handBets) + getTotalRankBets(rankBets) + getTotalColorBets(colorBets);
-  const totalRiver = (currentRiverBetAmount || 0) + additionalBet;
+  const ceiling = toCents(getTotalHandBets(handBets)) + toCents(getTotalRankBets(rankBets)) + toCents(getTotalColorBets(colorBets));
+  const totalRiver = toCents(currentRiverBetAmount) + toCents(additionalBet);
   return totalRiver <= ceiling;
 }
+
+
 
 // ============================================================
 // UNIFIED SIMULATION ENGINE (Phase 1)
