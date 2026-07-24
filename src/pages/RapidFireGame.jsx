@@ -1879,6 +1879,12 @@ export default function RapidFireGame() {
                 </div>
               </div>
               <DealerButton gamePhase={gamePhase} totalBet={totalBet} onDeal={handleDealButtonPress} />
+              <div className="flex flex-col items-center">
+                <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Bet Sum Count</span>
+                <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
+                  <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${totalBet.toFixed(2)}</span>
+                </div>
+              </div>
             </div>
 
             {/* Spacer */}
