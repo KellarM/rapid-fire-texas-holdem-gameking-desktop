@@ -55,6 +55,33 @@ const SESSIONS = [
       },
     ],
   },
+  {
+    id: 'session_04',
+    label: 'Session 04 — Full House Overtake (Only 2 Boards Win)',
+    result: 'Net: +$2.42',
+    slides: [
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/f3497b30b_session_04_flop.png',
+        phase: 'PRE-DEAL → FLOP',
+        caption: "Player bets only 1 card hand the 8/6 and targets both Flush and Straight Rank bets. Chooses to bet the cap on 3 black. Flop comes up 6♥, 7♦, 6♦. Board shows 3 Red, 0 Black. The Color board black bet is already lost. 7/7 takes a quick lead with a full house.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/604d30754_session_04_turn.png',
+        phase: 'THE TURN',
+        caption: "Dealer turns over: 8♥. 7/7 still leads with 7s full of 6s. 8/6 now has a Full House too — 6s full of 8s — but it is not enough. Board shows 3 Low, 1 High. HIGH is the favourite. Player bets the max cap on HIGH.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/23d20b5ec_session_04_river.png',
+        phase: 'THE RIVER',
+        caption: "River: 8♠ — HIGH. The 8/6 hand completes a Full House — 8-8-8-6-6 — overtaking 7/7. Board finishes 4 Red, 1 Black.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/ad4c0a878_session_04_results.png',
+        phase: 'THE RESULTS',
+        caption: "Huge win on the river card. 2 out of 4 boards win — Card and River.\nTotal Win: $5.62 | Total Bet: $3.20 | Net Result: +$2.42",
+      },
+    ],
+  },
 ];
 
 export default function PlayExamplesModal({ onClose }) {
