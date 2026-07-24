@@ -1855,55 +1855,8 @@ export default function RapidFireGame() {
 
           {/* Bottom controls */}
           <div className="flex items-center gap-2 border-t border-yellow-900/40 pt-1.5 flex-shrink-0 w-full">
-            {/* Far left: bank drop zone + chip selector */}
+            {/* Chip selector — far left */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
-              {gamePhase === 'betting' &&
-              <div
-                id="bank-drop-zone"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const data = e.dataTransfer.getData('text/plain');
-                  if (!data) return;
-                  try {
-                    const parsed = JSON.parse(data);
-                    const { from, type, pid: dragPid } = parsed;
-                    if (type === 'hand') {
-                      handleDropChip(from, 'bank', dragPid);
-                    } else if (type === 'rank') {
-                      const amt = (rankBets[dragPid] || {})[from] || 0;
-                      if (amt > 0) {
-                        const remainingRankBets = { ...(rankBets[dragPid] || {}) };
-                        delete remainingRankBets[from];
-                        const isLastRankBet = !hasRankBet(remainingRankBets);
-                        if (isLastRankBet) {
-                          const colorRefund = Object.values(redBlackBets[dragPid] || {}).reduce((s, v) => s + v, 0);
-                          const riverRefund = lowHighBets[dragPid]?.amount || 0;
-                          setRankBets((prev) => ({ ...prev, [dragPid]: remainingRankBets }));
-                          setRedBlackBets((prev) => ({ ...prev, [dragPid]: {} }));
-                          setLowHighBets((prev) => ({ ...prev, [dragPid]: null }));
-                          setBalances((b) => {const n = [...b];n[dragPid] += amt + colorRefund + riverRefund;return n;});
-                        } else {
-                          setRankBets((prev) => {const n = { ...(prev[dragPid] || {}) };delete n[from];return { ...prev, [dragPid]: n };});
-                          setBalances((b) => {const n = [...b];n[dragPid] += amt;return n;});
-                        }
-                      }
-                    } else if (type === 'rb') {
-                      const amt = (redBlackBets[dragPid] || {})[from] || 0;
-                      if (amt > 0) {
-                        setRedBlackBets((prev) => {const n = { ...(prev[dragPid] || {}) };delete n[from];return { ...prev, [dragPid]: n };});
-                        setBalances((b) => {const n = [...b];n[dragPid] += amt;return n;});
-                      }
-                    }
-                  } catch (e) {}
-                }}
-                className="flex items-center justify-center w-7 h-7 rounded-full border border-dashed border-yellow-600/50 bg-yellow-900/20 text-yellow-500/60 text-xs font-bold transition-all hover:border-yellow-400 hover:bg-yellow-900/40"
-                title="Drag chip here to refund to bank">
-                
-                  💰
-                </div>
-              }
-              <span className="text-yellow-400/60 text-xs flex-shrink-0">Chip:</span>
               {CHIP_VALUES.map((v) =>
               <button
                 key={v}
@@ -1917,10 +1870,7 @@ export default function RapidFireGame() {
               )}
             </div>
 
-            {/* Spacer */}
-            <div className="flex-1" />
-
-            {/* Player Bank + Dealer Button */}
+            {/* Player Bank + Dealer Button — directly beside the $1 chip */}
             <div className="flex items-center gap-3 flex-shrink-0">
               <div className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black">
                 <span className="text-yellow-400 text-xs font-black leading-none tracking-wider">P{activePlayer + 1}</span>
