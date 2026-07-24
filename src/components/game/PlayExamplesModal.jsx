@@ -82,6 +82,33 @@ const SESSIONS = [
       },
     ],
   },
+  {
+    id: 'session_05',
+    label: 'Session 05 — 5-Black Sweep (Only Rank + River Win)',
+    result: 'Net: +$0.08',
+    slides: [
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/26dd50bd6_session_05_flop.png',
+        phase: 'PRE-DEAL → FLOP',
+        caption: "Player bets 1 card hand and covers ALL 7 Rank positions at 1¢ each. Bets Red on the Color Board. Flop comes up 4♠, 6♠, 6♣. Board shows 0 Red, 3 Black. The Color board Red bet is already lost. 8/6 takes the early lead with Three of a Kind — 6-6-6.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/2f7216ed2_session_05_turn.png',
+        phase: 'THE TURN',
+        caption: "Turn: 9♠ is dealt. Q♠ / 10♠ is now in the lead with a flush. Board shows 3 Low, 1 High. HIGH is the favourite. Player bets the max cap on HIGH.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/1594e70da_session_05_river.png',
+        phase: 'THE RIVER',
+        caption: "The river card is Dealt. A♠. K/K Wins with a Flush.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/d7b3fc04e_session_05_results.png',
+        phase: 'THE RESULTS',
+        caption: "Coverage saves the round. 2 out of 4 boards win — Rank and River.\nTotal Win: $0.64 | Total Bet: $0.56 | Net Result: +$0.08",
+      },
+    ],
+  },
 ];
 
 export default function PlayExamplesModal({ onClose }) {
