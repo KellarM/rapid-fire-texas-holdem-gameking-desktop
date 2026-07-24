@@ -1871,11 +1871,12 @@ export default function RapidFireGame() {
             </div>
 
             {/* Player Bank + Dealer Button — directly beside the $1 chip */}
-            <div className="flex items-center gap-3 flex-shrink-0">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black">
-                <span className="text-yellow-400 text-xs font-black leading-none tracking-wider">P{activePlayer + 1}</span>
-                <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${(balances[activePlayer] ?? 100).toFixed(2)}</span>
-                <span title={dbReady ? 'Balance synced to server' : 'Syncing balance...'} style={{ width: 7, height: 7, borderRadius: '50%', background: dbReady ? '#22c55e' : '#f59e0b', display: 'inline-block', flexShrink: 0 }} />
+            <div className="flex items-end gap-3 flex-shrink-0">
+              <div className="flex flex-col items-center">
+                <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Players Bank</span>
+                <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
+                  <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${(balances[activePlayer] ?? 100).toFixed(2)}</span>
+                </div>
               </div>
               <DealerButton gamePhase={gamePhase} totalBet={totalBet} onDeal={handleDealButtonPress} />
             </div>
