@@ -36,7 +36,7 @@ export default function PlayExamplesModal({ onClose }) {
 
   const overlayStyle = {
     position: 'fixed', inset: 0, zIndex: 1000,
-    background: 'rgba(0,0,0,0.88)',
+    background: 'rgba(0,0,0,0.92)',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
   };
 
@@ -44,33 +44,29 @@ export default function PlayExamplesModal({ onClose }) {
     background: 'linear-gradient(160deg, #1a0f00 0%, #0f0800 100%)',
     border: '2px solid rgba(202,138,4,0.5)',
     borderRadius: '16px',
-    width: '900px', maxWidth: '96vw',
-    maxHeight: '92vh',
+    width: '920px', maxWidth: '96vw',
+    maxHeight: '94vh',
     display: 'flex', flexDirection: 'column',
     overflow: 'hidden',
     boxShadow: '0 12px 60px rgba(0,0,0,0.9)',
   };
 
-  const headerStyle = {
-    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    padding: '14px 20px',
-    borderBottom: '1px solid rgba(202,138,4,0.3)',
-  };
-
-  const closeBtnStyle = {
-    background: 'rgba(90,45,0,0.5)', border: '1px solid rgba(202,138,4,0.4)',
-    color: '#facc15', borderRadius: '8px', cursor: 'pointer',
-    width: '30px', height: '30px', fontSize: '16px',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-  };
-
-  const navBtnStyle = (disabled) => ({
-    padding: '8px 20px', borderRadius: '8px', cursor: disabled ? 'not-allowed' : 'pointer',
-    fontWeight: 700, fontSize: '13px',
+  const btnStyle = {
+    background: 'rgba(90,45,0,0.5)',
     border: '1px solid rgba(202,138,4,0.4)',
+    color: '#e2d9a0', borderRadius: '6px', cursor: 'pointer',
+    fontWeight: 700, fontSize: '13px',
+    padding: '6px 14px',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    transition: 'background 0.15s',
+  };
+
+  const navBtn = (disabled) => ({
+    ...btnStyle,
     background: disabled ? 'rgba(30,15,0,0.3)' : 'rgba(90,45,0,0.6)',
     color: disabled ? 'rgba(226,217,160,0.3)' : '#e2d9a0',
-    transition: 'background 0.15s',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    padding: '6px 16px',
   });
 
   // Session list view
@@ -78,11 +74,16 @@ export default function PlayExamplesModal({ onClose }) {
     return (
       <div style={overlayStyle} onClick={onClose}>
         <div style={panelStyle} onClick={e => e.stopPropagation()}>
-          <div style={headerStyle}>
+          {/* Header */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '14px 20px',
+            borderBottom: '1px solid rgba(202,138,4,0.3)',
+          }}>
             <span style={{ fontSize: '16px', fontWeight: 900, color: '#facc15', fontFamily: 'Oswald, sans-serif', letterSpacing: '0.1em' }}>
               🎬 PLAY EXAMPLES
             </span>
-            <button style={closeBtnStyle} onClick={onClose}>✕</button>
+            <button style={btnStyle} onClick={onClose}>✕ Close</button>
           </div>
 
           <div style={{ padding: '16px 20px', overflowY: 'auto', flex: 1 }}>
@@ -122,76 +123,92 @@ export default function PlayExamplesModal({ onClose }) {
   const isLast = slideIndex === selectedSession.slides.length - 1;
 
   return (
-    <div style={overlayStyle} onClick={() => { setSelectedSession(null); }}>
+    <div style={overlayStyle} onClick={() => setSelectedSession(null)}>
       <div style={panelStyle} onClick={e => e.stopPropagation()}>
 
-        {/* Header */}
-        <div style={headerStyle}>
+        {/* TOP BAR: Back | Session label | Phase | Nav buttons | Close */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '12px 18px',
+          borderBottom: '1px solid rgba(202,138,4,0.3)',
+          gap: '12px', flexShrink: 0,
+        }}>
+          {/* Left: Back + Session name */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <button
               onClick={() => setSelectedSession(null)}
-              style={{ ...closeBtnStyle, fontSize: '13px', width: 'auto', padding: '0 10px' }}
+              style={navBtn(false)}
             >
               ← Back
             </button>
-            <span style={{ fontSize: '14px', fontWeight: 900, color: '#facc15', fontFamily: 'Oswald, sans-serif' }}>
+            <span style={{ fontSize: '13px', fontWeight: 900, color: '#facc15', fontFamily: 'Oswald, sans-serif', whiteSpace: 'nowrap' }}>
               {selectedSession.label}
             </span>
           </div>
-          <button style={closeBtnStyle} onClick={onClose}>✕</button>
-        </div>
 
-        {/* Slide counter */}
-        <div style={{ padding: '8px 20px 0', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '11px', fontWeight: 700, color: '#facc15', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+          {/* Center: Phase label */}
+          <span style={{
+            fontSize: '11px', fontWeight: 700, color: 'rgba(250,204,21,0.8)',
+            letterSpacing: '0.12em', textTransform: 'uppercase', whiteSpace: 'nowrap',
+          }}>
             {slide.phase}
           </span>
-          <span style={{ fontSize: '11px', color: 'rgba(226,217,160,0.5)' }}>
-            {slideIndex + 1} / {selectedSession.slides.length}
-          </span>
+
+          {/* Right: Nav + Close */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button style={navBtn(isFirst)} disabled={isFirst} onClick={() => setSlideIndex(i => i - 1)}>
+              ← Prev
+            </button>
+            {/* Dot indicators */}
+            <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
+              {selectedSession.slides.map((_, i) => (
+                <div key={i} onClick={() => setSlideIndex(i)} style={{
+                  width: '8px', height: '8px', borderRadius: '50%', cursor: 'pointer',
+                  background: i === slideIndex ? '#facc15' : 'rgba(202,138,4,0.3)',
+                  transition: 'background 0.15s',
+                }} />
+              ))}
+            </div>
+            <button style={navBtn(isLast)} disabled={isLast} onClick={() => setSlideIndex(i => i + 1)}>
+              Next →
+            </button>
+            <button style={btnStyle} onClick={onClose}>✕</button>
+          </div>
         </div>
 
-        {/* Screenshot */}
-        <div style={{ padding: '10px 20px 0', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+        {/* SCREENSHOT — full, unblocked, centered */}
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: '16px 20px', minHeight: '0',
+          overflow: 'hidden',
+        }}>
           <img
             src={slide.image}
             alt={slide.phase}
-            style={{ width: '100%', maxHeight: '420px', objectFit: 'contain', borderRadius: '8px', border: '1px solid rgba(202,138,4,0.25)' }}
+            style={{
+              maxWidth: '100%',
+              maxHeight: '100%',
+              objectFit: 'contain',
+              borderRadius: '8px',
+              border: '1px solid rgba(202,138,4,0.25)',
+              display: 'block',
+            }}
           />
         </div>
 
-        {/* Caption */}
-        <div style={{ padding: '12px 20px', background: 'rgba(0,0,0,0.3)', margin: '10px 20px', borderRadius: '8px', border: '1px solid rgba(202,138,4,0.2)' }}>
-          <p style={{ fontSize: '13px', color: '#e2d9a0', lineHeight: '1.6', margin: 0, whiteSpace: 'pre-line' }}>
+        {/* CAPTION — below the screenshot, never overlapping */}
+        <div style={{
+          padding: '14px 24px',
+          background: 'rgba(0,0,0,0.4)',
+          borderTop: '1px solid rgba(202,138,4,0.2)',
+          flexShrink: 0,
+        }}>
+          <p style={{
+            fontSize: '14px', color: '#e2d9a0', lineHeight: '1.65', margin: 0,
+            whiteSpace: 'pre-line', textAlign: 'center',
+          }}>
             {slide.caption}
           </p>
-        </div>
-
-        {/* Navigation */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 20px', borderTop: '1px solid rgba(202,138,4,0.2)' }}>
-          <button
-            style={navBtnStyle(isFirst)}
-            disabled={isFirst}
-            onClick={() => setSlideIndex(i => i - 1)}
-          >
-            ← Previous
-          </button>
-          <div style={{ display: 'flex', gap: '6px' }}>
-            {selectedSession.slides.map((_, i) => (
-              <div key={i} onClick={() => setSlideIndex(i)} style={{
-                width: '8px', height: '8px', borderRadius: '50%', cursor: 'pointer',
-                background: i === slideIndex ? '#facc15' : 'rgba(202,138,4,0.3)',
-                transition: 'background 0.15s',
-              }} />
-            ))}
-          </div>
-          <button
-            style={navBtnStyle(isLast)}
-            disabled={isLast}
-            onClick={() => setSlideIndex(i => i + 1)}
-          >
-            Next →
-          </button>
         </div>
 
       </div>
