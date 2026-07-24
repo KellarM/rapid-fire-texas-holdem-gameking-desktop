@@ -28,6 +28,33 @@ const SESSIONS = [
       },
     ],
   },
+  {
+    id: 'session_03',
+    label: 'Session 03 — Three of a Kind / 3 Boards Win',
+    result: 'Net: +$1.32',
+    slides: [
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/1c7595a88_session_03_flop.png',
+        phase: 'PRE-DEAL → FLOP',
+        caption: "Player bets the 4/2 hand at 7.3:1. Targets the Flush Rank bet and bets 3 Black on the Color Board. Flop comes up J♣, A♥, 4♥. Board shows 2 Red, 1 Black. A♦/10♥ leads with One Pair.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/03da0f995_session_03_turn.png',
+        phase: 'THE TURN',
+        caption: "Q♦/J♥ now takes the lead by 2 Pair with a Q♠ on the Turn.\nColor board is still open with 2 Red & 2 Black cards showing.\nWith 3 High cards & 1 low card showing, Low is the favourite.\nPlayer bets the max cap on Low \"Come on Low card, make it Low & Black!!\"",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/521514cd1_session_03_river.png',
+        phase: 'THE RIVER',
+        caption: "River: 4♣ — LOW. The 4/2 hand completes Three of a Kind — 4-4-4. Board finishes 2 Red, 3 Black.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/11ec1dc21_session_03_results.png',
+        phase: 'THE RESULTS',
+        caption: "3 out of 4 boards win — Card, Color, and River.\nThe Rank Flush bet lost — the winning hand was Three of a Kind.\nTotal Win: $2.12 | Total Bet: $0.80 | Net Result: +$1.32",
+      },
+    ],
+  },
 ];
 
 export default function PlayExamplesModal({ onClose }) {
