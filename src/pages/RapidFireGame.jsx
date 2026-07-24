@@ -1871,7 +1871,7 @@ export default function RapidFireGame() {
             </div>
 
             {/* Player Bank + Dealer Button — directly beside the $1 chip */}
-            <div className="flex items-end gap-3 flex-shrink-0">
+            <div className="flex items-center gap-3 flex-shrink-0">
               <div className="flex flex-col items-center">
                 <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Players Bank</span>
                 <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
