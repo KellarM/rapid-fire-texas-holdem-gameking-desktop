@@ -342,11 +342,21 @@ export default function PlayExamplesModal({ onClose }) {
           ))}
         </div>
 
-        {/* Session title + result */}
-        <div className="px-6 py-3 flex items-center justify-between flex-shrink-0">
-          <span className="text-sm font-bold text-white">{session.label.split('—').slice(1).join('—').trim()}</span>
-          <span className={`text-sm font-black ${session.result.startsWith('Net: +') ? 'text-green-400' : 'text-red-400'}`}>{session.result}</span>
-        </div>
+        {/* Session title + result — Exam 01 aligns the phase pill into this row */}
+        {isExam01 ? (
+          <div className="px-6 py-1.5 flex items-center justify-between flex-shrink-0 gap-3">
+            <span className="text-sm font-bold text-white whitespace-nowrap">{session.label.split('—').slice(1).join('—').trim()}</span>
+            <span className="inline-block px-3 py-0.5 rounded-md text-xs font-bold tracking-widest uppercase" style={{ background: 'rgba(234,179,8,0.15)', color: '#facc15', border: '1px solid rgba(234,179,8,0.4)' }}>
+              {slide.phase}
+            </span>
+            <span className={`text-sm font-black whitespace-nowrap ${session.result.startsWith('Net: +') ? 'text-green-400' : 'text-red-400'}`}>{session.result}</span>
+          </div>
+        ) : (
+          <div className="px-6 py-3 flex items-center justify-between flex-shrink-0">
+            <span className="text-sm font-bold text-white">{session.label.split('—').slice(1).join('—').trim()}</span>
+            <span className={`text-sm font-black ${session.result.startsWith('Net: +') ? 'text-green-400' : 'text-red-400'}`}>{session.result}</span>
+          </div>
+        )}
 
         {/* Slide content */}
         <div
@@ -354,13 +364,6 @@ export default function PlayExamplesModal({ onClose }) {
           onScroll={checkScroll}
           className="flex-1 overflow-y-auto px-6 pb-4 flex flex-col items-center gap-3 min-h-0"
         >
-          {isExam01 && (
-            <div className="w-full text-center flex-shrink-0">
-              <span className="inline-block px-3 py-1 rounded-md text-xs font-bold tracking-widest uppercase" style={{ background: 'rgba(234,179,8,0.15)', color: '#facc15', border: '1px solid rgba(234,179,8,0.4)' }}>
-                {slide.phase}
-              </span>
-            </div>
-          )}
           <div className="relative w-full flex justify-center">
             <img
               src={slide.image}
