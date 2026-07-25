@@ -163,6 +163,33 @@ const SESSIONS = [
       },
     ],
   },
+  {
+    id: 'session_08',
+    label: 'Session 08 — Q♥/10♥ Flush / 2 Boards Win',
+    result: 'Net: -$0.16',
+    slides: [
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/b34d9fbd8_session_08_flop.png',
+        phase: 'PRE-DEAL → FLOP',
+        caption: 'Player places 7 separate Card Hand bets. Hedges the Rank board & Covers ALL Rank positions. Bets the Cap on 3 Black. The Dealers Flop comes up 4♥, A♥, 10♣. Board shows 2 Red, 1 Black. A♣/10♠ takes the early lead with Two Pair. "Come on, I need more black cards!"',
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/723c0abce_session_08_turn.png',
+        phase: 'THE TURN',
+        caption: "Turn: 5♥. Board is now 3 Red, 1 Black. Q♥/10♥ surges into the lead with a Flush. The 3 Black bet is dead — only 1 card remaining. Board shows 2 Low, 2 High. River odds are even at 0.904:1. Player declines the River bet.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/ec14d3c93_session_08_river.png',
+        phase: 'THE RIVER',
+        caption: "River: 7♠ — LOW. Q♥/10♥ holds the Flush win. Board finishes 3 Red, 2 Black.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/ef4d01f50_session_08_results.png',
+        phase: 'THE RESULTS',
+        caption: "2 out of 4 boards win — Card and Rank. Color 3 Black missed. No River bet placed.\nTotal Win: $0.12 | Total Bet: $0.28 | Net Result: -$0.16",
+      },
+    ],
+  },
 ];
 
 export default function PlayExamplesModal({ onClose }) {
