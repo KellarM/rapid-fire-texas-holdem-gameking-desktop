@@ -299,6 +299,17 @@ export default function PlayExamplesModal({ onClose }) {
     setSlideIdx(0);
   };
 
+  // Advance to the next slide. On the last slide of an example, jump to slide 1
+  // of the next example — wrapping from the 10th example back to the first.
+  const goNext = () => {
+    if (slideIdx < session.slides.length - 1) {
+      setSlideIdx(i => i + 1);
+    } else {
+      const nextSession = sessionIdx < SESSIONS.length - 1 ? sessionIdx + 1 : 0;
+      pickSession(nextSession);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
@@ -414,23 +425,13 @@ export default function PlayExamplesModal({ onClose }) {
           <span className="text-xs text-gray-400 font-semibold">
             Slide {slideIdx + 1} / {session.slides.length}
           </span>
-          {slideIdx < session.slides.length - 1 ? (
-            <button
-              onClick={() => setSlideIdx(i => Math.min(session.slides.length - 1, i + 1))}
-              className="rounded-lg text-sm font-bold transition-all px-4 py-1"
-              style={{ background: 'rgba(60,35,0,0.5)', border: '1px solid rgba(234,179,8,0.7)', color: '#fde047', cursor: 'pointer' }}
-            >
-              Next →
-            </button>
-          ) : (
-            <button
-              onClick={onClose}
-              className="rounded-lg text-sm font-black transition-all px-4 py-1"
-              style={{ background: 'rgba(234,179,8,0.2)', border: '1px solid rgba(234,179,8,0.8)', color: '#fde047', cursor: 'pointer' }}
-            >
-              Done ✓
-            </button>
-          )}
+          <button
+            onClick={goNext}
+            className="rounded-lg text-sm font-bold transition-all px-4 py-1"
+            style={{ background: 'rgba(60,35,0,0.5)', border: '1px solid rgba(234,179,8,0.7)', color: '#fde047', cursor: 'pointer' }}
+          >
+            Next →
+          </button>
         </div>
       </div>
     </div>
