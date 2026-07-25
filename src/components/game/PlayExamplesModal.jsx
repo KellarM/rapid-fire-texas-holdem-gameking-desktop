@@ -190,6 +190,33 @@ const SESSIONS = [
       },
     ],
   },
+  {
+    id: 'session_09',
+    label: 'Session 09 — Quiet Straight / Coverage Strategy',
+    result: 'Net: +$0.16',
+    slides: [
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/c744a44c0_session_09_flop.png',
+        phase: 'PRE-DEAL → FLOP',
+        caption: "Player places multiple Card Hand bets and hedges the Rank Board covering ALL 7 positions. Bets 3 Black on the Color Board at 1.87:1. Total wagered: $0.28.\nThe Dealer's Flop comes up 7♥, 6♣, 2♠. Board shows 1 Red, 2 Black. 7♦/7♠ takes the lead with Three of a Kind — pocket pair finds the board.\n\"Pocket Sevens hit the flop — beautiful. Just need one more Black for the Color!\"",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/6a6a94687_session_09_turn.png',
+        phase: 'THE TURN',
+        caption: "3♦ on the Turn. Board now 2 Red, 2 Black.\n7♦/7♠ holds the lead with Three of a Kind.\nColor Board still alive — needs 1 more Black on the River.\nWith 4 Low cards showing, HIGH is the favourite. Player skips the River bet.\n\"Let the Color ride — one more Black!\"",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/c39eb70db_session_09_river.png',
+        phase: 'THE RIVER',
+        caption: "River: 4♣ — LOW & BLACK.\nA♥/5♦ completes the Straight — A-2-3-4-5.\nBoard finishes 2 Red, 3 Black. Color Board 3 Black confirmed.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/2f2298822_session_09_results.png',
+        phase: 'THE RESULTS',
+        caption: "Color Board wins at 1.87:1 — $0.40 return.\nRank Board wins at 2.84:1 — $0.04 return.\nCard Board: No payout.\nRiver: No bet placed.\nTotal Win: $0.44 | Total Wagered: $0.28 | Net Result: +$0.16",
+      },
+    ],
+  },
 ];
 
 export default function PlayExamplesModal({ onClose }) {
