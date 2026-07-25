@@ -260,12 +260,12 @@ const SESSIONS = [
         caption: "3♥ on the Turn. Board now 4 Red, 0 Black.\nFull House still leads.\n4 Red confirmed — 5 Red still alive.\nRiver is even — no favourite. Player skips the River bet.\n\"One more Red for the sweep!\"",
       },
       {
-        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/26976986e_session_11_river.png',
+        image: 'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/bc95241e8_image.png',
         phase: 'THE RIVER',
         caption: "River: 7♥ — LOW & RED.\nA♣/5♣ wins with Full House — A-A-A-5-5.\nBoard finishes 5 Red, 0 Black.",
       },
       {
-        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/5092f8d0f_session_11_results.png',
+        image: 'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/dd37ac4dd_image.png',
         phase: 'THE RESULTS',
         caption: "Color & Rank win — 5 Red at 43:1 ($2.20) and Full House at 2.46:1 ($0.52).\nCard Board: Lost. No River bet placed.\nTotal Win: $2.72 | Total Wagered: $1.20 | Net Result: +$1.52",
       },
