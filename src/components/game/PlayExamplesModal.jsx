@@ -136,6 +136,33 @@ const SESSIONS = [
       },
     ],
   },
+  {
+    id: 'session_07',
+    label: 'Session 07 — Kings Overtaken / 3 Boards Win',
+    result: 'Net: +$0.15',
+    slides: [
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/869a52324_session_07_flop.png',
+        phase: 'PRE-DEAL → FLOP',
+        caption: 'Player places 7 separate Card Hand bets. Player then hedges the Rank board & Covers ALL Rank positions. Then Bets ALL Red — 3R, 4R, and 5R. The Dealers Flop comes up 5♥, Q♦, 8♣. Board shows 2 Red, 1 Black. K♣/K♠ takes the early lead with One Pair.',
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/5de13b3c2_session_07_turn.png',
+        phase: 'THE TURN',
+        caption: "Turn: 9♦. Board is now 3 Red, 1 Black. K♣/K♠ still leads with One Pair. Board shows 1 Low, 3 High. LOW is the favourite at 0.79:1. Player declines the River bet.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/938d5073e_session_07_river.png',
+        phase: 'THE RIVER',
+        caption: "River: 9♠ — HIGH. J♣/9♣ overtakes K♣/K♠ with Three of a Kind — 9-9-9. Board finishes 3 Red, 2 Black.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/bbeb42573_session_07_results.png',
+        phase: 'THE RESULTS',
+        caption: "3 out of 4 boards win — Card, Color, and Rank. No River bet placed.\nTotal Win: $0.43 | Total Bet: $0.28 | Net Result: +$0.15",
+      },
+    ],
+  },
 ];
 
 export default function PlayExamplesModal({ onClose }) {
