@@ -137,3 +137,121 @@ const SESSIONS = [
     ],
   },
 ];
+
+export default function PlayExamplesModal({ onClose }) {
+  const [sessionIdx, setSessionIdx] = useState(0);
+  const [slideIdx, setSlideIdx] = useState(0);
+  const session = SESSIONS[sessionIdx];
+  const slide = session.slides[slideIdx];
+
+  const pickSession = (idx) => {
+    setSessionIdx(idx);
+    setSlideIdx(0);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="relative w-full max-w-4xl max-h-[92vh] rounded-2xl flex flex-col overflow-hidden z-10"
+        style={{
+          background: 'linear-gradient(160deg, #1a0f00 0%, #0f0800 100%)',
+          border: '2px solid rgba(202,138,4,0.5)',
+          boxShadow: '0 8px 40px rgba(0,0,0,0.85)',
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-yellow-700/30 bg-gradient-to-r from-yellow-900/30 to-orange-900/20 flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <span style={{ fontSize: 20 }}>🎬</span>
+            <h2 style={{ fontSize: 18, fontWeight: 900, color: '#facc15', letterSpacing: '0.1em', fontFamily: 'Oswald, sans-serif' }}>
+              PLAY EXAMPLES
+            </h2>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-slate-700 text-gray-400 hover:text-white transition-colors">
+            ✕
+          </button>
+        </div>
+
+        {/* Session tabs */}
+        <div className="flex gap-1.5 px-4 pt-3 pb-2 overflow-x-auto flex-shrink-0 border-b border-yellow-700/20">
+          {SESSIONS.map((s, idx) => (
+            <button
+              key={s.id}
+              onClick={() => pickSession(idx)}
+              className="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all"
+              style={{
+                background: idx === sessionIdx ? 'rgba(234,179,8,0.18)' : 'rgba(0,0,0,0.3)',
+                border: idx === sessionIdx ? '1px solid rgba(234,179,8,0.8)' : '1px solid rgba(202,138,4,0.3)',
+                color: idx === sessionIdx ? '#fde047' : '#94a3b8',
+              }}
+            >
+              {s.label.split('—')[0].trim()}
+            </button>
+          ))}
+        </div>
+
+        {/* Session title + result */}
+        <div className="px-6 py-3 flex items-center justify-between flex-shrink-0">
+          <span className="text-sm font-bold text-white">{session.label.split('—').slice(1).join('—').trim()}</span>
+          <span className={`text-sm font-black ${session.result.startsWith('Net: +') ? 'text-green-400' : 'text-red-400'}`}>{session.result}</span>
+        </div>
+
+        {/* Slide content */}
+        <div className="flex-1 overflow-y-auto px-6 pb-4 flex flex-col items-center gap-3 min-h-0">
+          <div className="relative w-full flex justify-center">
+            <img
+              src={slide.image}
+              alt={slide.phase}
+              className="rounded-xl max-h-[50vh] w-auto object-contain"
+              style={{ border: '2px solid rgba(202,138,4,0.4)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}
+            />
+          </div>
+          <div className="w-full text-center">
+            <span className="inline-block px-3 py-1 rounded-md text-xs font-bold tracking-widest uppercase mb-2" style={{ background: 'rgba(234,179,8,0.15)', color: '#facc15', border: '1px solid rgba(234,179,8,0.4)' }}>
+              {slide.phase}
+            </span>
+            <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">{slide.caption}</p>
+          </div>
+        </div>
+
+        {/* Footer: slide nav */}
+        <div className="flex items-center justify-between px-6 py-3 border-t border-yellow-700/30 bg-black/30 flex-shrink-0">
+          <button
+            onClick={() => setSlideIdx(i => Math.max(0, i - 1))}
+            disabled={slideIdx === 0}
+            className="px-4 py-2 rounded-lg text-sm font-bold transition-all"
+            style={{
+              background: slideIdx === 0 ? 'rgba(0,0,0,0.3)' : 'rgba(60,35,0,0.5)',
+              border: '1px solid rgba(202,138,4,0.4)',
+              color: slideIdx === 0 ? '#475569' : '#e2d9a0',
+              cursor: slideIdx === 0 ? 'default' : 'pointer',
+            }}
+          >
+            ← Prev
+          </button>
+          <span className="text-xs text-gray-400 font-semibold">
+            Slide {slideIdx + 1} / {session.slides.length}
+          </span>
+          {slideIdx < session.slides.length - 1 ? (
+            <button
+              onClick={() => setSlideIdx(i => Math.min(session.slides.length - 1, i + 1))}
+              className="px-4 py-2 rounded-lg text-sm font-bold transition-all"
+              style={{ background: 'rgba(60,35,0,0.5)', border: '1px solid rgba(234,179,8,0.7)', color: '#fde047', cursor: 'pointer' }}
+            >
+              Next →
+            </button>
+          ) : (
+            <button
+              onClick={onClose}
+              className="px-4 py-2 rounded-lg text-sm font-black transition-all"
+              style={{ background: 'rgba(234,179,8,0.2)', border: '1px solid rgba(234,179,8,0.8)', color: '#fde047', cursor: 'pointer' }}
+            >
+              Done ✓
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
