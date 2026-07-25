@@ -206,7 +206,6 @@ export default function MobileGameLayout({
   // Tools
   onOpenStats,
   onOpenMollySimulator,
-  onOpenArchetypeBattle,
   onOpenExploitHunter,
   onOpenComplianceReport,
   onOpenKsStrategyTest,
@@ -958,7 +957,6 @@ export default function MobileGameLayout({
           <ToolsMenu
             onOpenStats={onOpenStats}
             onOpenMollySimulator={onOpenMollySimulator}
-            onOpenArchetypeBattle={onOpenArchetypeBattle}
             onOpenExploitHunter={onOpenExploitHunter}
             onOpenComplianceReport={onOpenComplianceReport}
             onOpenKsStrategyTest={onOpenKsStrategyTest}
