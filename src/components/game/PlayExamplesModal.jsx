@@ -311,10 +311,10 @@ export default function PlayExamplesModal({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-1.5">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
       <div
-        className="relative w-full max-w-4xl max-h-[92vh] rounded-2xl flex flex-col overflow-hidden z-10"
+        className="relative w-full max-w-4xl h-[calc(100vh-12px)] rounded-2xl flex flex-col overflow-hidden z-10"
         style={{
           background: 'linear-gradient(160deg, #1a0f00 0%, #0f0800 100%)',
           border: '2px solid rgba(202,138,4,0.5)',
