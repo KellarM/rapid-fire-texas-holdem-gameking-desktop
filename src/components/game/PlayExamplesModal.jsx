@@ -198,7 +198,7 @@ const SESSIONS = [
       {
         image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/c744a44c0_session_09_flop.png',
         phase: 'PRE-DEAL → FLOP',
-        caption: "Player places multiple Card Hand bets and hedges the Rank Board covering ALL 7 positions. Bets 3 Black on the Color Board at 1.87:1. Total wagered: $0.28.\nThe Dealer's Flop comes up 7♥, 6♣, 2♠. Board shows 1 Red, 2 Black. 7♦/7♠ takes the lead with Three of a Kind — pocket pair finds the board.\n\"Pocket Sevens hit the flop — beautiful. Just need one more Black for the Color!\"",
+        caption: "Player places multiple Card Hand bets and hedges the Rank Board covering ALL 7 positions. Bets 3 Black on the Color Board at 1.87:1. The DealerThe Dealer's Flop comes up 7♥, 6♣, 2♠. Board shows 1 Red, 2 Black. 7♦/7♠ takes the lead with Three of a Kind — pocket pair finds the board.\n\"Pocket Sevens hit the flop — beautiful. Just need one more Black for the Color!\"",
       },
       {
         image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/6a6a94687_session_09_turn.png',
@@ -214,6 +214,33 @@ const SESSIONS = [
         image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/2f2298822_session_09_results.png',
         phase: 'THE RESULTS',
         caption: "Color Board wins at 1.87:1 — $0.40 return.\nRank Board wins at 2.84:1 — $0.04 return.\nCard Board: No payout.\nRiver: No bet placed.\nTotal Win: $0.44 | Total Wagered: $0.28 | Net Result: +$0.16",
+      },
+    ],
+  },
+  {
+    id: 'session_10',
+    label: 'Session 10 — K♣/K♠ Full House / Only Rank Survives',
+    result: 'Net: -$0.57',
+    slides: [
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/446009b6c_session_10_flop.png',
+        phase: 'PRE-DEAL → FLOP',
+        caption: "Player bets 7♦/7♠ at 20¢ — one card hand. Targets 3 of a Kind and Full House on the Rank Board. Bets 3 Red on the Color Board. Total wagered: $0.80.\nThe Dealer's Flop comes up 2♠, J♥, 2♣. Board shows 1 Red, 2 Black. 4♥/2♥ takes the lead with Three of a Kind — 2-2-2.\n\"Not my hand, but the Rank bets are alive.\"",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/5bce544c9_session_10_turn.png',
+        phase: 'THE TURN',
+        caption: "9♠ on the Turn. Board now 1 Red, 3 Black.\n4♥/2♥ holds the lead with Three of a Kind.\nColor Board 3 Red is dead — only 1 Red showing.\nRiver is even — no favourite. Player skips the River bet.\n\"Come on 7 — Full House plus the Rank bet.\"",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/4061bfe32_session_10_river.png',
+        phase: 'THE RIVER',
+        caption: "River: K♦ — HIGH & RED.\nK♣/K♠ completes a Full House — K-K-K-2-2.\nBoard finishes 2 Red, 3 Black.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/cd612f8a1_session_10_results.png',
+        phase: 'THE RESULTS',
+        caption: "Only Rank survives — Full House wins at 1.34:1. $0.23 return.\nCard & Color Board: Lost with no bet on the river placed.\nTotal Win: $0.23 | Total Wagered: $0.80 | Net Result: -$0.57",
       },
     ],
   },
