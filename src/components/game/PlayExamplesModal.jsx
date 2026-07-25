@@ -341,13 +341,16 @@ export default function PlayExamplesModal({ onClose }) {
           ))}
         </div>
 
-        {/* Session title + result — phase pill aligned into this row */}
-        <div className="px-6 py-1.5 flex items-center justify-between flex-shrink-0 gap-3">
-          <span className="text-sm font-bold text-white whitespace-nowrap">{session.label.split('—').slice(1).join('—').trim()}</span>
-          <span className="inline-block px-3 py-0.5 rounded-md text-xs font-bold tracking-widest uppercase" style={{ background: 'rgba(234,179,8,0.15)', color: '#facc15', border: '1px solid rgba(234,179,8,0.4)' }}>
+        {/* Session title + result — phase pill pinned to the exact geometric center */}
+        <div className="relative px-6 py-1.5 flex items-center justify-between flex-shrink-0 gap-3">
+          <span className="text-sm font-bold text-white whitespace-nowrap z-10">{session.label.split('—').slice(1).join('—').trim()}</span>
+          <span
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 inline-block px-3 py-0.5 rounded-md text-xs font-bold tracking-widest uppercase z-0"
+            style={{ background: 'rgba(234,179,8,0.15)', color: '#facc15', border: '1px solid rgba(234,179,8,0.4)' }}
+          >
             {slide.phase}
           </span>
-          <span className={`text-sm font-black whitespace-nowrap ${session.result.startsWith('Net: +') ? 'text-green-400' : 'text-red-400'}`}>{session.result}</span>
+          <span className={`text-sm font-black whitespace-nowrap z-10 ${session.result.startsWith('Net: +') ? 'text-green-400' : 'text-red-400'}`}>{session.result}</span>
         </div>
 
         {/* Slide content */}
