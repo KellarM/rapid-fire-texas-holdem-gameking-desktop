@@ -370,13 +370,13 @@ export default function PlayExamplesModal({ onClose }) {
           onScroll={checkScroll}
           className="flex-1 overflow-y-auto px-6 pb-4 flex flex-col items-center gap-3 min-h-0"
         >
-          <div className="relative w-full flex justify-center">
+          <div className="relative w-full flex justify-center shrink-0">
             <img
               src={slide.image}
               alt={slide.phase}
               onLoad={checkScroll}
-              className="rounded-xl max-h-[50vh] w-auto object-contain"
-              style={{ border: '2px solid rgba(202,138,4,0.4)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}
+              className="rounded-xl max-h-[50vh] w-auto object-contain shrink-0"
+              style={{ flexShrink: 0, border: '2px solid rgba(202,138,4,0.4)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}
             />
           </div>
           <div className="w-full text-center">
