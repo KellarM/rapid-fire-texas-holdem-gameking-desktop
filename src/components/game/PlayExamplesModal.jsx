@@ -279,7 +279,6 @@ export default function PlayExamplesModal({ onClose }) {
   const [canScrollDown, setCanScrollDown] = useState(false);
   const session = SESSIONS[sessionIdx];
   const slide = session.slides[slideIdx];
-  const isExam01 = sessionIdx === 0;
   const scrollRef = useRef(null);
 
   // Re-check scroll bounds whenever slide/image/session changes
@@ -312,7 +311,7 @@ export default function PlayExamplesModal({ onClose }) {
         }}
       >
         {/* Header */}
-        <div className={`flex items-center justify-between px-6 ${isExam01 ? 'py-2' : 'py-4'} border-b border-yellow-700/30 bg-gradient-to-r from-yellow-900/30 to-orange-900/20 flex-shrink-0`}>
+        <div className="flex items-center justify-between px-6 py-2 border-b border-yellow-700/30 bg-gradient-to-r from-yellow-900/30 to-orange-900/20 flex-shrink-0">
           <div className="flex items-center gap-2">
             <span style={{ fontSize: 20 }}>🎬</span>
             <h2 style={{ fontSize: 18, fontWeight: 900, color: '#facc15', letterSpacing: '0.1em', fontFamily: 'Oswald, sans-serif' }}>
@@ -342,21 +341,14 @@ export default function PlayExamplesModal({ onClose }) {
           ))}
         </div>
 
-        {/* Session title + result — Exam 01 aligns the phase pill into this row */}
-        {isExam01 ? (
-          <div className="px-6 py-1.5 flex items-center justify-between flex-shrink-0 gap-3">
-            <span className="text-sm font-bold text-white whitespace-nowrap">{session.label.split('—').slice(1).join('—').trim()}</span>
-            <span className="inline-block px-3 py-0.5 rounded-md text-xs font-bold tracking-widest uppercase" style={{ background: 'rgba(234,179,8,0.15)', color: '#facc15', border: '1px solid rgba(234,179,8,0.4)' }}>
-              {slide.phase}
-            </span>
-            <span className={`text-sm font-black whitespace-nowrap ${session.result.startsWith('Net: +') ? 'text-green-400' : 'text-red-400'}`}>{session.result}</span>
-          </div>
-        ) : (
-          <div className="px-6 py-3 flex items-center justify-between flex-shrink-0">
-            <span className="text-sm font-bold text-white">{session.label.split('—').slice(1).join('—').trim()}</span>
-            <span className={`text-sm font-black ${session.result.startsWith('Net: +') ? 'text-green-400' : 'text-red-400'}`}>{session.result}</span>
-          </div>
-        )}
+        {/* Session title + result — phase pill aligned into this row */}
+        <div className="px-6 py-1.5 flex items-center justify-between flex-shrink-0 gap-3">
+          <span className="text-sm font-bold text-white whitespace-nowrap">{session.label.split('—').slice(1).join('—').trim()}</span>
+          <span className="inline-block px-3 py-0.5 rounded-md text-xs font-bold tracking-widest uppercase" style={{ background: 'rgba(234,179,8,0.15)', color: '#facc15', border: '1px solid rgba(234,179,8,0.4)' }}>
+            {slide.phase}
+          </span>
+          <span className={`text-sm font-black whitespace-nowrap ${session.result.startsWith('Net: +') ? 'text-green-400' : 'text-red-400'}`}>{session.result}</span>
+        </div>
 
         {/* Slide content */}
         <div
@@ -373,18 +365,9 @@ export default function PlayExamplesModal({ onClose }) {
               style={{ border: '2px solid rgba(202,138,4,0.4)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}
             />
           </div>
-          {isExam01 ? (
-            <div className="w-full text-center">
-              <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">{slide.caption}</p>
-            </div>
-          ) : (
-            <div className="w-full text-center">
-              <span className="inline-block px-3 py-1 rounded-md text-xs font-bold tracking-widest uppercase mb-2" style={{ background: 'rgba(234,179,8,0.15)', color: '#facc15', border: '1px solid rgba(234,179,8,0.4)' }}>
-                {slide.phase}
-              </span>
-              <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">{slide.caption}</p>
-            </div>
-          )}
+          <div className="w-full text-center">
+            <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">{slide.caption}</p>
+          </div>
         </div>
 
         {/* Floating scroll-down indicator — appears when content extends below view */}
@@ -411,11 +394,11 @@ export default function PlayExamplesModal({ onClose }) {
         )}
 
         {/* Footer: slide nav */}
-        <div className={`flex items-center justify-between px-6 ${isExam01 ? 'py-[9px]' : 'py-3'} border-t border-yellow-700/30 bg-black/30 flex-shrink-0`}>
+        <div className="flex items-center justify-between px-6 py-[9px] border-t border-yellow-700/30 bg-black/30 flex-shrink-0">
           <button
             onClick={() => setSlideIdx(i => Math.max(0, i - 1))}
             disabled={slideIdx === 0}
-            className={`rounded-lg text-sm font-bold transition-all ${isExam01 ? 'px-4 py-1' : 'px-4 py-2'}`}
+            className="rounded-lg text-sm font-bold transition-all px-4 py-1"
             style={{
               background: slideIdx === 0 ? 'rgba(0,0,0,0.3)' : 'rgba(60,35,0,0.5)',
               border: '1px solid rgba(202,138,4,0.4)',
@@ -431,7 +414,7 @@ export default function PlayExamplesModal({ onClose }) {
           {slideIdx < session.slides.length - 1 ? (
             <button
               onClick={() => setSlideIdx(i => Math.min(session.slides.length - 1, i + 1))}
-              className={`rounded-lg text-sm font-bold transition-all ${isExam01 ? 'px-4 py-1' : 'px-4 py-2'}`}
+              className="rounded-lg text-sm font-bold transition-all px-4 py-1"
               style={{ background: 'rgba(60,35,0,0.5)', border: '1px solid rgba(234,179,8,0.7)', color: '#fde047', cursor: 'pointer' }}
             >
               Next →
@@ -439,7 +422,7 @@ export default function PlayExamplesModal({ onClose }) {
           ) : (
             <button
               onClick={onClose}
-              className={`rounded-lg text-sm font-black transition-all ${isExam01 ? 'px-4 py-1' : 'px-4 py-2'}`}
+              className="rounded-lg text-sm font-black transition-all px-4 py-1"
               style={{ background: 'rgba(234,179,8,0.2)', border: '1px solid rgba(234,179,8,0.8)', color: '#fde047', cursor: 'pointer' }}
             >
               Done ✓
