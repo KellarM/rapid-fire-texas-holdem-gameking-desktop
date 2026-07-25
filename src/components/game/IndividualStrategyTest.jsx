@@ -1,149 +1,18 @@
 // ============================================================
 // EXPLOIT HUNTER
 // Scans all 70 bet positions for RTP ceiling violations.
-// Plain-English explanation of every finding.
-// Full CSV export of every position's stats.
+// Plain-English explanation of every finding. Full CSV export.
+//
+// The heavy scan runs in a Web Worker (src/workers/exploitHunterWorker.js)
+// so the UI stays responsive during 10k–250k round scans.
 // ============================================================
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, AlertTriangle, CheckCircle2, RefreshCw, ShieldAlert, Download, Info, ChevronDown, ChevronRight } from 'lucide-react';
+import { Search, CheckCircle2, RefreshCw, ShieldAlert, Download, Info, ChevronDown, ChevronRight } from 'lucide-react';
 import { CARDED_HAND_PAYOUTS, COLOR_BOARD_PAYOUTS, LOW_HIGH_PAYOUT } from '@/lib/payoutConstants';
 import { PER_HAND_RANK_PAYOUTS } from '@/lib/perHandRankPayouts';
 
-// ── Same deck/eval engine ─────────────────────────────────────
-const RL=['2','3','4','5','6','7','8','9','10','J','Q','K','A'],SL=['clubs','diamonds','hearts','spades'];
-function enc(r,s){return RL.indexOf(r)*4+SL.indexOf(s);}
-const HE=[[enc('A','diamonds'),enc('10','hearts')],[enc('K','clubs'),enc('K','spades')],[enc('Q','clubs'),enc('J','spades')],[enc('Q','spades'),enc('10','spades')],[enc('J','clubs'),enc('9','clubs')],[enc('8','diamonds'),enc('6','diamonds')],[enc('7','diamonds'),enc('7','spades')],[enc('4','hearts'),enc('2','hearts')],[enc('3','clubs'),enc('3','hearts')],[enc('A','hearts'),enc('5','diamonds')]];
-const PS=new Set(HE.flat()),D32=[];
-for(let r=0;r<13;r++)for(let s=0;s<4;s++){const c=r*4+s;if(!PS.has(c))D32.push(c);}
-const B=14,B2=B*B,B3=B*B*B,B4=B*B*B*B,B5=B*B*B*B*B;
-function e5(c0,c1,c2,c3,c4){const r=[c0>>2,c1>>2,c2>>2,c3>>2,c4>>2].sort((a,b)=>b-a);const[a,b,c,d,e]=r;const fl=(c0&3)===(c1&3)&&(c1&3)===(c2&3)&&(c2&3)===(c3&3)&&(c3&3)===(c4&3);const cnt=new Int8Array(13);r.forEach(v=>cnt[v]++);const wh=a===12&&b===3&&c===2&&d===1&&e===0,st=wh||(new Set(r).size===5&&a-e===4),sh=wh?3:a;if(fl&&st)return a===12&&b===11?9*B5:8*B5+sh;const g=[];for(let v=12;v>=0;v--)if(cnt[v])g.push([v,cnt[v]]);g.sort((x,y)=>y[1]-x[1]||y[0]-x[0]);const mx=g[0][1],sc=g.length>1?g[1][1]:0;if(mx===4)return 7*B5+g[0][0]*B4+g[1][0];if(mx===3&&sc===2)return 6*B5+g[0][0]*B4+g[1][0];if(fl)return 5*B5+a*B4+b*B3+c*B2+d*B+e;if(st)return 4*B5+sh;if(mx===3)return 3*B5+g[0][0]*B4+g[1][0]*B3+g[2][0]*B2;if(mx===2&&sc===2)return 2*B5+g[0][0]*B4+g[1][0]*B3+g[2][0]*B2;if(mx===2)return 1*B5+g[0][0]*B4+g[1][0]*B3+g[2][0]*B2+g[3][0]*B;return a*B4+b*B3+c*B2+d*B+e;}
-function b7(h0,h1,b0,b1,b2,b3,b4){const all=[h0,h1,b0,b1,b2,b3,b4];let best=-1;for(let i=0;i<3;i++)for(let j=i+1;j<4;j++)for(let k=j+1;k<5;k++)for(let l=k+1;l<6;l++)for(let m=l+1;m<7;m++){const s=e5(all[i],all[j],all[k],all[l],all[m]);if(s>best)best=s;}return best;}
-function rc(s){return Math.floor(s/B5)-1;}
-const RCM={'High Card':-1,'One Pair':0,'Two Pair':1,'Three of a Kind':2,'Straight':3,'Flush':4,'Full House':5,'Four of a Kind':6,'Straight Flush':7,'Royal Flush':8};
-function _sri(max){if(max===0)return 0;let mask=1;while(mask<=max)mask=(mask<<1)|1;const a=new Uint32Array(1);let v;do{if(typeof crypto!=='undefined'&&crypto.getRandomValues){crypto.getRandomValues(a);v=a[0]&mask;}else{return(Math.random()*(max+1))|0;}}while(v>max);return v;}
-function deal(){const d=[...D32];for(let i=31;i>0;i--){const j=_sri(i);[d[i],d[j]]=[d[j],d[i]];}return[d[1],d[2],d[3],d[5],d[7]];}
-function evalWinners(b0,b1,b2,b3,b4){const str=HE.map(h=>b7(h[0],h[1],b0,b1,b2,b3,b4));const best=Math.max(...str);const winners=str.map(s=>s===best?1:0);return{str,winners,count:winners.reduce((a,b)=>a+b,0)};}
-
-// ── Build all 70 positions ────────────────────────────────────
-const HAND_NAMES=['A♦10♥','K♣K♠','Q♣J♠','Q♠10♠','J♣9♣','8♦6♦','7♦7♠','4♥2♥','3♣3♥','A♥5♦'];
-
-function buildPositions() {
-  const positions = [];
-  for (let i=1;i<=10;i++) {
-    positions.push({
-      type:'hand', key:String(i),
-      group:'Carded Hands',
-      label:`Hand ${i} (${HAND_NAMES[i-1]})`,
-      shortLabel:`H${i}`,
-      payout: CARDED_HAND_PAYOUTS[i-1],
-      handIdx:i-1,
-    });
-  }
-  for (let hId=1;hId<=10;hId++) {
-    for (const [rName,payout] of Object.entries(PER_HAND_RANK_PAYOUTS[hId]||{})) {
-      const rCat=RCM[rName]??-99;
-      positions.push({
-        type:'perHandRank', key:`${hId}:${rName}`,
-        group:'Hand Ranks',
-        label:`Hand ${hId} (${HAND_NAMES[hId-1]}) — ${rName}`,
-        shortLabel:`H${hId}:${rName}`,
-        payout, handIdx:hId-1, rCat,
-      });
-    }
-  }
-  for (const [key,payout] of Object.entries(COLOR_BOARD_PAYOUTS)) {
-    const isRed=key[1]==='R', n=parseInt(key[0]);
-    positions.push({
-      type:'color', key, group:'Color Board',
-      label:`${n} or more ${isRed?'Red':'Black'} board cards`,
-      shortLabel:key,
-      payout, thr:n, isRed,
-    });
-  }
-  positions.push(
-    { type:'lh', key:'LOW',  group:'Low / High', label:'River card LOW (2–7)',  shortLabel:'LOW',  payout:LOW_HIGH_PAYOUT },
-    { type:'lh', key:'HIGH', group:'Low / High', label:'River card HIGH (8–A)', shortLabel:'HIGH', payout:LOW_HIGH_PAYOUT },
-  );
-  return positions;
-}
-
-const ALL_POSITIONS = buildPositions();
-
-// ── Run the scan ──────────────────────────────────────────────
-function runScan(rounds, rtpCeiling) {
-  const wins       = new Float64Array(ALL_POSITIONS.length);
-  const handWins   = new Float64Array(ALL_POSITIONS.length);
-
-  for (let round=0; round<rounds; round++) {
-    const [b0,b1,b2,b3,b4] = deal();
-    const {str,winners,count} = evalWinners(b0,b1,b2,b3,b4);
-    const isBW = count===10;
-    let reds=0;
-    [b0,b1,b2,b3,b4].forEach(c=>{if((c&3)===1||(c&3)===2)reds++;});
-    const isLow=(b4>>2)<=5;
-
-    for (let pi=0; pi<ALL_POSITIONS.length; pi++) {
-      const pos = ALL_POSITIONS[pi];
-      if (pos.type==='hand') {
-        if (!isBW && winners[pos.handIdx]===1) wins[pi]++;
-      } else if (pos.type==='perHandRank') {
-        if (!isBW && winners[pos.handIdx]===1) {
-          handWins[pi]++;
-          if (rc(str[pos.handIdx])===pos.rCat) wins[pi]++;
-        }
-      } else if (pos.type==='color') {
-        if ((pos.isRed?reds:5-reds)>=pos.thr) wins[pi]++;
-      } else if (pos.type==='lh') {
-        if (pos.key==='LOW'?isLow:!isLow) wins[pi]++;
-      }
-    }
-  }
-
-  return ALL_POSITIONS.map((pos, pi) => {
-    const isAdaptive = pos.type==='perHandRank';
-    const denom = isAdaptive ? (handWins[pi]||1) : rounds;
-    const winFreq = wins[pi] / denom;
-    const rtp = isAdaptive
-      ? winFreq * (pos.payout + 1) * 100
-      : (wins[pi] * (pos.payout + 1) * 100) / rounds;
-
-    const fairOdds  = winFreq > 0 ? ((1/winFreq)-1).toFixed(2) : '—';
-    const for965    = winFreq > 0 ? ((0.965/winFreq)-1).toFixed(2) : '—';
-    const for95     = winFreq > 0 ? ((0.95/winFreq)-1).toFixed(2) : '—';
-    const overUnder = rtp - rtpCeiling;
-    const flagged   = rtp > rtpCeiling;
-    const severity  = overUnder > 2 ? 'HIGH' : overUnder > 0.5 ? 'MEDIUM' : overUnder > 0 ? 'LOW' : 'OK';
-
-    // Plain-English explanation
-    let explanation = '';
-    if (flagged) {
-      explanation = `This bet pays ${pos.payout}:1 but the actual win rate is ${(winFreq*100).toFixed(3)}%, giving an RTP of ${rtp.toFixed(2)}% — which is ${overUnder.toFixed(2)}% above your ${rtpCeiling}% ceiling. `;
-      explanation += `To bring this within range, the payout should be reduced to approximately ${for965}:1 (for 96.5% RTP). `;
-      if (severity==='HIGH') explanation += `⚠ HIGH severity: this is significantly overpaying and would likely be flagged in any regulatory audit.`;
-      else if (severity==='MEDIUM') explanation += `This is a moderate overpay. Likely to cause issues under strict standards (GLI/BMM).`;
-      else explanation += `Minor overpay. May pass under lenient standards but worth correcting.`;
-    } else {
-      explanation = `Clean. Win rate of ${(winFreq*100).toFixed(3)}% with ${pos.payout}:1 payout gives ${rtp.toFixed(2)}% RTP — within your ${rtpCeiling}% ceiling.`;
-    }
-
-    return {
-      ...pos,
-      wins: wins[pi],
-      handWins: handWins[pi],
-      rounds: isAdaptive ? handWins[pi] : rounds,
-      winFreqRaw: winFreq,
-      winFreq: (winFreq*100).toFixed(4),
-      rtp: rtp.toFixed(4),
-      rtpNum: rtp,
-      overUnder: overUnder.toFixed(2),
-      fairOdds, for965, for95,
-      flagged, severity, explanation,
-    };
-  });
-}
-
-// ── CSV export ────────────────────────────────────────────────
+// ── CSV export (UI-side, runs against the results objects returned by the worker) ──
 function exportCSV(results, rtpCeiling, rounds) {
   const rows = [
     `Exploit Hunter Scan — Rounds: ${rounds.toLocaleString()} | RTP Ceiling: ${rtpCeiling}% | Date: ${new Date().toLocaleString()}`,
@@ -160,9 +29,9 @@ function exportCSV(results, rtpCeiling, rounds) {
       `"${r.explanation}"`,
     ].join(','));
   }
-  const blob = new Blob([rows.join('\n')], { type:'text/csv' });
+  const blob = new Blob([rows.join('\n')], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url;
+  const a = document.createElement('a'); a.href = url;
   a.download = `RapidFire_ExploitScan_${Date.now()}.csv`;
   a.click(); URL.revokeObjectURL(url);
 }
@@ -176,23 +45,52 @@ const SEV_STYLES = {
 };
 
 export default function ExploitHunter({ onClose }) {
-  const [rounds, setRounds]       = useState(50000);
-  const [rtpCeiling, setRtpCeiling] = useState(98.5);
-  const [results, setResults]     = useState(null);
-  const [running, setRunning]     = useState(false);
+  const [rounds, setRounds]           = useState(50000);
+  const [rtpCeiling, setRtpCeiling]   = useState(98.5);
+  const [results, setResults]         = useState(null);
+  const [running, setRunning]         = useState(false);
+  const [progressPct, setProgressPct] = useState(0);
   const [expandedPos, setExpandedPos] = useState(null);
-  const [showAll, setShowAll]     = useState(false);
+  const [showAll, setShowAll]         = useState(false);
+  const [error, setError]             = useState(null);
+  const workerRef = useRef(null);
+  const callIdRef = useRef(0);
+
+  // Spin up the worker once for the component's lifetime
+  useEffect(() => {
+    const w = new Worker(new URL('../../workers/exploitHunterWorker.js', import.meta.url), { type: 'module' });
+    workerRef.current = w;
+    w.onmessage = (e) => {
+      const { type, pct, results: r, error: err } = e.data;
+      if (type === 'PROGRESS') setProgressPct(pct ?? 0);
+      else if (type === 'RESULT') { setResults(r); setRunning(false); setProgressPct(100); }
+      else if (type === 'ERROR') { setError(err || 'Scan failed'); setRunning(false); }
+    };
+    return () => { w.terminate(); workerRef.current = null; };
+  }, []);
 
   function run() {
-    setRunning(true); setResults(null); setExpandedPos(null);
-    setTimeout(() => { setResults(runScan(rounds, rtpCeiling)); setRunning(false); }, 50);
+    setError(null);
+    setRunning(true);
+    setResults(null);
+    setExpandedPos(null);
+    setProgressPct(0);
+    callIdRef.current += 1;
+    const callId = callIdRef.current;
+    workerRef.current?.postMessage({
+      type: 'SCAN', callId, rounds, rtpCeiling,
+      cardedPayouts: CARDED_HAND_PAYOUTS,
+      colorPayouts: COLOR_BOARD_PAYOUTS,
+      lowHighPayout: LOW_HIGH_PAYOUT,
+      perHandRankPayouts: PER_HAND_RANK_PAYOUTS,
+    });
   }
 
-  const flagged = results?.filter(r=>r.flagged).sort((a,b)=>b.rtpNum-a.rtpNum) ?? [];
-  const clean   = results?.filter(r=>!r.flagged) ?? [];
+  const flagged = results?.filter(r => r.flagged).sort((a,b) => b.rtpNum - a.rtpNum) ?? [];
+  const clean   = results?.filter(r => !r.flagged) ?? [];
 
   const groupedAll = results
-    ? GROUP_ORDER.map(g => ({ group:g, items: results.filter(r=>r.group===g).sort((a,b)=>b.rtpNum-a.rtpNum) }))
+    ? GROUP_ORDER.map(g => ({ group: g, items: results.filter(r => r.group === g).sort((a,b) => b.rtpNum - a.rtpNum) }))
     : [];
 
   return (
@@ -218,7 +116,7 @@ export default function ExploitHunter({ onClose }) {
             <div className="flex flex-wrap gap-4 items-end mb-5">
               <div>
                 <label className="text-xs text-slate-400 block mb-1">Rounds per position</label>
-                <select value={rounds} onChange={e=>setRounds(Number(e.target.value))}
+                <select value={rounds} onChange={e => setRounds(Number(e.target.value))}
                   className="bg-slate-800 border border-slate-600 text-white text-sm rounded-lg px-3 py-2">
                   <option value={10000}>10,000 (fast, rough)</option>
                   <option value={50000}>50,000 (balanced)</option>
@@ -228,7 +126,7 @@ export default function ExploitHunter({ onClose }) {
               </div>
               <div>
                 <label className="text-xs text-slate-400 block mb-1">RTP Ceiling</label>
-                <select value={rtpCeiling} onChange={e=>setRtpCeiling(Number(e.target.value))}
+                <select value={rtpCeiling} onChange={e => setRtpCeiling(Number(e.target.value))}
                   className="bg-slate-800 border border-slate-600 text-white text-sm rounded-lg px-3 py-2">
                   <option value={98}>98.0% (GLI strict)</option>
                   <option value={98.5}>98.5% (house standard)</option>
@@ -237,15 +135,32 @@ export default function ExploitHunter({ onClose }) {
               </div>
               <button onClick={run} disabled={running}
                 className="flex items-center gap-2 px-5 py-2 rounded-lg bg-red-900/40 border border-red-700 text-white font-bold text-sm hover:bg-red-900/60 transition-colors disabled:opacity-50">
-                {running?<><RefreshCw className="w-4 h-4 animate-spin"/>Scanning...</>:<><Search className="w-4 h-4"/>Run Scan</>}
+                {running ? <><RefreshCw className="w-4 h-4 animate-spin"/>Scanning...</> : <><Search className="w-4 h-4"/>Run Scan</>}
               </button>
               {results && (
-                <button onClick={()=>exportCSV(results,rtpCeiling,rounds)}
+                <button onClick={() => exportCSV(results, rtpCeiling, rounds)}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-700/50 border border-slate-600 text-slate-300 font-semibold text-sm hover:bg-slate-700 transition-colors">
                   <Download className="w-4 h-4"/>Export CSV
                 </button>
               )}
             </div>
+
+            {/* Live progress bar */}
+            {running && (
+              <div className="mb-5">
+                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                  <motion.div className="h-full bg-red-500 rounded-full"
+                    initial={{ width: 0 }} animate={{ width: `${progressPct}%` }} transition={{ duration: 0.2 }} />
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1 text-right">{progressPct.toFixed(0)}% — scanning in background, UI stays responsive</p>
+              </div>
+            )}
+
+            {error && (
+              <div className="mb-5 bg-red-900/30 border border-red-700 rounded-lg px-4 py-3 text-xs text-red-200">
+                Scan error: {error}
+              </div>
+            )}
 
             {/* How to read this */}
             <div className="flex items-start gap-2 bg-slate-800/40 border border-slate-700/40 rounded-lg px-4 py-3 mb-5 text-xs text-slate-400">
@@ -280,10 +195,10 @@ export default function ExploitHunter({ onClose }) {
                   <div className="mb-5">
                     <div className="text-xs font-bold text-red-400 uppercase tracking-wider mb-2">⚠ Violations — above {rtpCeiling}% ceiling</div>
                     <div className="space-y-2">
-                      {flagged.map(r=>(
+                      {flagged.map(r => (
                         <div key={r.key} className="rounded-lg border border-red-800/40 bg-red-950/20 overflow-hidden">
                           <button className="w-full flex items-center justify-between px-4 py-3 text-left"
-                            onClick={()=>setExpandedPos(p=>p===r.key?null:r.key)}>
+                            onClick={() => setExpandedPos(p => p===r.key?null:r.key)}>
                             <div className="flex items-center gap-2">
                               <span className={`text-xs px-2 py-0.5 rounded font-bold ${SEV_STYLES[r.severity]}`}>{r.severity}</span>
                               <span className="text-sm text-white font-medium">{r.label}</span>
@@ -327,7 +242,7 @@ export default function ExploitHunter({ onClose }) {
                 )}
 
                 {/* Full table toggle */}
-                <button onClick={()=>setShowAll(s=>!s)}
+                <button onClick={() => setShowAll(s => !s)}
                   className="flex items-center gap-2 text-xs text-slate-400 hover:text-white transition-colors mb-3">
                   {showAll?<ChevronDown className="w-4 h-4"/>:<ChevronRight className="w-4 h-4"/>}
                   {showAll?'Hide':'Show'} full table — all {results.length} positions
@@ -335,7 +250,7 @@ export default function ExploitHunter({ onClose }) {
 
                 {showAll && (
                   <div className="space-y-4">
-                    {groupedAll.map(({group,items})=>(
+                    {groupedAll.map(({group, items}) => (
                       <div key={group}>
                         <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">{group}</div>
                         <div className="rounded-lg overflow-hidden border border-slate-700/50">
@@ -350,7 +265,7 @@ export default function ExploitHunter({ onClose }) {
                               <th className="text-center px-3 py-2">Status</th>
                             </tr></thead>
                             <tbody className="divide-y divide-slate-800">
-                              {items.map(r=>(
+                              {items.map(r => (
                                 <tr key={r.key} className={r.flagged?'bg-red-950/15':''}>
                                   <td className="px-3 py-1.5 text-slate-300">{r.shortLabel}</td>
                                   <td className="px-3 py-1.5 text-right text-slate-400">{r.winFreq}%</td>
