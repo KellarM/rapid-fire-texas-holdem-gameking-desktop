@@ -310,6 +310,18 @@ export default function PlayExamplesModal({ onClose }) {
     }
   };
 
+  // Go back to the previous slide. On slide 1 of an example, jump to the last
+  // slide of the previous example — wrapping from Exam 01 back to Exam 10 slide 4.
+  const goPrev = () => {
+    if (slideIdx > 0) {
+      setSlideIdx(i => i - 1);
+    } else {
+      const prevSession = sessionIdx > 0 ? sessionIdx - 1 : SESSIONS.length - 1;
+      setSessionIdx(prevSession);
+      setSlideIdx(SESSIONS[prevSession].slides.length - 1);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-1.5">
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
@@ -410,15 +422,9 @@ export default function PlayExamplesModal({ onClose }) {
         {/* Footer: slide nav */}
         <div className="flex items-center justify-between px-6 py-[9px] border-t border-yellow-700/30 bg-black/30 flex-shrink-0">
           <button
-            onClick={() => setSlideIdx(i => Math.max(0, i - 1))}
-            disabled={slideIdx === 0}
+            onClick={goPrev}
             className="rounded-lg text-sm font-bold transition-all px-4 py-1"
-            style={{
-              background: slideIdx === 0 ? 'rgba(0,0,0,0.3)' : 'rgba(60,35,0,0.5)',
-              border: '1px solid rgba(202,138,4,0.4)',
-              color: slideIdx === 0 ? '#475569' : '#e2d9a0',
-              cursor: slideIdx === 0 ? 'default' : 'pointer',
-            }}
+            style={{ background: 'rgba(60,35,0,0.5)', border: '1px solid rgba(234,179,8,0.7)', color: '#fde047', cursor: 'pointer' }}
           >
             ← Prev
           </button>
