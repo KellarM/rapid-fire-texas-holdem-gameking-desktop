@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 const SESSIONS = [
   {
     id: 'session_02',
-    label: 'Session 02 — Only Rank Survives',
+    label: 'Exam 01 — Only Rank Survives',
     result: 'Net: -$1.69',
     slides: [
       {
@@ -30,7 +30,7 @@ const SESSIONS = [
   },
   {
     id: 'session_03',
-    label: 'Session 03 — Three of a Kind / 3 Boards Win',
+    label: 'Exam 02 — Three of a Kind / 3 Boards Win',
     result: 'Net: +$1.32',
     slides: [
       {
@@ -57,7 +57,7 @@ const SESSIONS = [
   },
   {
     id: 'session_04',
-    label: 'Session 04 — Full House Overtake (Only 2 Boards Win)',
+    label: 'Exam 03 — Full House Overtake (Only 2 Boards Win)',
     result: 'Net: +$2.42',
     slides: [
       {
@@ -84,7 +84,7 @@ const SESSIONS = [
   },
   {
     id: 'session_05',
-    label: 'Session 05 — 5-Black Sweep (Only Rank + River Win)',
+    label: 'Exam 04 — 5-Black Sweep (Only Rank + River Win)',
     result: 'Net: +$0.08',
     slides: [
       {
@@ -111,7 +111,7 @@ const SESSIONS = [
   },
   {
     id: 'session_06',
-    label: 'Session 06 — Only Rank Fires (House Wins Decisively)',
+    label: 'Exam 05 — Only Rank Fires (House Wins Decisively)',
     result: 'Net: -$0.54',
     slides: [
       {
@@ -138,7 +138,7 @@ const SESSIONS = [
   },
   {
     id: 'session_07',
-    label: 'Session 07 — Kings Overtaken / 3 Boards Win',
+    label: 'Exam 06 — Kings Overtaken / 3 Boards Win',
     result: 'Net: +$0.15',
     slides: [
       {
@@ -165,7 +165,7 @@ const SESSIONS = [
   },
   {
     id: 'session_08',
-    label: 'Session 08 — Q♥/10♥ Flush / 2 Boards Win',
+    label: 'Exam 07 — Q♥/10♥ Flush / 2 Boards Win',
     result: 'Net: -$0.16',
     slides: [
       {
@@ -192,7 +192,7 @@ const SESSIONS = [
   },
   {
     id: 'session_09',
-    label: 'Session 09 — Quiet Straight / Coverage Strategy',
+    label: 'Exam 08 — Quiet Straight / Coverage Strategy',
     result: 'Net: +$0.16',
     slides: [
       {
@@ -219,7 +219,7 @@ const SESSIONS = [
   },
   {
     id: 'session_10',
-    label: 'Session 10 — K♣/K♠ Full House / Only Rank Survives',
+    label: 'Exam 09 — K♣/K♠ Full House / Only Rank Survives',
     result: 'Net: -$0.57',
     slides: [
       {
@@ -241,6 +241,33 @@ const SESSIONS = [
         image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/cd612f8a1_session_10_results.png',
         phase: 'THE RESULTS',
         caption: "Only Rank survives — Full House wins at 1.34:1. $0.23 return.\nCard & Color Board: Lost with no bet on the river placed.\nTotal Win: $0.23 | Total Wagered: $0.80 | Net Result: -$0.57",
+      },
+    ],
+  },
+  {
+    id: 'session_11',
+    label: 'Exam 10 — All-Red Board / Color Sweep',
+    result: 'Net: +$1.52',
+    slides: [
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/0509f5a7f_session_11_flop.png',
+        phase: 'PRE-DEAL → FLOP',
+        caption: "Player places 3 separate Card Hand bets. Targets 3 of a Kind and Full House on the Rank Board. Stacks 3 Red, 4 Red, and 5 Red on the Color Board. Total wagered: $1.20.\nThe Dealer's Flop comes up A♦, 5♦, A♥. Board shows 3 Red, 0 Black. Full House leads from the flop — two Aces on board.\n\"All Red on the Flop — Color bets are looking good!\"",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/501f2df23_session_11_turn.png',
+        phase: 'THE TURN',
+        caption: "3♥ on the Turn. Board now 4 Red, 0 Black.\nFull House still leads.\n4 Red confirmed — 5 Red still alive.\nRiver is even — no favourite. Player skips the River bet.\n\"One more Red for the sweep!\"",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/26976986e_session_11_river.png',
+        phase: 'THE RIVER',
+        caption: "River: 7♥ — LOW & RED.\nA♣/5♣ wins with Full House — A-A-A-5-5.\nBoard finishes 5 Red, 0 Black.",
+      },
+      {
+        image: 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/5092f8d0f_session_11_results.png',
+        phase: 'THE RESULTS',
+        caption: "Color & Rank win — 5 Red at 43:1 ($2.20) and Full House at 2.46:1 ($0.52).\nCard Board: Lost. No River bet placed.\nTotal Win: $2.72 | Total Wagered: $1.20 | Net Result: +$1.52",
       },
     ],
   },
