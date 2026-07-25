@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 const SESSIONS = [
   {
@@ -195,8 +195,23 @@ const SESSIONS = [
 export default function PlayExamplesModal({ onClose }) {
   const [sessionIdx, setSessionIdx] = useState(0);
   const [slideIdx, setSlideIdx] = useState(0);
+  const [canScrollDown, setCanScrollDown] = useState(false);
   const session = SESSIONS[sessionIdx];
   const slide = session.slides[slideIdx];
+  const scrollRef = useRef(null);
+
+  // Re-check scroll bounds whenever slide/image/session changes
+  const checkScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollDown(el.scrollTop + el.clientHeight < el.scrollHeight - 2);
+  };
+
+  // Reset to top + re-check on slide change
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+    checkScroll();
+  }, [sessionIdx, slideIdx]);
 
   const pickSession = (idx) => {
     setSessionIdx(idx);
@@ -252,11 +267,16 @@ export default function PlayExamplesModal({ onClose }) {
         </div>
 
         {/* Slide content */}
-        <div className="flex-1 overflow-y-auto px-6 pb-4 flex flex-col items-center gap-3 min-h-0">
+        <div
+          ref={scrollRef}
+          onScroll={checkScroll}
+          className="flex-1 overflow-y-auto px-6 pb-4 flex flex-col items-center gap-3 min-h-0"
+        >
           <div className="relative w-full flex justify-center">
             <img
               src={slide.image}
               alt={slide.phase}
+              onLoad={checkScroll}
               className="rounded-xl max-h-[50vh] w-auto object-contain"
               style={{ border: '2px solid rgba(202,138,4,0.4)', boxShadow: '0 4px 20px rgba(0,0,0,0.6)' }}
             />
@@ -268,6 +288,29 @@ export default function PlayExamplesModal({ onClose }) {
             <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">{slide.caption}</p>
           </div>
         </div>
+
+        {/* Floating scroll-down indicator — appears when content extends below view */}
+        {canScrollDown && (
+          <div
+            className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
+            style={{
+              bottom: '62px',
+              zIndex: 20,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '2px',
+              animation: 'rfthScrollBounce 1.2s ease-in-out infinite',
+            }}
+          >
+            <span style={{ fontSize: 11, fontWeight: 800, color: '#facc15', letterSpacing: '0.1em', textShadow: '0 1px 3px rgba(0,0,0,0.9)' }}>
+              SCROLL
+            </span>
+            <svg width="22" height="14" viewBox="0 0 22 14" fill="none" style={{ filter: 'drop-shadow(2px 3px 3px rgba(0,0,0,0.9))' }}>
+              <path d="M2 2 L11 11 L20 2" stroke="#facc15" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        )}
 
         {/* Footer: slide nav */}
         <div className="flex items-center justify-between px-6 py-3 border-t border-yellow-700/30 bg-black/30 flex-shrink-0">

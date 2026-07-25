@@ -96,6 +96,11 @@
   }
 }
 
+@keyframes rfthScrollBounce {
+  0%, 100% { transform: translate(-50%, 0); opacity: 0.85; }
+  50%      { transform: translate(-50%, 6px); opacity: 1; }
+}
+
 @keyframes dealer-marquee {
   0%   { transform: translateX(100vw); }
   100% { transform: translateX(-100%); }
