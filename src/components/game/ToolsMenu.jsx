@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Wrench, Award, PieChart, Layers, Timer, Eye, LineChart, SlidersHorizontal, Shuffle } from 'lucide-react';
+import { Wrench, Award, PieChart, Layers, Timer, LineChart, SlidersHorizontal, Shuffle } from 'lucide-react';
 
 const TOOLS = [
-  { icon: Eye,        label: 'Observer',                    type: 'observer',         badge: 'NEW', badgeColor: 'bg-cyan-700/60 text-cyan-300 border-cyan-600/40' },
   { icon: LineChart,  label: 'Analytics',                   type: 'analytics',        badge: 'NEW', badgeColor: 'bg-green-700/60 text-green-300 border-green-600/40' },
   { icon: Award,      label: 'Gaming License Calibration', href: '/gaming-license' },
   { icon: Award,      label: 'Gaming License Calibration 2', href: '/gaming-license-2', badge: 'OPP', badgeColor: 'bg-cyan-700/60 text-cyan-300 border-cyan-600/40' },
@@ -16,7 +15,6 @@ const TOOLS = [
 ];
 
 export default function ToolsMenu({
-  onOpenObserver,
   onOpenAnalytics,
   onOpenGameTiming,
   onOpenVersions,
@@ -40,7 +38,6 @@ export default function ToolsMenu({
   }
 
   const typeHandlers = {
-    observer:         onOpenObserver,
     analytics:        onOpenAnalytics,
     gameTiming:        onOpenGameTiming,
     versions:          onOpenVersions,

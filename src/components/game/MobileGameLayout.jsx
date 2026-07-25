@@ -209,7 +209,6 @@ export default function MobileGameLayout({
   onOpenExploitHunter,
   onOpenComplianceReport,
   onOpenKsStrategyTest,
-  onOpenObserver,
   onOpenGameTiming,
   onOpenAnalytics,
   onOpenVersions,
@@ -960,7 +959,6 @@ export default function MobileGameLayout({
             onOpenExploitHunter={onOpenExploitHunter}
             onOpenComplianceReport={onOpenComplianceReport}
             onOpenKsStrategyTest={onOpenKsStrategyTest}
-            onOpenObserver={onOpenObserver}
             onOpenGameTiming={onOpenGameTiming}
             onOpenAnalytics={onOpenAnalytics}
             onOpenVersions={onOpenVersions}

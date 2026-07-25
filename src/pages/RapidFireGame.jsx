@@ -38,7 +38,6 @@ import { useGreedEngineState } from '@/components/game/GreedEngine';
 import MollySimulator from '@/components/game/MollySimulator';
 import ExploitHunter from '@/components/game/IndividualStrategyTest';
 import KillSwitchStrategyTest from '@/components/game/KillSwitchStrategyTest';
-import Observer from '@/components/game/Observer';
 import AnalyticsDashboard from '@/components/game/AnalyticsDashboard';
 import RegulatoryComplianceReport from '@/components/game/TwoHandRankTest';
 
@@ -154,27 +153,7 @@ export default function RapidFireGame() {
   const [showExploitHunter, setShowExploitHunter] = useState(false);
   const [showComplianceReport, setShowComplianceReport] = useState(false);
   const [showKsStrategyTest, setShowKsStrategyTest] = useState(false);
-  const [showObserver, setShowObserver] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
-  // Observer persists across refreshes — ON by default, only OFF if user explicitly toggled it off
-  const [observeOn, setObserveOn] = useState(
-    () => localStorage.getItem('rfth_observer_on') !== 'false'
-  );
-  const [observerRoundCount, setObserverRoundCount] = useState(0);
-  // Persist observe toggle to localStorage so state survives refresh
-  const handleObserveToggle = (valOrFn) => {
-    setObserveOn(prev => {
-      const next = typeof valOrFn === 'function' ? valOrFn(prev) : valOrFn;
-      try { localStorage.setItem('rfth_observer_on', String(next)); } catch {}
-      return next;
-    });
-  };
-  const prevObserverRoundRef = useRef(null);
-  const onRoundSettledRef = useRef(null);  // Observer registers its handler here
-
-  // ── Observer: round data is dispatched via onRoundSettledRef to Observer component ──
-  // (saving logic lives in Observer.jsx to avoid stale closure issues)
-  // ─────────────────────────────────────────────────────────────────────────
   
   const [showGameTiming, setShowGameTiming] = useState(false);
   const [showVersions, setShowVersions] = useState(false);
@@ -1444,7 +1423,7 @@ export default function RapidFireGame() {
     FIXED_HANDS.find((h) => h.id === leader.handIds[1]) :
     null;
 
-    // ── Observer data capture ────────────────────────────────────────────────
+    // ── Analytics data capture ────────────────────────────────────────────────
     const redsCount = finalComm.filter(c => cardColor(c) === 'red').length;
     const activePlayerHandBets = snapHandBets[activePlayer] || {};
     const activePlayerColorBets = snapRedBlackBets[activePlayer] || {};
@@ -1456,10 +1435,8 @@ export default function RapidFireGame() {
       (activePlayerLowHighBet?.amount || 0);
     const activePlayerPayout = playerWinnings[activePlayer] || 0;
     const activeBal = balancesRef.current[activePlayer] ?? balances[activePlayer] ?? 0;
-    const observerKey = Date.now() + '_' + Math.random();
     const roundData = {
       roundId,
-      observerKey,
       sessionId: 'live_' + Date.now(),
       communityCards: finalComm.map(c => ({ rank: c.rank, suit: SUITS[c.suit] })),
       winnerHandIds: leader?.handIds || [],
@@ -1482,8 +1459,6 @@ export default function RapidFireGame() {
       blacksCount: finalComm.length - redsCount,
       riverCard: finalComm.length > 0 ? finalComm[finalComm.length-1]?.rank + SUITS[finalComm[finalComm.length-1]?.suit] : null,
     };
-    console.log('[Observer] settle() dispatching round via ref, roundId:', roundId, 'handler present:', !!onRoundSettledRef.current);
-    if (onRoundSettledRef.current) onRoundSettledRef.current(roundData);
     // ── GA4 Event Tracking — card, rank, color, river outcomes ──────────────
     trackRoundOutcome(roundData);
     // ── Analytics DB — fire-and-forget save to GameEvent entity ──────────────
@@ -1670,17 +1645,6 @@ export default function RapidFireGame() {
         <KillSwitchStrategyTest onClose={() => setShowKsStrategyTest(false)} />
         }
       </AnimatePresence>
-
-      {/* Observer — always mounted so observeOn state persists when panel is closed */}
-      <Observer
-        isOpen={showObserver}
-        onClose={() => setShowObserver(false)}
-        observeOn={observeOn}
-        onObserveToggle={handleObserveToggle}
-        onRoundSettledRef={onRoundSettledRef}
-        roundCount={observerRoundCount}
-        onRoundCountChange={setObserverRoundCount}
-      />
 
       {/* Game Timing Modal */}
 
@@ -1894,7 +1858,7 @@ export default function RapidFireGame() {
             </div>
 
             {/* Tools — secret key triggered, hidden by default */}
-            <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenObserver={() => setShowObserver(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} toolsVisible={toolbarVisible} />
+            <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} toolsVisible={toolbarVisible} />
 
             {/* ⚙ Gear Button — always visible */}
             <GearMenu
