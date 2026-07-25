@@ -428,6 +428,9 @@ export default function PlayExamplesModal({ onClose }) {
           >
             ← Prev
           </button>
+          <span className="text-[10px] text-gray-500 italic font-medium px-2 flex-1 text-center" style={{ maxWidth: '420px' }}>
+            All examples depict true, unaltered gameplay; outcomes are not determined, predicted, or influenced in advance.
+          </span>
           <span className="text-xs text-gray-400 font-semibold">
             Slide {slideIdx + 1} / {session.slides.length}
           </span>
