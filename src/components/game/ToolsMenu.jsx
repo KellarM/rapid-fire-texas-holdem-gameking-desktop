@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Wrench, Award, PieChart, Layers, Timer, LineChart, SlidersHorizontal, Shuffle } from 'lucide-react';
+import { Wrench, Award, PieChart, Layers, Timer, LineChart, SlidersHorizontal, Shuffle, Shield } from 'lucide-react';
 
 const TOOLS = [
   { icon: LineChart,  label: 'Analytics',                   type: 'analytics',        badge: 'NEW', badgeColor: 'bg-green-700/60 text-green-300 border-green-600/40' },
@@ -12,6 +12,7 @@ const TOOLS = [
   { icon: Timer,      label: 'Game Timing',                type: 'gameTiming'      },
   { icon: SlidersHorizontal, label: 'Versions',             type: 'versions',         badge: 'NEW', badgeColor: 'bg-purple-700/60 text-purple-300 border-purple-600/40' },
   { icon: SlidersHorizontal, label: 'Bell Curve',           type: 'bellCurve',        badge: 'NEW', badgeColor: 'bg-red-700/60 text-red-300 border-red-600/40' },
+  { icon: Shield,     label: 'Max Bet Simulator',          href: '/max-bet-simulator', badge: 'NEW', badgeColor: 'bg-amber-700/60 text-amber-300 border-amber-600/40' },
 ];
 
 export default function ToolsMenu({
@@ -143,7 +144,10 @@ export default function ToolsMenu({
               <Link key={label} to={href} onClick={() => setOpen(false)}
                 className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-300 hover:bg-yellow-900/20 hover:text-yellow-200 transition-colors">
                 <Icon className="w-4 h-4 text-yellow-500/70 flex-shrink-0" />
-                {label}
+                <span className="flex-1">{label}</span>
+                {badge && (
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded border font-bold ${badgeColor}`}>{badge}</span>
+                )}
               </Link>
             );
           })}
