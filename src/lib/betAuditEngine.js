@@ -148,6 +148,8 @@ function buildWinnerLabel(winners) {
 
 // ── Shuffle working copy of deck ──────────────────────────────
 // Crypto-grade RNG — rejection sampling for unbiased uniform distribution
+// Dealing protocol: Fisher-Yates shuffle → burn[0] | flop[1,2,3] | burn[4] | turn[5] | burn[6] | river[7]
+// Matches gameEngine.js getSecureRandomBoard() exactly for GLI certification consistency.
 function _secureRandInt(max) {
   if (max === 0) return 0;
   let mask = 1;
@@ -211,7 +213,13 @@ export function runBetAudit({
 
   for (let g = 0; g < actualRounds; g++) {
     shuffle();
-    const [c0,c1,c2,c3,c4] = deck;
+    // ── Burn protocol — matches gameEngine.js getSecureRandomBoard() ──
+    // Standard casino burn: burn[0] | flop[1,2,3] | burn[4] | turn[5] | burn[6] | river[7]
+    // Same CSPRNG Fisher-Yates shuffle + 3 burn cards as the live game engine.
+    // Mathematically identical odds (any 5 positions from a random permutation
+    // have the same distribution), but dealing method now matches the game
+    // engine for GLI certification consistency.
+    const c0 = deck[1], c1 = deck[2], c2 = deck[3], c3 = deck[5], c4 = deck[7];
 
     const { strengths, bestStr, bestRankCat, winners, winnerCount } = evalAllHands(c0, c1, c2, c3, c4);
 
