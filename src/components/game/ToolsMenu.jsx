@@ -20,8 +20,14 @@ export default function ToolsMenu({
   onOpenVersions,
   onOpenBellCurve,
   toolsVisible = true,
+  onHideTools,
+  password = 'Mi@Ke091134',
 }) {
   const [open, setOpen] = useState(false);
+  const [promptOpen, setPromptOpen] = useState(false);
+  const [pwInput, setPwInput] = useState('');
+  const [pwError, setPwError] = useState(false);
+  const pwRef = useRef(null);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -32,9 +38,42 @@ export default function ToolsMenu({
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
+  useEffect(() => {
+    if (promptOpen) {
+      setTimeout(() => pwRef.current?.focus(), 50);
+    }
+  }, [promptOpen]);
+
   function handle(fn) {
     fn?.();
     setOpen(false);
+  }
+
+  function submitPassword(e) {
+    e?.preventDefault();
+    if (pwInput === password) {
+      setPromptOpen(false);
+      setPwInput('');
+      setPwError(false);
+      setOpen(true);
+    } else {
+      setPwError(true);
+      setTimeout(() => {
+        setPromptOpen(false);
+        setPwInput('');
+        setPwError(false);
+        onHideTools?.();
+      }, 1200);
+    }
+  }
+
+  function onToolClick() {
+    if (!open && !promptOpen) {
+      setPromptOpen(true);
+    } else {
+      setOpen(false);
+      setPromptOpen(false);
+    }
   }
 
   const typeHandlers = {
@@ -47,7 +86,7 @@ export default function ToolsMenu({
   return (
     <div className="relative" ref={ref} style={{ visibility: toolsVisible ? 'visible' : 'hidden' }}>
       <button
-        onClick={() => setOpen(o => !o)}
+        onClick={onToolClick}
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all
           ${open
             ? 'border-yellow-400 bg-yellow-700/40 text-yellow-200'
@@ -58,6 +97,28 @@ export default function ToolsMenu({
         Tools
         <span className={`transition-transform duration-200 text-yellow-400/60 ${open ? 'rotate-180' : ''}`}>▾</span>
       </button>
+
+      {promptOpen && (
+        <div className="absolute right-0 bottom-full mb-1.5 w-64 bg-slate-900 border border-yellow-700/40 rounded-xl shadow-2xl shadow-black/60 z-50 p-3">
+          <p className="text-yellow-400/70 text-xs font-semibold tracking-wider uppercase mb-2">Tools Access</p>
+          <form onSubmit={submitPassword}>
+            <input
+              ref={pwRef}
+              type="password"
+              value={pwInput}
+              onChange={(e) => { setPwInput(e.target.value); setPwError(false); }}
+              placeholder="Enter password"
+              className={`w-full bg-slate-800 border rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500 outline-none transition-colors
+                ${pwError ? 'border-red-600' : 'border-slate-600 focus:border-yellow-500'}`}
+            />
+            {pwError && <p className="text-red-400 text-[10px] mt-1 font-semibold">Incorrect — hiding Tools.</p>}
+            <button type="submit"
+              className="mt-2 w-full px-3 py-2 rounded-lg bg-yellow-700/40 border border-yellow-600 text-yellow-100 text-sm font-bold hover:bg-yellow-700/60 transition-colors">
+              Unlock
+            </button>
+          </form>
+        </div>
+      )}
 
       {open && (
         <div className="absolute right-0 bottom-full mb-1.5 w-60 bg-slate-900 border border-yellow-700/40 rounded-xl shadow-2xl shadow-black/60 z-50 overflow-hidden">
