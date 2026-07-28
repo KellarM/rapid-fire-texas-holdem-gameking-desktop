@@ -1574,7 +1574,7 @@ export default function RapidFireGame() {
         onAbandon={handleRecoveryAbandon}
       />
       <style>{`@keyframes rfUnlockFadeOut{0%{opacity:0}10%{opacity:1}78%{opacity:1}100%{opacity:0}}`}</style>
-      <div className={`velvet-board h-screen w-screen overflow-hidden text-white flex flex-col theme-${boardTheme}`} onClick={preloadSounds} onTouchStart={preloadSounds}>
+      <div className={`velvet-board h-screen w-screen overflow-hidden text-white flex flex-col relative theme-${boardTheme}`} onClick={preloadSounds} onTouchStart={preloadSounds}>
 
       {/* Alerts */}
       <HandBetLimitAlert
@@ -1764,9 +1764,10 @@ export default function RapidFireGame() {
 
             {/* Board color — now in ⚙ Gear menu */}
             
-            {/* Logo — left side */}
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none' }}>
+            {/* Logo — left side, with hidden Tools launcher stacked beneath */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px', userSelect: 'none' }}>
               <img src={LOGO_URLS[boardTheme]} alt="Rapid Fire Texas Hold'em" style={{ width: '72px', height: 'auto', display: 'block', borderRadius: '8px' }} />
+              <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
             </div>
 
             <CommunityCards cards={communityCards} phase={gamePhase} />
@@ -1857,18 +1858,6 @@ export default function RapidFireGame() {
               }
             </div>
 
-            {/* Tools — secret key triggered, hidden by default */}
-            <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
-
-            {/* ⚙ Gear Button — always visible */}
-            <GearMenu
-              soundManager={soundManager}
-              boardTheme={boardTheme}
-              setBoardTheme={setBoardTheme}
-              onHowToPlay={() => setShowHowToPlay(true)}
-              onOpenStats={() => setShowStatsPanel(true)}
-              onResetBank={handleResetBank}
-            />
           </div>
         </div>
 
@@ -1937,6 +1926,18 @@ export default function RapidFireGame() {
             
           </div>
         </div>
+      </div>
+
+      {/* ⚙ Gear Button — pinned bottom-right, immune to control-bar flex shifts */}
+      <div style={{ position: 'absolute', bottom: '10px', right: '12px', zIndex: 150 }}>
+        <GearMenu
+          soundManager={soundManager}
+          boardTheme={boardTheme}
+          setBoardTheme={setBoardTheme}
+          onHowToPlay={() => setShowHowToPlay(true)}
+          onOpenStats={() => setShowStatsPanel(true)}
+          onResetBank={handleResetBank}
+        />
       </div>
     </div>
   </>);
