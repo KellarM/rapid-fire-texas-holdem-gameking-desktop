@@ -1811,6 +1811,69 @@ export default function RapidFireGame() {
             </div>
           </div>
 
+          {/* Players control box — constrained between the Previous Hands rail and the Side Bets panel, gear pinned far right */}
+          <div
+            className="border rounded-xl slot-border-dormant flex-shrink-0 flex items-center gap-2 w-full"
+            style={{ position: 'relative', background: 'rgba(0,0,0,0.45)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.4)', padding: '8px 60px 8px 10px' }}
+          >
+            {/* Chip selector — far left */}
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {CHIP_VALUES.map((v) =>
+              <button
+                key={v}
+                onClick={() => setSelectedChip(v)}
+                className={`relative flex-shrink-0 transition-all duration-150 rounded-full border-0 bg-transparent p-0
+                    ${selectedChip === v ? 'scale-125 drop-shadow-[0_0_6px_rgba(251,191,36,0.9)]' : 'opacity-75 hover:opacity-100 hover:scale-110'}`}
+                style={{ lineHeight: 0 }}
+              >
+                <Chip amount={v} scale={0.72} />
+              </button>
+              )}
+            </div>
+
+            {/* Player Bank + Dealer Button + Bet Sum Count */}
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="flex flex-col items-center">
+                <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Players Bank</span>
+                <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
+                  <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${(balances[activePlayer] ?? 100).toFixed(2)}</span>
+                </div>
+              </div>
+              <DealerButton gamePhase={gamePhase} totalBet={totalBet} onDeal={handleDealButtonPress} />
+              <div className="flex flex-col items-center">
+                <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Bet Sum Count</span>
+                <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
+                  <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${totalBet.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Spacer */}
+            <div className="flex-1" />
+
+            {/* Clear button */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              {gamePhase === 'betting' && totalBet > 0 &&
+              <button
+                onClick={clearBets}
+                className="px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-300 text-xs font-semibold hover:bg-red-900/50 transition-all">
+                Clear
+              </button>
+              }
+            </div>
+
+            {/* ⚙ Gear Button — pinned far right inside the Players box */}
+            <div style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 20 }}>
+              <GearMenu
+                soundManager={soundManager}
+                boardTheme={boardTheme}
+                setBoardTheme={setBoardTheme}
+                onHowToPlay={() => setShowHowToPlay(true)}
+                onOpenStats={() => setShowStatsPanel(true)}
+                onResetBank={handleResetBank}
+              />
+            </div>
+          </div>
           </div>
 
         {/* RIGHT: Rank Bets | Side Bets | Payout Table */}
@@ -1880,69 +1943,6 @@ export default function RapidFireGame() {
         </div>
         </div>
 
-        {/* Players control box — spans full width of the board, gear pinned far right */}
-        <div
-          className="border rounded-xl slot-border-dormant flex-shrink-0 flex items-center gap-2"
-          style={{ position: 'relative', background: 'rgba(0,0,0,0.45)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.4)', padding: '8px 60px 8px 10px' }}
-        >
-          {/* Chip selector — far left */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            {CHIP_VALUES.map((v) =>
-            <button
-              key={v}
-              onClick={() => setSelectedChip(v)}
-              className={`relative flex-shrink-0 transition-all duration-150 rounded-full border-0 bg-transparent p-0
-                  ${selectedChip === v ? 'scale-125 drop-shadow-[0_0_6px rgba(251,191,36,0.9)]' : 'opacity-75 hover:opacity-100 hover:scale-110'}`}
-              style={{ lineHeight: 0 }}
-            >
-              <Chip amount={v} scale={0.72} />
-            </button>
-            )}
-          </div>
-
-          {/* Player Bank + Dealer Button + Bet Sum Count */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="flex flex-col items-center">
-              <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Players Bank</span>
-              <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
-                <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${(balances[activePlayer] ?? 100).toFixed(2)}</span>
-              </div>
-            </div>
-            <DealerButton gamePhase={gamePhase} totalBet={totalBet} onDeal={handleDealButtonPress} />
-            <div className="flex flex-col items-center">
-              <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Bet Sum Count</span>
-              <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
-                <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${totalBet.toFixed(2)}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Spacer */}
-          <div className="flex-1" />
-
-          {/* Clear button */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {gamePhase === 'betting' && totalBet > 0 &&
-            <button
-              onClick={clearBets}
-              className="px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-300 text-xs font-semibold hover:bg-red-900/50 transition-all">
-              Clear
-            </button>
-            }
-          </div>
-
-          {/* ⚙ Gear Button — pinned far right inside the Players box */}
-          <div style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 20 }}>
-            <GearMenu
-              soundManager={soundManager}
-              boardTheme={boardTheme}
-              setBoardTheme={setBoardTheme}
-              onHowToPlay={() => setShowHowToPlay(true)}
-              onOpenStats={() => setShowStatsPanel(true)}
-              onResetBank={handleResetBank}
-            />
-          </div>
-        </div>
       </div>
     </div>
   </>);
