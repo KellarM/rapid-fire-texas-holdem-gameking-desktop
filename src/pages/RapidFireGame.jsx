@@ -57,6 +57,7 @@ import RoundRecoveryModal from '@/components/game/RoundRecoveryModal';
 import { useGameSounds } from '@/hooks/useGameSounds';
 import { useDropChip } from '@/hooks/useDropChip';
 import GearMenu from '@/components/game/GearMenu';
+import OnboardingIndicator from '@/components/game/OnboardingIndicator';
 
 
 // STARTING_BALANCE = 100 (managed server-side via usePlayerSession)
@@ -1864,14 +1865,16 @@ export default function RapidFireGame() {
 
             {/* ⚙ Gear Button — pinned far right inside the Players box */}
             <div style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 20 }}>
-              <GearMenu
-                soundManager={soundManager}
-                boardTheme={boardTheme}
-                setBoardTheme={setBoardTheme}
-                onHowToPlay={() => setShowHowToPlay(true)}
-                onOpenStats={() => setShowStatsPanel(true)}
-                onResetBank={handleResetBank}
-              />
+              <OnboardingIndicator>
+                <GearMenu
+                  soundManager={soundManager}
+                  boardTheme={boardTheme}
+                  setBoardTheme={setBoardTheme}
+                  onHowToPlay={() => setShowHowToPlay(true)}
+                  onOpenStats={() => setShowStatsPanel(true)}
+                  onResetBank={handleResetBank}
+                />
+              </OnboardingIndicator>
             </div>
           </div>
           </div>
