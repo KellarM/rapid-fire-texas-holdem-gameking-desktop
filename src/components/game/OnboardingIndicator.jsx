@@ -16,8 +16,12 @@ export default function OnboardingIndicator({ children }) {
 
   useEffect(() => {
     try {
+      // URL param ?onboarding=1 forces the indicator to show (for testing/tweaking)
+      const urlParams = new URLSearchParams(window.location.search);
+      const forceShow = urlParams.get('onboarding') === '1';
+
       const seen = localStorage.getItem(STORAGE_KEY);
-      if (!seen) {
+      if (!seen || forceShow) {
         // Small delay so the page fully renders before the indicator appears
         const t = setTimeout(() => setVisible(true), 600);
         return () => clearTimeout(t);
