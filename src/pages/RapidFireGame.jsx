@@ -1765,9 +1765,10 @@ export default function RapidFireGame() {
 
             {/* Board color — now in ⚙ Gear menu */}
             
-            {/* Logo — left side */}
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none' }}>
+            {/* Logo — left side, with ToolsMenu button below */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', userSelect: 'none', gap: '4px' }}>
               <img src={LOGO_URLS[boardTheme]} alt="Rapid Fire Texas Hold'em" style={{ width: '72px', height: 'auto', display: 'block', borderRadius: '8px' }} />
+              <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
             </div>
 
             <CommunityCards cards={communityCards} phase={gamePhase} />
@@ -1852,8 +1853,8 @@ export default function RapidFireGame() {
             {/* Spacer */}
             <div className="flex-1" />
 
-            {/* Clear button */}
-            <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Clear button — fixed width so appearance doesn't shift layout */}
+            <div className="flex items-center gap-2 flex-shrink-0" style={{ minWidth: '80px', justifyContent: 'flex-end' }}>
               {gamePhase === 'betting' && totalBet > 0 &&
               <button
                 onClick={clearBets}
@@ -1862,9 +1863,6 @@ export default function RapidFireGame() {
                 </button>
               }
             </div>
-
-            {/* Tools — secret key triggered, hidden by default */}
-            <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
 
             {/* ⚙ Gear Button — always visible */}
             <OnboardingIndicator>
