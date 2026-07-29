@@ -57,6 +57,7 @@ import RoundRecoveryModal from '@/components/game/RoundRecoveryModal';
 import { useGameSounds } from '@/hooks/useGameSounds';
 import { useDropChip } from '@/hooks/useDropChip';
 import GearMenu from '@/components/game/GearMenu';
+import OnboardingIndicator from '@/components/game/OnboardingIndicator';
 
 
 // STARTING_BALANCE = 100 (managed server-side via usePlayerSession)
@@ -1861,14 +1862,16 @@ export default function RapidFireGame() {
             <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
 
             {/* ⚙ Gear Button — always visible */}
-            <GearMenu
-              soundManager={soundManager}
-              boardTheme={boardTheme}
-              setBoardTheme={setBoardTheme}
-              onHowToPlay={() => setShowHowToPlay(true)}
-              onOpenStats={() => setShowStatsPanel(true)}
-              onResetBank={handleResetBank}
-            />
+            <OnboardingIndicator>
+              <GearMenu
+                soundManager={soundManager}
+                boardTheme={boardTheme}
+                setBoardTheme={setBoardTheme}
+                onHowToPlay={() => setShowHowToPlay(true)}
+                onOpenStats={() => setShowStatsPanel(true)}
+                onResetBank={handleResetBank}
+              />
+            </OnboardingIndicator>
           </div>
         </div>
 
