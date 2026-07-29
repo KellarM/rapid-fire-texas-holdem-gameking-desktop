@@ -100,7 +100,7 @@ export default function ToolsMenu({
       </button>
 
       {promptOpen && (
-        <div className="absolute right-0 bottom-full mb-1.5 w-64 bg-slate-900 border border-yellow-700/40 rounded-xl shadow-2xl shadow-black/60 z-50 p-3">
+        <div className="absolute right-0 top-full mt-1.5 w-64 bg-slate-900 border border-yellow-700/40 rounded-xl shadow-2xl shadow-black/60 z-50 p-3">
           <p className="text-yellow-400/70 text-xs font-semibold tracking-wider uppercase mb-2">Tools Access</p>
           <form onSubmit={submitPassword}>
             <input
@@ -122,7 +122,7 @@ export default function ToolsMenu({
       )}
 
       {open && (
-        <div className="absolute right-0 bottom-full mb-1.5 w-60 bg-slate-900 border border-yellow-700/40 rounded-xl shadow-2xl shadow-black/60 z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-1.5 w-60 bg-slate-900 border border-yellow-700/40 rounded-xl shadow-2xl shadow-black/60 z-50 overflow-hidden">
           <div className="px-3 py-2 border-b border-yellow-700/20">
             <p className="text-yellow-400/60 text-xs font-semibold tracking-wider uppercase">Game Tools</p>
           </div>
