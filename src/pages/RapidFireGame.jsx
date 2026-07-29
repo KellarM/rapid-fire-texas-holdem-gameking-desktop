@@ -57,8 +57,6 @@ import RoundRecoveryModal from '@/components/game/RoundRecoveryModal';
 import { useGameSounds } from '@/hooks/useGameSounds';
 import { useDropChip } from '@/hooks/useDropChip';
 import GearMenu from '@/components/game/GearMenu';
-import PlayExamplesModal from '@/components/game/PlayExamplesModal';
-import OnboardingIndicator from '@/components/game/OnboardingIndicator';
 
 
 // STARTING_BALANCE = 100 (managed server-side via usePlayerSession)
@@ -150,7 +148,6 @@ export default function RapidFireGame() {
   const [history, setHistory] = useState(() => { try { const s = localStorage.getItem('rfth_history'); return s ? JSON.parse(s) : []; } catch { return []; } });
   const [playerStats, setPlayerStats] = useState({});
   const [showStatsPanel, setShowStatsPanel] = useState(false);
-  const [showPlayExamples, setShowPlayExamples] = useState(false);
   const [showMollySimulator, setShowMollySimulator] = useState(false);
 
   const [showExploitHunter, setShowExploitHunter] = useState(false);
@@ -1577,7 +1574,7 @@ export default function RapidFireGame() {
         onAbandon={handleRecoveryAbandon}
       />
       <style>{`@keyframes rfUnlockFadeOut{0%{opacity:0}10%{opacity:1}78%{opacity:1}100%{opacity:0}}`}</style>
-      <div className={`velvet-board h-screen w-screen overflow-hidden text-white flex flex-col relative theme-${boardTheme}`} onClick={preloadSounds} onTouchStart={preloadSounds}>
+      <div className={`velvet-board h-screen w-screen overflow-hidden text-white flex flex-col theme-${boardTheme}`} onClick={preloadSounds} onTouchStart={preloadSounds}>
 
       {/* Alerts */}
       <HandBetLimitAlert
@@ -1677,9 +1674,8 @@ export default function RapidFireGame() {
         <Link to="/contact" className="hover:text-yellow-500 transition-colors">Contact</Link>
       </div>
 
-      {/* Main Layout: 3-column row + full-width Players control box */}
-      <div className="flex flex-col gap-1.5 p-1.5 flex-1 min-h-0">
-      <div className="flex gap-1.5 flex-1 min-h-0">
+      {/* Main Layout: 3 columns, fills remaining height */}
+      <div className="flex gap-1.5 p-1.5 flex-1 min-h-0">
 
         {/* LEFT: History + Jackpots */}
         <div className="w-56 flex-shrink-0 flex flex-col gap-1.5 overflow-hidden">
@@ -1768,10 +1764,9 @@ export default function RapidFireGame() {
 
             {/* Board color — now in ⚙ Gear menu */}
             
-            {/* Logo — left side, with hidden Tools launcher stacked beneath */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px', userSelect: 'none' }}>
+            {/* Logo — left side */}
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none' }}>
               <img src={LOGO_URLS[boardTheme]} alt="Rapid Fire Texas Hold'em" style={{ width: '72px', height: 'auto', display: 'block', borderRadius: '8px' }} />
-              <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
             </div>
 
             <CommunityCards cards={communityCards} phase={gamePhase} />
@@ -1814,11 +1809,8 @@ export default function RapidFireGame() {
             </div>
           </div>
 
-          {/* Players control box — constrained between the Previous Hands rail and the Side Bets panel, gear pinned far right */}
-          <div
-            className="border rounded-xl slot-border-dormant flex-shrink-0 flex items-center gap-2 w-full"
-            style={{ position: 'relative', background: 'rgba(0,0,0,0.45)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.4)', padding: '8px 60px 8px 10px' }}
-          >
+          {/* Bottom controls */}
+          <div className="flex items-center gap-2 border-t border-yellow-900/40 pt-1.5 flex-shrink-0 w-full">
             {/* Chip selector — far left */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
               {CHIP_VALUES.map((v) =>
@@ -1834,7 +1826,7 @@ export default function RapidFireGame() {
               )}
             </div>
 
-            {/* Player Bank + Dealer Button + Bet Sum Count */}
+            {/* Player Bank + Dealer Button — directly beside the $1 chip */}
             <div className="flex items-center gap-3 flex-shrink-0">
               <div className="flex flex-col items-center">
                 <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Players Bank</span>
@@ -1860,26 +1852,25 @@ export default function RapidFireGame() {
               <button
                 onClick={clearBets}
                 className="px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-300 text-xs font-semibold hover:bg-red-900/50 transition-all">
-                Clear
-              </button>
+                  Clear
+                </button>
               }
             </div>
 
-            {/* ⚙ Gear Button — pinned far right inside the Players box */}
-            <div style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 20 }}>
-              <OnboardingIndicator>
-                <GearMenu
-                  soundManager={soundManager}
-                  boardTheme={boardTheme}
-                  setBoardTheme={setBoardTheme}
-                  onHowToPlay={() => setShowHowToPlay(true)}
-                  onOpenStats={() => setShowStatsPanel(true)}
-                  onResetBank={handleResetBank}
-                />
-              </OnboardingIndicator>
-            </div>
+            {/* Tools — secret key triggered, hidden by default */}
+            <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
+
+            {/* ⚙ Gear Button — always visible */}
+            <GearMenu
+              soundManager={soundManager}
+              boardTheme={boardTheme}
+              setBoardTheme={setBoardTheme}
+              onHowToPlay={() => setShowHowToPlay(true)}
+              onOpenStats={() => setShowStatsPanel(true)}
+              onResetBank={handleResetBank}
+            />
           </div>
-          </div>
+        </div>
 
         {/* RIGHT: Rank Bets | Side Bets | Payout Table */}
         <div className="w-56 flex-shrink-0 flex flex-col gap-1.5" style={{ overflow: 'visible' }}>
@@ -1946,13 +1937,8 @@ export default function RapidFireGame() {
             
           </div>
         </div>
-        </div>
-
       </div>
     </div>
-      {showPlayExamples && (
-        <PlayExamplesModal onClose={() => setShowPlayExamples(false)} />
-      )}
   </>);
 
 }
