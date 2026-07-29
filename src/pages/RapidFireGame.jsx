@@ -1950,7 +1950,6 @@ export default function RapidFireGame() {
 
       </div>
     </div>
-  <>
       {showPlayExamples && (
         <PlayExamplesModal onClose={() => setShowPlayExamples(false)} />
       )}
