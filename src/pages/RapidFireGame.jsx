@@ -1811,7 +1811,7 @@ export default function RapidFireGame() {
           </div>
 
           {/* Bottom controls */}
-          <div className="flex items-center gap-2 border-t border-yellow-900/40 pt-1.5 flex-shrink-0 w-full">
+          <div className="flex items-center gap-2 border rounded-xl slot-border-dormant pt-1.5 px-2 flex-shrink-0 w-full">
             {/* Chip selector — far left */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
               {CHIP_VALUES.map((v) =>
