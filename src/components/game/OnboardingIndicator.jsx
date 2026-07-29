@@ -3,32 +3,20 @@ import { useState, useEffect } from 'react';
 /**
  * OnboardingIndicator
  * Shows a pulsing gold highlight + tooltip bubble pointing at the gear button
- * on first visit. Dismissed by clicking anywhere on the screen.
- * Uses localStorage so it only shows once per device, ever.
+ * every time the game is loaded or refreshed.
+ * Dismissed by clicking anywhere on the screen.
+ * Does NOT reappear on "next game" transitions within the same session —
+ * only on a fresh page load.
  *
  * The indicator wraps around the gear button — pass the gear button as children.
- * When dismissed, the overlay disappears and the flag is set in localStorage.
  */
-const STORAGE_KEY = 'rfth_onboarding_seen';
-
 export default function OnboardingIndicator({ children }) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    try {
-      // URL param ?onboarding=1 forces the indicator to show (for testing/tweaking)
-      const urlParams = new URLSearchParams(window.location.search);
-      const forceShow = urlParams.get('onboarding') === '1';
-
-      const seen = localStorage.getItem(STORAGE_KEY);
-      if (!seen || forceShow) {
-        // Small delay so the page fully renders before the indicator appears
-        const t = setTimeout(() => setVisible(true), 600);
-        return () => clearTimeout(t);
-      }
-    } catch {
-      // localStorage not available — don't show
-    }
+    // Show on every page load, after a short delay so the page fully renders
+    const t = setTimeout(() => setVisible(true), 600);
+    return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {
@@ -36,7 +24,6 @@ export default function OnboardingIndicator({ children }) {
 
     function dismiss() {
       setVisible(false);
-      try { localStorage.setItem(STORAGE_KEY, '1'); } catch {}
     }
 
     // Dismiss on ANY click anywhere
