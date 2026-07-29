@@ -57,6 +57,7 @@ import RoundRecoveryModal from '@/components/game/RoundRecoveryModal';
 import { useGameSounds } from '@/hooks/useGameSounds';
 import { useDropChip } from '@/hooks/useDropChip';
 import GearMenu from '@/components/game/GearMenu';
+import PlayExamplesModal from '@/components/game/PlayExamplesModal';
 import OnboardingIndicator from '@/components/game/OnboardingIndicator';
 
 
@@ -149,6 +150,7 @@ export default function RapidFireGame() {
   const [history, setHistory] = useState(() => { try { const s = localStorage.getItem('rfth_history'); return s ? JSON.parse(s) : []; } catch { return []; } });
   const [playerStats, setPlayerStats] = useState({});
   const [showStatsPanel, setShowStatsPanel] = useState(false);
+  const [showPlayExamples, setShowPlayExamples] = useState(false);
   const [showMollySimulator, setShowMollySimulator] = useState(false);
 
   const [showExploitHunter, setShowExploitHunter] = useState(false);
@@ -1948,6 +1950,10 @@ export default function RapidFireGame() {
 
       </div>
     </div>
+  <>
+      {showPlayExamples && (
+        <PlayExamplesModal onClose={() => setShowPlayExamples(false)} />
+      )}
   </>);
 
 }

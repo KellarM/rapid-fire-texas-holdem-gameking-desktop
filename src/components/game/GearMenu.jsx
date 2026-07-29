@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useRef, useEffect } from 'react';
 import GameRulesModal from '@/components/game/GameRulesModal';
 import VolumeControl from '@/components/game/VolumeControl';
-import PlayExamplesModal from '@/components/game/PlayExamplesModal';
 
 const COLORS = [
   { id: 'red',   label: 'Red',   dot: '#b30000' },
@@ -10,9 +9,8 @@ const COLORS = [
   { id: 'green', label: 'Green', dot: '#0a4a1e' },
 ];
 
-export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHowToPlay, onResetBank, onOpenStats }) {
+export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHowToPlay, onResetBank, onOpenStats, onPlayExamples }) {
   const [open, setOpen] = useState(false);
-  const [showPlayExamples, setShowPlayExamples] = useState(false);
   const ref = useRef(null);
 
   useEffect(() => {
@@ -135,7 +133,7 @@ export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHo
                 style={{ ...actionBtnStyle, border: '1px solid rgba(202,138,4,0.7)', background: 'rgba(80,45,0,0.7)' }}
                 onMouseEnter={e => e.currentTarget.style.background = 'rgba(120,65,0,0.8)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'rgba(80,45,0,0.7)'}
-                onClick={() => { setShowPlayExamples(true); setOpen(false); }}
+                onClick={() => { if (onPlayExamples) onPlayExamples(); setOpen(false); }}
               >
                 <span>🎬</span> Play Examples
               </button>
@@ -144,9 +142,6 @@ export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHo
         )}
       </div>
 
-      {showPlayExamples && (
-        <PlayExamplesModal onClose={() => setShowPlayExamples(false)} />
-      )}
     </>
   );
 }
