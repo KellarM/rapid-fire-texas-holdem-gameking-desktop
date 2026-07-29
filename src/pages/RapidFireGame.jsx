@@ -413,10 +413,15 @@ export default function RapidFireGame() {
   useEffect(() => {
     const p = new Set();
     const onDown = (e) => {
-      p.add(e.key.toLowerCase());
+      const k = (e.key || '').toLowerCase();
+      if (!k) return;
+      p.add(k);
       if (p.has('control') && p.has('alt') && p.has('j') && p.has('l')) { e.preventDefault(); setToolbarVisible(v=>!v); }
     };
-    const onUp = (e) => p.delete(e.key.toLowerCase());
+    const onUp = (e) => {
+      const k = (e.key || '').toLowerCase();
+      if (k) p.delete(k);
+    };
     window.addEventListener('keydown', onDown); window.addEventListener('keyup', onUp);
     return () => { window.removeEventListener('keydown', onDown); window.removeEventListener('keyup', onUp); };
   }, []);
