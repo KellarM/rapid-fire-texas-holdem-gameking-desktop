@@ -122,7 +122,7 @@ export default function OnboardingIndicator({ children }) {
             fontWeight: 600,
             lineHeight: 1.5,
           }}>
-            Tap the ⚙ gear for Game Rules,<br />How to Play & Tutorials
+            Tap the ⚙ gear for Game Rules,<br />How to Play, Tutorials & Volume Control
           </div>
           <div style={{
             color: 'rgba(250,204,21,0.5)',
