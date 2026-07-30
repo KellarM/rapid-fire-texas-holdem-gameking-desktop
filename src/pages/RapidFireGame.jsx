@@ -1468,6 +1468,7 @@ export default function RapidFireGame() {
     // ── GA4 Event Tracking — card, rank, color, river outcomes ──────────────
     trackRoundOutcome(roundData);
     // ── Analytics DB — fire-and-forget save to GameEvent entity ──────────────
+    console.log('[Analytics] saveEvent firing', { roundId: roundData.roundId, totalBet: roundData.totalBet });
     base44.functions.invoke('gameAnalytics', {
       action: 'saveEvent',
       eventData: {
@@ -1499,7 +1500,8 @@ export default function RapidFireGame() {
         hand_bet_count: roundData.handBetCount || 0,
         is_board_win: roundData.isBoardWin || false,
       }
-    }).catch((e) => { console.error('[Analytics saveEvent failed]', e?.response?.data || e?.message || e); }); // never blocks gameplay
+    }).then((res) => { console.log('[Analytics] saveEvent OK', res?.data); })
+      .catch((e) => { console.error('[Analytics saveEvent failed]', e?.response?.data || e?.message || e); }); // never blocks gameplay
     // ─────────────────────────────────────────────────────────────────────────
 
     setHistory((prev) => {
