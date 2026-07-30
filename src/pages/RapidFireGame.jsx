@@ -1499,7 +1499,7 @@ export default function RapidFireGame() {
         hand_bet_count: roundData.handBetCount || 0,
         is_board_win: roundData.isBoardWin || false,
       }
-    }).catch(() => {}); // silent fail — never blocks gameplay
+    }).catch((e) => { console.error('[Analytics saveEvent failed]', e?.response?.data || e?.message || e); }); // never blocks gameplay
     // ─────────────────────────────────────────────────────────────────────────
 
     setHistory((prev) => {
