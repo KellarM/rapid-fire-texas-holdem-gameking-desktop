@@ -102,9 +102,8 @@ Deno.serve(async (req) => {
       return Response.json({ ok: true, id: record.id });
     }
 
-    // ── Summary (admin-only) ────────────────────────────────────────────────
+    // ── Summary (any authenticated user; UI access is gated by ToolsMenu password) ─
     if (action === 'summary') {
-      if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
       const events = [];
       let skip = 0;
       const pageSize = 5000;
