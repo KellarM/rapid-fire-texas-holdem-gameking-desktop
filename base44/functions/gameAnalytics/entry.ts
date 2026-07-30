@@ -86,8 +86,7 @@ function sanitizeGameEvent(raw) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    const user = await base44.auth.me(); // may be null for guests on the published app
 
     const body = await req.json();
     const { action, eventData } = body;
@@ -98,7 +97,8 @@ Deno.serve(async (req) => {
     if (action === 'saveEvent') {
       const clean = sanitizeGameEvent(eventData);
       if (!clean) return Response.json({ error: 'Invalid event payload' }, { status: 400 });
-      const record = await base44.entities.GameEvent.create(clean);
+      // asServiceRole so anonymous guests on the published links are captured too
+      const record = await base44.asServiceRole.entities.GameEvent.create(clean);
       return Response.json({ ok: true, id: record.id });
     }
 
@@ -338,7 +338,7 @@ Deno.serve(async (req) => {
 
     // ── Clear (admin-only) ─────────────────────────────────────────────────
     if (action === 'clear') {
-      if (user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
+      if (!user || user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
       const events = [];
       let skip = 0;
       const pageSize = 5000;
