@@ -82,7 +82,9 @@ function AnalyticsDashboard({ isOpen, onClose }) {
     setLoading(true);
     try {
       const res = await base44.functions.invoke('gameAnalytics', { action: 'summary' });
-      setStats(res?.data || null);
+      console.log('[Analytics] summary response:', res);
+      const statsData = res?.data ?? res;
+      setStats(statsData || null);
     } catch (e) {
       console.error('[Analytics] load error', e);
     } finally {
@@ -96,8 +98,10 @@ function AnalyticsDashboard({ isOpen, onClose }) {
     if (!window.confirm('Clear ALL game analytics events? This cannot be undone.')) return;
     setClearing(true);
     try {
-      await base44.functions.invoke('gameAnalytics', { action: 'clear' });
-      setStats(null);
+      const res = await base44.functions.invoke('gameAnalytics', { action: 'clear' });
+      console.log('[Analytics] clear response:', res);
+      const clearData = res?.data ?? res;
+      setStats(clearData?.ok ? null : stats);
     } catch (e) { console.error('[Analytics] clear error', e); }
     finally { setClearing(false); }
   };
