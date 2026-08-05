@@ -1879,7 +1879,7 @@ export default function RapidFireGame() {
         </div>
 
         {/* RIGHT: Rank Bets | Side Bets | Payout Table */}
-        <div className="w-56 flex-shrink-0 flex flex-col gap-1.5" style={{ overflow: 'visible' }}>
+        <div className="flex-shrink-0 flex flex-col gap-1.5" style={{ width: 263, overflow: 'visible' }}>
           {/* Rank Bets panel */}
           <div className="border rounded-xl p-2 flex flex-col slot-border-dormant" style={{ flex: '7 1 0', background: 'rgba(0,0,0,0.45)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.4)', overflow: 'visible' }}>
             <RankBets
