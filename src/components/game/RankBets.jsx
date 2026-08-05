@@ -36,21 +36,23 @@ function useUnlockPulse(rankKey, unlockedRanks) {
   return pulseActive;
 }
 
-function LockIcon({ dim = false, onGold = false }) {
-  const bodyFill = onGold
-    ? `rgba(0,0,0,${dim ? 0.45 : 0.88})`
-    : `rgba(197,160,89,${dim ? 0.35 : 0.80})`;
-  const shackleColor = onGold
-    ? `rgba(0,0,0,${dim ? 0.45 : 0.88})`
-    : `rgba(197,160,89,${dim ? 0.35 : 0.80})`;
-  const keyholeColor = onGold ? 'rgba(230,180,20,0.9)' : 'rgba(10,6,2,0.9)';
+const GOLD_LOCK_IMG = 'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/103f8d764_GoldLock.png';
+
+function LockIcon({ dim = false }) {
   return (
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, display: 'block' }}>
-      <rect x="3" y="11" width="18" height="12" rx="2.5" fill={bodyFill} />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke={shackleColor} strokeWidth="2.8" strokeLinecap="round" />
-      <circle cx="12" cy="17" r="2" fill={keyholeColor} />
-      <rect x="11" y="17" width="2" height="3" rx="1" fill={keyholeColor} />
-    </svg>
+    <img
+      src={GOLD_LOCK_IMG}
+      alt="locked"
+      style={{
+        width: 26,
+        height: 26,
+        flexShrink: 0,
+        display: 'block',
+        objectFit: 'contain',
+        opacity: dim ? 0.5 : 1,
+        filter: dim ? 'grayscale(40%)' : 'none',
+      }}
+    />
   );
 }
 
@@ -207,7 +209,7 @@ function RankSlot({
               {oddsLabel}
             </span>
           ) : (fullyLocked || showDarkLock) ? (
-            <LockIcon dim={hardLocked} onGold={true} />
+            <LockIcon dim={hardLocked} />
           ) : null}
         </div>
       </div>
