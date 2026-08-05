@@ -1742,9 +1742,9 @@ export default function RapidFireGame() {
           <div
             className="slot-border-dormant"
             style={{
-              height: '152px',
-              minHeight: '152px',
-              maxHeight: '152px',
+              height: '191px',
+              minHeight: '191px',
+              maxHeight: '191px',
               width: '100%',
               flexShrink: 0,
               display: 'flex',
