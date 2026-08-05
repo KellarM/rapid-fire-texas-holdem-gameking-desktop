@@ -51,13 +51,11 @@ const TIMING_FIELDS = [
   },
 ];
 
-export default function GameTimingModal({ isOpen, onClose, onSaved }) {
+export default function GameTimingModal({ isOpen, onClose, onSaved, dealerMode = true, onDealerModeChange }) {
   const [values, setValues] = useState(DEFAULT_TIMING);
   const [recordId, setRecordId] = useState(null);
   const [saving, setSaving] = useState(false);
-  // Mode toggle: false (left) = Timing Feature, true (right) = Dealer Button
-  // Local state only — DB persistence and game-logic wiring come in a later step
-  const [dealerMode, setDealerMode] = useState(false);
+  // Mode toggle comes from parent (RapidFireGame) — persisted to DB on Save.
 
   useEffect(() => {
     if (isOpen) {
@@ -87,6 +85,7 @@ export default function GameTimingModal({ isOpen, onClose, onSaved }) {
       riverBetting: values.riverBetting,
       riverReveal: values.riverReveal,
       endOfRound: values.endOfRound,
+      dealerMode: dealerMode, // persist mode toggle to DB
     };
     try {
       if (recordId) {
@@ -145,7 +144,7 @@ export default function GameTimingModal({ isOpen, onClose, onSaved }) {
                 {/* Center: Mode toggle — left=Timing, right=Dealer */}
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setDealerMode(prev => !prev)}
+                    onClick={() => onDealerModeChange?.(!dealerMode)}
                     className="relative flex items-center transition-colors"
                     style={{
                       width: 44, height: 22, borderRadius: 11, cursor: 'pointer',

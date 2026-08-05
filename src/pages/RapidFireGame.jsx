@@ -48,6 +48,7 @@ import { base44 } from '@/api/base44Client';
 import DealerButton from '@/components/game/DealerButton';
 import HowToPlayOverlay from '@/components/game/HowToPlayOverlay';
 import { useGameTiming } from '@/hooks/useGameTiming';
+import CountdownClock from '@/components/game/CountdownClock';
 import { useGameVersions } from '@/hooks/useGameVersions';
 import { usePlayerSession } from '@/hooks/usePlayerSession';
 import { useAuditRound } from '@/hooks/useAuditRound';
@@ -203,6 +204,18 @@ export default function RapidFireGame() {
 
   // Game timing
   const { timing, startTimer, stopTimer, reloadTiming } = useGameTiming();
+
+  // ── Mode: false (default) = Timing Feature, true = Dealer Button ──────────
+  // Loaded from the GameTiming DB record. Dealer mode = current live behaviour
+  // (player-controlled via DealerButton). Timing mode = auto-progression with
+  // visible countdown clocks, ported from rapid-fire-texas-holdem-desktop.
+  const [dealerMode, setDealerMode] = useState(true); // default: Dealer (safe)
+  const dealerModeRef = useRef(true);
+  useEffect(() => { dealerModeRef.current = dealerMode; }, [dealerMode]);
+
+  // Countdown display state (Timing mode only)
+  const [countdownTime, setCountdownTime] = useState(0);
+  const [countdownActive, setCountdownActive] = useState(false);
   const { versions, recordId: versionsRecordId, dbLoaded: versionsReady } = useGameVersions();
 
   // ── Server-authoritative balance & session (GLI-19 Phase 1) ──────────────
@@ -385,6 +398,21 @@ export default function RapidFireGame() {
   // ─────────────────────────────────────────────────────────────────────────
 
   // reloadTiming is passed as onSaved to GameTimingModal — no event listener needed
+
+  // Load dealerMode from the GameTiming DB record (loaded by useGameTiming hook).
+  // The hook stores the raw record fields in `timing`, which includes dealerMode
+  // if the operator has saved it. Default to true (Dealer) if not yet set.
+  useEffect(() => {
+    if (timing.dealerMode !== undefined) {
+      setDealerMode(!!timing.dealerMode);
+    }
+  }, [timing.dealerMode]);
+
+  // Expose dealerMode to the modal via a callback prop
+  const handleTimingSaved = useCallback(() => {
+    reloadTiming();
+    // After reload, the timing.dealerMode effect above will sync the state
+  }, [reloadTiming]);
   const timerActiveRef = useRef(false);
   const handleDealRiverRef = useRef(null);
   const settleRef = useRef(null);
@@ -583,7 +611,22 @@ export default function RapidFireGame() {
     setHandBets((prev) => ({ ...prev, [pid]: { ...(prev[pid] || {}), [handId]: existing + selectedChip } }));
     setBalances((b) => {const n = [...b];n[pid] -= selectedChip;return n;});
     playChipPlace();
-  }, [gamePhase, balance, selectedChip, pid, handBets, pHandBets, pRankBets, pRedBlackBets, pLowHighBet, versions]);
+
+    // ── Timing mode: start betting countdown on first bet ──────────────
+    if (!dealerModeRef.current && Object.keys(pHandBets).length === 0 && !timerActiveRef.current) {
+      timerActiveRef.current = true;
+      setCountdownActive(true);
+      startTimer(
+        timing.bettingClose,
+        (remaining) => setCountdownTime(remaining),
+        () => {
+          timerActiveRef.current = false;
+          setCountdownActive(false);
+          setTimeout(() => handleDealFlop(), 100);
+        }
+      );
+    }
+  }, [gamePhase, balance, selectedChip, pid, handBets, pHandBets, pRankBets, pRedBlackBets, pLowHighBet, versions, timing, startTimer]);
 
   const handleRemoveHandBet = useCallback((handId) => {
     if (gamePhase !== 'betting') return;
@@ -966,13 +1009,24 @@ export default function RapidFireGame() {
         Object.keys(updatedRedBlackBets[i] || {}).length > 0 ||
         Object.keys(updatedRankBets[i] || {}).length > 0 ||
         (updatedLowHighBets[i]?.amount || 0) > 0);
-
     });
-    // No-op: timer removal is now handled by dealer button flow
-    void anyBetsRemain;
+    // Timing mode: if all bets are removed, cancel the betting countdown
+    if (!anyBetsRemain && timerActiveRef.current) {
+      stopTimer();
+      timerActiveRef.current = false;
+      setCountdownActive(false);
+      setCountdownTime(0);
+    }
   };
 
   const clearBets = () => {
+    // Timing mode: cancel any active countdown
+    if (timerActiveRef.current) {
+      stopTimer();
+      timerActiveRef.current = false;
+      setCountdownActive(false);
+      setCountdownTime(0);
+    }
     const riverRefund = pLowHighBet?.amount || 0;
     const refund = Object.values(pHandBets).reduce((s, v) => s + v, 0) +
     Object.values(pRedBlackBets).reduce((s, v) => s + v, 0) +
@@ -995,6 +1049,7 @@ export default function RapidFireGame() {
     if (gamePhase !== 'betting') return;
     stopTimer();
     timerActiveRef.current = false;
+    setCountdownActive(false);
 
     // ── Phase 2 GLI-19: open AuditRound record (bets now locked) ─────────────
     // IMPORTANT: read from REFS not closure variables — refs always hold current state.
@@ -1085,13 +1140,28 @@ export default function RapidFireGame() {
       `Turn: ${cardDisplay(turnCard)}${leaderCards ? ` — ${leaderCards} leads (${leader.handResult.name})` : ''} — River bet now open!`
     );
     setGamePhase('lowHighBetting');
-    // River bet window is now manual — player presses Deal when ready
-  }, [gamePhase, deck, deckIndex, communityCards]);
+
+    // ── Timing mode: start river betting countdown ───────────────────────
+    if (!dealerModeRef.current) {
+      timerActiveRef.current = true;
+      setCountdownActive(true);
+      startTimer(
+        timing.riverBetting,
+        (remaining) => setCountdownTime(remaining),
+        () => {
+          timerActiveRef.current = false;
+          setCountdownActive(false);
+          setTimeout(() => handleDealRiverRef.current?.(), 100);
+        }
+      );
+    }
+  }, [gamePhase, deck, deckIndex, communityCards, timing, startTimer]);
 
   const handleDealRiver = useCallback(() => {
     if (gamePhase !== 'lowHighBetting') return;
     stopTimer();
     timerActiveRef.current = false;
+    setCountdownActive(false);
 
     const riverCard = deck[deckIndex];
     const newComm = [...communityCards, riverCard];
@@ -1526,6 +1596,7 @@ export default function RapidFireGame() {
   const handleNewRound = useCallback(() => {
     stopTimer();
     timerActiveRef.current = false;
+    setCountdownActive(false);
     setHandBets({}); setRedBlackBets({}); setRankBets({}); setLowHighBets({});
     setCommunityCards([]); setLeadingHandIds([]); setWinnerHandIds([]);
     setWinningRedBlack([]); setWinningLowHigh(null); setWinningRank(null);
@@ -1562,6 +1633,36 @@ export default function RapidFireGame() {
     });
     // NOTE: history is intentionally NOT cleared here — it accumulates across rounds
   }, [stopTimer]);
+
+  // ── Auto-progression (Timing mode only) ──────────────────────────────────
+  // Flop → Turn: auto-deal after flopReveal seconds
+  useEffect(() => {
+    if (gamePhase !== 'flop') return;
+    if (dealerModeRef.current) return; // skip in Dealer mode
+
+    // Resume guard: skip auto-timer for one render cycle after crash recovery
+    if (isResumingRound.current) {
+      isResumingRound.current = false;
+      const resumeTimer = setTimeout(() => handleDealTurn(), timing.flopReveal * 1000);
+      return () => clearTimeout(resumeTimer);
+    }
+
+    const timer = setTimeout(() => {
+      handleDealTurn();
+    }, timing.flopReveal * 1000);
+    return () => clearTimeout(timer);
+  }, [gamePhase, timing.flopReveal, handleDealTurn]);
+
+  // Winner → New Round: auto-start after endOfRound seconds
+  useEffect(() => {
+    if (gamePhase !== 'winner') return;
+    if (dealerModeRef.current) return; // skip in Dealer mode
+
+    const timer = setTimeout(() => {
+      handleNewRound();
+    }, timing.endOfRound * 1000);
+    return () => clearTimeout(timer);
+  }, [gamePhase, timing.endOfRound, handleNewRound]);
 
   const handleDealButtonPress = useCallback(() => {
     if (gamePhase === 'betting' && totalBet > 0) handleDealFlop();
@@ -1658,7 +1759,7 @@ export default function RapidFireGame() {
       {/* Analytics Dashboard */}
       <AnalyticsDashboard isOpen={showAnalytics} onClose={() => setShowAnalytics(false)} />
 
-      <GameTimingModal isOpen={showGameTiming} onClose={() => setShowGameTiming(false)} onSaved={reloadTiming} />
+      <GameTimingModal isOpen={showGameTiming} onClose={() => setShowGameTiming(false)} onSaved={handleTimingSaved} dealerMode={dealerMode} onDealerModeChange={setDealerMode} />
       <GameVersionsModal isOpen={showVersions} onClose={() => setShowVersions(false)} />
       {showBellCurve && (
         <BellCurveModal
@@ -1784,6 +1885,18 @@ export default function RapidFireGame() {
 
           {/* 10 Fixed Hands Grid */}
           <div className="flex-1 min-h-0 w-full" style={{ position: 'relative' }}>
+            {/* Countdown clock overlay — Timing mode, centered over hand grid */}
+            {!dealerMode && (
+              <div style={{
+                position: 'absolute',
+                top: '50%', left: '50%',
+                transform: 'translate(-50%, -50%)',
+                zIndex: 50,
+                pointerEvents: 'none',
+              }}>
+                <CountdownClock timeRemaining={countdownTime} isActive={countdownActive} phase={gamePhase} />
+              </div>
+            )}
             <div className="grid grid-cols-5 gap-1.5 h-full auto-rows-fr">
               {handDisplayOrder.map((hid) => {
               const hand = FIXED_HANDS.find(h => h.id === hid);
@@ -1841,7 +1954,11 @@ export default function RapidFireGame() {
                   <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${(balances[activePlayer] ?? 100).toFixed(2)}</span>
                 </div>
               </div>
-              <DealerButton gamePhase={gamePhase} totalBet={totalBet} onDeal={handleDealButtonPress} />
+              {dealerMode ? (
+                <DealerButton gamePhase={gamePhase} totalBet={totalBet} onDeal={handleDealButtonPress} />
+              ) : (
+                <div style={{ width: 120, flexShrink: 0 }} />
+              )}
               <div className="flex flex-col items-center">
                 <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Bet Sum Count</span>
                 <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
