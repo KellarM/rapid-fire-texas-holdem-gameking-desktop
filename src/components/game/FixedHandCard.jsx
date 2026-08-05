@@ -55,7 +55,7 @@ export default function FixedHandCard({
   return (
     <motion.div
       style={isActive ? { background: 'linear-gradient(135deg, #b8860b 0%, #d4a017 30%, #c9900e 60%, #8B6914 100%)' } : undefined}
-      className={`relative rounded-xl p-1.5 ${isActive ? 'border-[5px]' : 'border-[3px]'} cursor-pointer transition-colors duration-200 select-none flex flex-col justify-between ${borderCls}`}
+      className={`relative rounded-xl p-1 ${isActive ? 'border-[5px]' : 'border-[3px]'} cursor-pointer transition-colors duration-200 select-none flex flex-col justify-between ${borderCls}`}
       animate={isLeading && !isWinner ? { scale: [1, 1.02, 1] } : { scale: 1 }}
       transition={{ duration: 0.5, repeat: isLeading && !isWinner ? Infinity : 0, repeatDelay: 1.5 }}
       onMouseDown={(e) => {
@@ -107,11 +107,11 @@ export default function FixedHandCard({
       </div>
 
       {/* Cards */}
-      <div className="flex gap-0.5 justify-center card-felt-shadow flex-1 items-center" style={{ transform: 'scale(0.9)', transformOrigin: 'center center' }}>
+      <div className="flex gap-0.5 justify-center card-felt-shadow flex-1 items-center">
         {hand.cards.map((card, i) => {
           const imgUrl = getCardImageUrl(card);
           return imgUrl
-            ? <img key={i} src={imgUrl} alt={`${card.rank} of ${card.suit}`} className="w-[3.9rem] h-[5.5rem] rounded-lg shadow-lg object-cover" />
+            ? <img key={i} src={imgUrl} alt={`${card.rank} of ${card.suit}`} className="w-[4.3rem] h-[6.1rem] rounded-lg shadow-lg object-cover" />
             : <PlayingCard key={i} card={card} size="sm" glow={isLeading || isWinner} />;
         })}
       </div>
