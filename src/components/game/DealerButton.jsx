@@ -4,30 +4,12 @@ import { getDealButtonState } from '@/hooks/useDealerButton';
 /**
  * DealerButton — replaces the countdown clock.
  * Player presses this to advance the game through each phase.
- *
- * SIZE-LOCK:
- * - OUTER container stays a fixed 200px footprint — this is what keeps the
- *   footer from shifting (verified working, left unchanged).
- * - The visible PILL itself is now smaller (150x42) and centered inside
- *   that footprint, matching the compact "DEAL" reference size instead of
- *   stretching every state out to the widest label's width.
- * - Label letter-spacing tightened slightly (0.15em -> 0.08em) so
- *   "DEALING..." and "NEW ROUND" still fit cleanly inside the narrower pill.
- * No function/logic changes.
  */
-const OUTER_WIDTH = 200;
-const PILL_WIDTH = 150;
-const PILL_HEIGHT = 42;
-const SUBLABEL_HEIGHT = 14;
-
 export default function DealerButton({ gamePhase, totalBet, onDeal }) {
   const { label, sublabel, enabled, disabledReason } = getDealButtonState(gamePhase, totalBet);
 
   return (
-    <div
-      className="flex flex-col items-center gap-0.5 flex-shrink-0"
-      style={{ width: OUTER_WIDTH }}
-    >
+    <div className="flex flex-col items-center gap-0.5">
       <motion.button
         onClick={enabled ? onDeal : undefined}
         disabled={!enabled}
@@ -35,9 +17,8 @@ export default function DealerButton({ gamePhase, totalBet, onDeal }) {
         whileHover={enabled ? { scale: 1.06 } : {}}
         transition={{ type: 'spring', stiffness: 400, damping: 20 }}
         className={`
-          relative rounded-full font-black text-sm uppercase
+          relative px-8 py-3 rounded-full font-black text-sm tracking-widest uppercase
           border-2 transition-all duration-200 select-none
-          flex items-center justify-center flex-shrink-0
           ${enabled
             ? gamePhase === 'winner'
               ? 'border-green-400 bg-gradient-to-b from-green-500 to-green-700 text-white shadow-[0_0_18px_rgba(74,222,128,0.6)] hover:shadow-[0_0_28px_rgba(74,222,128,0.8)]'
@@ -46,10 +27,8 @@ export default function DealerButton({ gamePhase, totalBet, onDeal }) {
           }
         `}
         style={{
-          width: PILL_WIDTH,
-          height: PILL_HEIGHT,
-          letterSpacing: '0.08em',
-          boxSizing: 'border-box',
+          minWidth: 120,
+          letterSpacing: '0.15em',
         }}
       >
         {/* Shimmer when enabled */}
@@ -63,38 +42,13 @@ export default function DealerButton({ gamePhase, totalBet, onDeal }) {
             }}
           />
         )}
-        <span
-          className="relative z-10"
-          style={{
-            display: 'block',
-            width: '100%',
-            textAlign: 'center',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-        >
-          {label}
-        </span>
+        <span className="relative z-10">{label}</span>
       </motion.button>
 
-      {/* Sub-label — width stays at the outer footprint so it never wraps
-          and never affects footer stability, regardless of pill size. */}
-      <span
-        className={`text-[10px] font-semibold tracking-wide uppercase transition-colors ${
-          enabled ? 'text-yellow-400/80' : 'text-yellow-900/50'
-        }`}
-        style={{
-          display: 'block',
-          width: OUTER_WIDTH,
-          height: SUBLABEL_HEIGHT,
-          lineHeight: `${SUBLABEL_HEIGHT}px`,
-          textAlign: 'center',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        }}
-      >
+      {/* Sub-label */}
+      <span className={`text-[10px] font-semibold tracking-wide uppercase transition-colors ${
+        enabled ? 'text-yellow-400/80' : 'text-yellow-900/50'
+      }`}>
         {disabledReason || sublabel}
       </span>
 
