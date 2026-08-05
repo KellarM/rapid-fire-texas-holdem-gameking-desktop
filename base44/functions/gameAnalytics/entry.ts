@@ -92,18 +92,19 @@ Deno.serve(async (req) => {
     const { action, eventData } = body;
 
     // ── Save event ─────────────────────────────────────────────────────────
-    // Use the caller's own context so RLS stamps created_by_id — prevents
-    // cross-user event forgery while keeping live-game analytics working.
+    // Require an authenticated caller and use the user's own entity context so
+    // RLS stamps created_by_id — prevents cross-user event forgery.
     if (action === 'saveEvent') {
+      if (!user) return Response.json({ error: 'Authentication required' }, { status: 401 });
       const clean = sanitizeGameEvent(eventData);
       if (!clean) return Response.json({ error: 'Invalid event payload' }, { status: 400 });
-      // asServiceRole so anonymous guests on the published links are captured too
-      const record = await base44.asServiceRole.entities.GameEvent.create(clean);
+      const record = await base44.entities.GameEvent.create(clean);
       return Response.json({ ok: true, id: record.id });
     }
 
-    // ── Summary (any authenticated user; UI access is gated by ToolsMenu password) ─
+    // ── Summary (admin-only: aggregates all users' GameEvent records) ────────
     if (action === 'summary') {
+      if (!user || user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
       const events = [];
       let skip = 0;
       const pageSize = 5000;
