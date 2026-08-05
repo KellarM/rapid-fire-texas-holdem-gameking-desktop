@@ -44,13 +44,13 @@ function LockIcon({ dim = false }) {
       src={GOLD_LOCK_IMG}
       alt="locked"
       style={{
-        width: 26,
-        height: 26,
+        width: 42,
+        height: 42,
         flexShrink: 0,
         display: 'block',
         objectFit: 'contain',
-        opacity: dim ? 0.5 : 1,
-        filter: dim ? 'grayscale(40%)' : 'none',
+        opacity: dim ? 0.85 : 1,
+        filter: dim ? 'brightness(0.8)' : 'drop-shadow(0 0 4px rgba(255,215,0,0.6))',
       }}
     />
   );
