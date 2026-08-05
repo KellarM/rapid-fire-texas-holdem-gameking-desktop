@@ -8,12 +8,27 @@ const DEFAULT_TIMING = {
   riverBetting: 14,
   riverReveal: 5,
   endOfRound: 14,
+  dealerMode: true, // default: Dealer Button mode (safe)
 };
+
+const DEALER_MODE_KEY = 'rfth_dealerMode';
+
+function readLocalDealerMode() {
+  try {
+    const v = localStorage.getItem(DEALER_MODE_KEY);
+    return v === null ? true : v === 'true';
+  } catch { return true; }
+}
+
+function writeLocalDealerMode(v) {
+  try { localStorage.setItem(DEALER_MODE_KEY, String(v)); } catch {}
+}
 
 export function useGameTiming() {
   const [timing, setTiming] = useState(DEFAULT_TIMING);
   const [recordId, setRecordId] = useState(null);
   const timerRef = useRef(null);
+  const [dealerMode, setDealerModeState] = useState(() => readLocalDealerMode());
 
   // Load timing from DB on mount
   useEffect(() => {
@@ -22,6 +37,11 @@ export function useGameTiming() {
         const rec = records[0];
         setRecordId(rec.id);
         setTiming({ ...DEFAULT_TIMING, ...rec });
+        // If DB has dealerMode, use it; otherwise keep localStorage value
+        if (rec.dealerMode !== undefined && rec.dealerMode !== null) {
+          setDealerModeState(!!rec.dealerMode);
+          writeLocalDealerMode(!!rec.dealerMode);
+        }
       }
     }).catch(() => {});
   }, []);
@@ -33,6 +53,10 @@ export function useGameTiming() {
         const rec = records[0];
         setRecordId(rec.id);
         setTiming({ ...DEFAULT_TIMING, ...rec });
+        if (rec.dealerMode !== undefined && rec.dealerMode !== null) {
+          setDealerModeState(!!rec.dealerMode);
+          writeLocalDealerMode(!!rec.dealerMode);
+        }
       }
     }).catch(() => {});
   }, []);
@@ -62,5 +86,10 @@ export function useGameTiming() {
     }
   }, []);
 
-  return { timing, recordId, startTimer, stopTimer, reloadTiming };
+  const setDealerMode = useCallback((v) => {
+    setDealerModeState(v);
+    writeLocalDealerMode(v);
+  }, []);
+
+  return { timing, recordId, dealerMode, setDealerMode, startTimer, stopTimer, reloadTiming };
 }

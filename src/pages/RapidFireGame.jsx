@@ -203,14 +203,13 @@ export default function RapidFireGame() {
   }, [boardTheme]);
 
   // Game timing
-  const { timing, startTimer, stopTimer, reloadTiming } = useGameTiming();
+  const { timing, dealerMode, setDealerMode, startTimer, stopTimer, reloadTiming } = useGameTiming();
 
-  // ── Mode: false (default) = Timing Feature, true = Dealer Button ──────────
-  // Loaded from the GameTiming DB record. Dealer mode = current live behaviour
-  // (player-controlled via DealerButton). Timing mode = auto-progression with
-  // visible countdown clocks, ported from rapid-fire-texas-holdem-desktop.
-  const [dealerMode, setDealerMode] = useState(true); // default: Dealer (safe)
-  const dealerModeRef = useRef(true);
+  // ── Mode: true (default) = Dealer Button, false = Timing Feature ──────────
+  // Dealer mode = current live behaviour (player-controlled via DealerButton).
+  // Timing mode = auto-progression with visible countdown clocks.
+  // Source of truth: useGameTiming hook (DB + localStorage).
+  const dealerModeRef = useRef(dealerMode);
   useEffect(() => { dealerModeRef.current = dealerMode; }, [dealerMode]);
 
   // Countdown display state (Timing mode only)
@@ -398,21 +397,7 @@ export default function RapidFireGame() {
   // ─────────────────────────────────────────────────────────────────────────
 
   // reloadTiming is passed as onSaved to GameTimingModal — no event listener needed
-
-  // Load dealerMode from the GameTiming DB record (loaded by useGameTiming hook).
-  // The hook stores the raw record fields in `timing`, which includes dealerMode
-  // if the operator has saved it. Default to true (Dealer) if not yet set.
-  useEffect(() => {
-    if (timing.dealerMode !== undefined) {
-      setDealerMode(!!timing.dealerMode);
-    }
-  }, [timing.dealerMode]);
-
-  // Expose dealerMode to the modal via a callback prop
-  const handleTimingSaved = useCallback(() => {
-    reloadTiming();
-    // After reload, the timing.dealerMode effect above will sync the state
-  }, [reloadTiming]);
+  // dealerMode is managed by useGameTiming hook (DB + localStorage)
   const timerActiveRef = useRef(false);
   const handleDealRiverRef = useRef(null);
   const settleRef = useRef(null);
@@ -1759,7 +1744,7 @@ export default function RapidFireGame() {
       {/* Analytics Dashboard */}
       <AnalyticsDashboard isOpen={showAnalytics} onClose={() => setShowAnalytics(false)} />
 
-      <GameTimingModal isOpen={showGameTiming} onClose={() => setShowGameTiming(false)} onSaved={handleTimingSaved} dealerMode={dealerMode} onDealerModeChange={setDealerMode} />
+      <GameTimingModal isOpen={showGameTiming} onClose={() => setShowGameTiming(false)} onSaved={reloadTiming} dealerMode={dealerMode} onDealerModeChange={setDealerMode} />
       <GameVersionsModal isOpen={showVersions} onClose={() => setShowVersions(false)} />
       {showBellCurve && (
         <BellCurveModal

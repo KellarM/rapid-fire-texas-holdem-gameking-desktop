@@ -26,6 +26,11 @@
       "type": "number",
       "default": 14
     },
+    "dealerMode": {
+      "type": "boolean",
+      "default": true,
+      "description": "true = Dealer Button mode (manual), false = Timing Feature mode (auto-progression)"
+    },
     "description": {
       "type": "string",
       "maxLength": 1000

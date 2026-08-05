@@ -144,7 +144,24 @@ export default function GameTimingModal({ isOpen, onClose, onSaved, dealerMode =
                 {/* Center: Mode toggle — left=Timing, right=Dealer */}
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => onDealerModeChange?.(!dealerMode)}
+                    onClick={() => {
+                      onDealerModeChange?.(!dealerMode);
+                      // Immediately persist to DB so it survives refresh
+                      const payload = {
+                        bettingClose: values.bettingClose,
+                        flopReveal: values.flopReveal,
+                        turnReveal: values.turnReveal,
+                        riverBetting: values.riverBetting,
+                        riverReveal: values.riverReveal,
+                        endOfRound: values.endOfRound,
+                        dealerMode: !dealerMode,
+                      };
+                      if (recordId) {
+                        base44.entities.GameTiming.update(recordId, payload).catch(() => {});
+                      } else {
+                        base44.entities.GameTiming.create({ config_key: 'default', ...payload }).then(r => setRecordId(r.id)).catch(() => {});
+                      }
+                    }}
                     className="relative flex items-center transition-colors"
                     style={{
                       width: 44, height: 22, borderRadius: 11, cursor: 'pointer',
