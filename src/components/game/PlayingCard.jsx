@@ -6,7 +6,8 @@ export default function PlayingCard({ card, size = 'md', faceDown = false, glow 
     sm: 'w-[3.9rem] h-[5.5rem]',
     md: 'w-14 h-20',
     lg: 'w-16 h-24',
-    xl: 'w-20 h-28'
+    xl: 'w-20 h-28',
+    community: 'w-[70px] h-[100px]'
   };
 
   if (faceDown) {
@@ -39,6 +40,31 @@ export default function PlayingCard({ card, size = 'md', faceDown = false, glow 
   const suitSymbol = SUITS[card.suit];
   const textColor = isRed ? 'text-red-600' : 'text-black';
   const borderColor = isRed ? 'border-red-500/60' : 'border-gray-500/60';
+
+  // ── size === 'community' — dedicated branch, explicit px fonts (not em-relative) ──
+  // Same design as the default card below, scaled up to a 70×100 box.
+  // Font ratios preserved exactly from the default (rank 0.2×h, suit-corner 0.1×h, center-suit 0.4545×h)
+  // so it reads as "the same card, bigger" — not a redesign.
+  if (size === 'community') {
+    return (
+      <div className="w-[70px] h-[100px] rounded-lg border-2 bg-white flex flex-col shadow-lg select-none overflow-hidden relative border-red-500/60 ">
+        <div className={`flex flex-col items-start leading-none p-1 ${textColor}`} style={{ fontWeight: 'bold' }}>
+          <div style={{ fontSize: '20px' }}>{card.rank}</div>
+          <div style={{ fontSize: '10px' }}>{suitSymbol}</div>
+        </div>
+
+        <div className="flex-1 flex items-center justify-center px-1 -my-1">
+          <div style={{ fontSize: '46px', color: isRed ? '#dc2626' : '#000', opacity: 0.7, lineHeight: 1 }}>
+            {suitSymbol}
+          </div>
+        </div>
+
+        <div className={`flex flex-col items-end leading-none p-1 pb-0.5 ${textColor}`} style={{ fontWeight: 'bold' }}>
+          <div style={{ fontSize: '20px' }}>{card.rank}</div>
+          <div style={{ fontSize: '10px' }}>{suitSymbol}</div>
+        </div>
+      </div>);
+  }
 
   return (
     <div className="w-[3.9rem] h-[5.5rem] rounded-lg border-2 bg-white flex flex-col shadow-lg select-none overflow-hidden relative border-red-500/60 ">

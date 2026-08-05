@@ -1,10 +1,10 @@
 import PlayingCard from './PlayingCard';
 import { motion } from 'framer-motion';
 
-const CARD_W = 56;
-const CARD_H = 80;
-const GAP = 6;
-const GROUP_GAP = 14;
+const CARD_W = 70;
+const CARD_H = 100;
+const GAP = 10;
+const GROUP_GAP = 20;
 const LABEL_H = 18;
 const LABEL_TOP_GAP = 6;
 
@@ -19,7 +19,7 @@ function CardSlot({ card, index, active }) {
           transition={{ duration: 0.4, delay: 0.05 * index }}
           style={{ width: CARD_W, height: CARD_H }}
         >
-          <PlayingCard card={card} size="md" glow={active} />
+          <PlayingCard card={card} size="community" glow={active} />
         </motion.div>
       ) : (
         <div style={{ width: CARD_W, height: CARD_H, opacity: 0.9 }}>
