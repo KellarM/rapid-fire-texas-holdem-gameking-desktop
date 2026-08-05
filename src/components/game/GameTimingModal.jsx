@@ -55,6 +55,9 @@ export default function GameTimingModal({ isOpen, onClose, onSaved }) {
   const [values, setValues] = useState(DEFAULT_TIMING);
   const [recordId, setRecordId] = useState(null);
   const [saving, setSaving] = useState(false);
+  // Mode toggle: false (left) = Timing Feature, true (right) = Dealer Button
+  // Local state only — DB persistence and game-logic wiring come in a later step
+  const [dealerMode, setDealerMode] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -131,6 +134,7 @@ export default function GameTimingModal({ isOpen, onClose, onSaved }) {
               {/* Header */}
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-yellow-700/30"
                 style={{ background: 'rgba(0,0,0,0.4)' }}>
+                {/* Left: icon + title */}
                 <div className="flex items-center gap-2.5">
                   <Timer className="w-5 h-5 text-yellow-400" />
                   <span className="text-yellow-300 font-black text-base tracking-wide"
@@ -138,6 +142,42 @@ export default function GameTimingModal({ isOpen, onClose, onSaved }) {
                     GAME TIMING
                   </span>
                 </div>
+                {/* Center: Mode toggle — left=Timing, right=Dealer */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setDealerMode(prev => !prev)}
+                    className="relative flex items-center transition-colors"
+                    style={{
+                      width: 44, height: 22, borderRadius: 11, cursor: 'pointer',
+                      border: '1px solid rgba(202,138,4,0.5)',
+                      background: dealerMode
+                        ? 'linear-gradient(90deg, rgba(60,80,100,0.6) 0%, rgba(40,100,160,0.7) 100%)'
+                        : 'linear-gradient(90deg, rgba(100,60,0,0.6) 0%, rgba(160,100,0,0.7) 100%)',
+                    }}
+                    title={dealerMode ? 'Dealer Button mode' : 'Timing Feature mode'}
+                  >
+                    <div
+                      className="absolute rounded-full transition-all"
+                      style={{
+                        width: 16, height: 16,
+                        top: 2,
+                        left: dealerMode ? 24 : 2,
+                        background: dealerMode ? '#60a5fa' : '#fbbf24',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.4)',
+                      }}
+                    />
+                  </button>
+                  <span
+                    className="font-bold text-sm tracking-wide transition-colors"
+                    style={{
+                      fontFamily: 'Oswald, sans-serif',
+                      color: dealerMode ? '#60a5fa' : 'rgba(250,204,21,0.4)',
+                    }}
+                  >
+                    Dealer
+                  </span>
+                </div>
+                {/* Right: close button */}
                 <button
                   onClick={onClose}
                   className="text-gray-500 hover:text-white transition-colors p-1"
