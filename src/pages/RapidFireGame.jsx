@@ -495,16 +495,6 @@ export default function RapidFireGame() {
   const isRankBetPlaced = rankBetCount > 0;
   const isRankHovered = hoveredRankRow !== null;
 
-  const luminosityClass = riverWinFlash ?
-  'lp-jackpot' :
-  sideBetGateOpen ?
-  'lp-rank-placed' :
-  isRankHovered ?
-  'lp-rank-hover' :
-  isHandBetPlaced ?
-  'lp-hand-placed' :
-  'lp-dormant';
-
   // All 7 rank slots are available when kill-switch is off (any rank can win regardless of hand selection)
   const activeHandIds = Object.keys(pHandBets).map(Number);
 
@@ -1974,8 +1964,7 @@ export default function RapidFireGame() {
               isRankBetPlaced={isRankBetPlaced}
               colorCap={Math.max(0, (totalHandAmt + totalRankAmt) - totalColorAmt)}
               riverCap={Math.max(0, (totalHandAmt + totalRankAmt + totalColorAmt) - (pLowHighBet?.amount || 0))}
-              rankLockThreshold={versions?.rankLockThreshold ?? 1}
-              boardStateClass={luminosityClass} />
+              rankLockThreshold={versions?.rankLockThreshold ?? 1} />
             
           </div>
         </div>
