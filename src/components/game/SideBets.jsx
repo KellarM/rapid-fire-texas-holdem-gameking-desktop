@@ -392,7 +392,7 @@ export default function SideBets({
               className="text-xs font-black tracking-wider uppercase"
               style={{ fontSize: '0.7rem', letterSpacing: '0.1em', ...goldEmbossText }}
             >
-              River — Low / High
+              River
             </span>
             {riverBoardOpen && (
               <span
