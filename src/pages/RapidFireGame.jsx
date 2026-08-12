@@ -1977,6 +1977,7 @@ export default function RapidFireGame() {
             border: '3px solid #e8b84b',
             boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
             background: 'rgba(0,0,0,0.35)',
+            position: 'relative',
           }}>
           {/* Chip selector — far left */}
           <div className="flex items-center gap-1.5 flex-shrink-0">
@@ -1993,8 +1994,14 @@ export default function RapidFireGame() {
             )}
           </div>
 
-          {/* Player Bank + Dealer Button — directly beside the $1 chip */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Player Bank + Dealer Button + Bet Sum — centered between left & right borders */}
+          <div className="flex items-center gap-3 flex-shrink-0"
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}>
             <div className="flex flex-col items-center">
               <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Players Bank</span>
               <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
