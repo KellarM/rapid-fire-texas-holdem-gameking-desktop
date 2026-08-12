@@ -327,7 +327,7 @@ export default function SideBets({
             style={{
               backdropFilter: 'blur(6px)',
               background: 'linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(15,10,5,0.82) 100%)',
-              border: '1.5px solid rgba(251,191,36,0.25)',
+              border: 'none',
               boxShadow: 'inset 0 0 20px rgba(251,191,36,0.05)',
             }}
           >
@@ -413,7 +413,7 @@ export default function SideBets({
             style={{
               backdropFilter: 'blur(6px)',
               background: 'linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(5,10,20,0.82) 100%)',
-              border: '1.5px solid rgba(251,191,36,0.25)',
+              border: 'none',
               boxShadow: 'inset 0 0 20px rgba(251,191,36,0.05)',
             }}
           >
