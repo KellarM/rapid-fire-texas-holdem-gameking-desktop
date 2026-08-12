@@ -141,7 +141,7 @@ export default function RapidFireGame() {
   const [gamePhase, setGamePhase] = useState('betting');
   const [deck, setDeck] = useState(() => getSecureRandomBoard());
   const [deckIndex, setDeckIndex] = useState(0);
-  const [dealerMessage, setDealerMessage] = useState("1 — Texas Hold'em is open for play. 2 — Place Hand, Rank, and Color bets now.");
+  const [dealerMessage, setDealerMessage] = useState("1 — Board is ready and open for play. 2 — Place Hand, Rank, and Color bets now.");
   const [leadingHandIds, setLeadingHandIds] = useState([]);
   const [winnerHandIds, setWinnerHandIds] = useState([]);
   const [winningRedBlack, setWinningRedBlack] = useState([]);
