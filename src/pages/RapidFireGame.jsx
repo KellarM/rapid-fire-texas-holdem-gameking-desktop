@@ -1935,7 +1935,7 @@ export default function RapidFireGame() {
             
           </div>
           {/* Side Bets panel */}
-          <div className="rounded-xl p-2 flex flex-col" style={{ flex: '5 1 0', overflow: 'visible' }}>
+          <div className="flex flex-col" style={{ flex: '5 1 0', overflow: 'visible' }}>
             <SideBets
               communityCards={communityCards}
               allRedBlackBets={redBlackBets}
