@@ -1977,31 +1977,26 @@ export default function RapidFireGame() {
             border: '3px solid #e8b84b',
             boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
             background: 'rgba(0,0,0,0.35)',
-            position: 'relative',
           }}>
-          {/* Chip selector — far left */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            {CHIP_VALUES.map((v) =>
-            <button
-              key={v}
-              onClick={() => setSelectedChip(v)}
-              className={`relative flex-shrink-0 transition-all duration-150 rounded-full border-0 bg-transparent p-0
-                  ${selectedChip === v ? 'scale-125 drop-shadow-[0_0_6px_rgba(251,191,36,0.9)]' : 'opacity-75 hover:opacity-100 hover:scale-110'}`}
-              style={{ lineHeight: 0 }}
-            >
-              <Chip amount={v} scale={0.72} />
-            </button>
-            )}
+          {/* LEFT section: chips — flex:1 so it mirrors the right section's width */}
+          <div className="flex items-center" style={{ flex: 1, justifyContent: 'flex-start' }}>
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              {CHIP_VALUES.map((v) =>
+              <button
+                key={v}
+                onClick={() => setSelectedChip(v)}
+                className={`relative flex-shrink-0 transition-all duration-150 rounded-full border-0 bg-transparent p-0
+                    ${selectedChip === v ? 'scale-125 drop-shadow-[0_0_6px_rgba(251,191,36,0.9)]' : 'opacity-75 hover:opacity-100 hover:scale-110'}`}
+                style={{ lineHeight: 0 }}
+              >
+                <Chip amount={v} scale={0.72} />
+              </button>
+              )}
+            </div>
           </div>
 
-          {/* Player Bank + Dealer Button + Bet Sum — centered between left & right borders */}
-          <div className="flex items-center gap-3 flex-shrink-0"
-            style={{
-              position: 'absolute',
-              left: '50%',
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
-            }}>
+          {/* CENTER: Player Bank + Dealer Button + Bet Sum — stays in normal flow (no absolute) so it keeps contributing height. True-centered because LEFT and RIGHT wrappers are both flex:1 and grow equally. */}
+          <div className="flex items-center gap-3 flex-shrink-0">
             <div className="flex flex-col items-center">
               <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Players Bank</span>
               <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
@@ -2021,31 +2016,30 @@ export default function RapidFireGame() {
             </div>
           </div>
 
-          {/* Spacer */}
-          <div className="flex-1" />
+          {/* RIGHT section: Clear + Gear — flex:1, mirrors LEFT section's width so CENTER lands at true midpoint */}
+          <div className="flex items-center gap-2" style={{ flex: 1, justifyContent: 'flex-end' }}>
+            <div className="flex items-center gap-2 flex-shrink-0" style={{ minWidth: '80px', justifyContent: 'flex-end' }}>
+              {gamePhase === 'betting' && totalBet > 0 &&
+              <button
+                onClick={clearBets}
+                className="px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-300 text-xs font-semibold hover:bg-red-900/50 transition-all">
+                  Clear
+                </button>
+              }
+            </div>
 
-          {/* Clear button — fixed width so appearance doesn't shift layout */}
-          <div className="flex items-center gap-2 flex-shrink-0" style={{ minWidth: '80px', justifyContent: 'flex-end' }}>
-            {gamePhase === 'betting' && totalBet > 0 &&
-            <button
-              onClick={clearBets}
-              className="px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-300 text-xs font-semibold hover:bg-red-900/50 transition-all">
-                Clear
-              </button>
-            }
+            {/* ⚙ Gear Button — always visible */}
+            <OnboardingIndicator>
+              <GearMenu
+                soundManager={soundManager}
+                boardTheme={boardTheme}
+                setBoardTheme={setBoardTheme}
+                onHowToPlay={() => setShowHowToPlay(true)}
+                onOpenStats={() => setShowStatsPanel(true)}
+                onResetBank={handleResetBank}
+              />
+            </OnboardingIndicator>
           </div>
-
-          {/* ⚙ Gear Button — always visible */}
-          <OnboardingIndicator>
-            <GearMenu
-              soundManager={soundManager}
-              boardTheme={boardTheme}
-              setBoardTheme={setBoardTheme}
-              onHowToPlay={() => setShowHowToPlay(true)}
-              onOpenStats={() => setShowStatsPanel(true)}
-              onResetBank={handleResetBank}
-            />
-          </OnboardingIndicator>
         </div>
       </div>
     </div>
