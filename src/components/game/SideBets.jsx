@@ -291,23 +291,23 @@ export default function SideBets({
     <div className="flex flex-col h-full gap-1">
       {/* Color Board */}
       <div className="relative flex flex-col min-h-0" style={{ flex: '3 1 0' }}>
-        {/* Header — hidden in landscape to save space */}
+        {/* Header row — label left, Match Cap pill right, same flex row */}
         {!compactLandscape && (
-          <div
-            className="text-xs font-black tracking-wider uppercase mb-1 text-center flex-shrink-0"
-            style={{ ...goldEmbossText, fontSize: '0.7rem', letterSpacing: '0.1em' }}
-          >
-            Color Board
-          </div>
-        )}
-
-        {/* Snowball Cap HUD pill — max total Color bet, based on Hand + Rank totals */}
-        {!colorLocked && (
-          <div
-            className="absolute -top-2 right-1 z-30 px-2 py-0.5 rounded-full text-[10px] font-black whitespace-nowrap pointer-events-none"
-            style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24' }}
-          >
-            Match Cap: ${colorCap.toLocaleString()}
+          <div className="flex items-center justify-between flex-shrink-0 mb-1">
+            <span
+              className="text-xs font-black tracking-wider uppercase"
+              style={{ fontSize: '0.7rem', letterSpacing: '0.1em', ...goldEmbossText }}
+            >
+              Color Board
+            </span>
+            {!colorLocked && (
+              <span
+                className="px-2 py-0.5 rounded-full text-[10px] font-black whitespace-nowrap pointer-events-none"
+                style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24' }}
+              >
+                Match Cap: ${colorCap.toLocaleString()}
+              </span>
+            )}
           </div>
         )}
 
@@ -385,23 +385,23 @@ export default function SideBets({
 
       {/* River — Low / High */}
       <div className="relative flex flex-col min-h-0" style={{ flex: '2 1 0' }}>
-        {/* Header — hidden in landscape to save space */}
+        {/* Header row — label left, Match Cap pill right, same flex row */}
         {!compactLandscape && (
-          <div
-            className={`text-xs font-black tracking-wider uppercase mb-1 text-center flex-shrink-0 ${canBetLH && !hoveredRiverType ? 'animate-pulse' : ''}`}
-            style={{ ...goldEmbossText, fontSize: '0.7rem', letterSpacing: '0.1em' }}
-          >
-            River — Low / High
-          </div>
-        )}
-
-        {/* Snowball Cap HUD pill — max River bet, based on Hand + Rank + Color totals */}
-        {riverBoardOpen && (
-          <div
-            className="absolute -top-2 right-1 z-30 px-2 py-0.5 rounded-full text-[10px] font-black whitespace-nowrap pointer-events-none"
-            style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24' }}
-          >
-            Match Cap: ${riverCap.toLocaleString()}
+          <div className={`flex items-center justify-between flex-shrink-0 mb-1 ${canBetLH && !hoveredRiverType ? 'animate-pulse' : ''}`}>
+            <span
+              className="text-xs font-black tracking-wider uppercase"
+              style={{ fontSize: '0.7rem', letterSpacing: '0.1em', ...goldEmbossText }}
+            >
+              River — Low / High
+            </span>
+            {riverBoardOpen && (
+              <span
+                className="px-2 py-0.5 rounded-full text-[10px] font-black whitespace-nowrap pointer-events-none"
+                style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24' }}
+              >
+                Match Cap: ${riverCap.toLocaleString()}
+              </span>
+            )}
           </div>
         )}
 

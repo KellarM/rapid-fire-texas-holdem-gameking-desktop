@@ -299,17 +299,23 @@ export default function RankBets({
 
   return (
     <div className="relative flex flex-col h-full" style={{ overflow: 'visible' }}>
-      {/* Header removed — space saved for rank rows */}
-
-      {/* Match Capacity HUD pill — how much more you can bet on Rank to match your Hand total */}
-      {!noHandBets && !killSwitchActive && (
-        <div
-          className="absolute -top-2 right-0 z-30 px-2 py-0.5 rounded-full text-[10px] font-black whitespace-nowrap pointer-events-none"
-          style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24' }}
+      {/* Header row — label left, Match Cap pill right, same flex row */}
+      <div className="flex items-center justify-between flex-shrink-0 mb-1">
+        <span
+          className="text-xs font-black tracking-wider uppercase"
+          style={{ fontSize: '0.7rem', letterSpacing: '0.1em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
         >
-          Match Cap: ${matchCapRemaining.toLocaleString()}
-        </div>
-      )}
+          Hand Ranking
+        </span>
+        {!noHandBets && !killSwitchActive && (
+          <span
+            className="px-2 py-0.5 rounded-full text-[10px] font-black whitespace-nowrap pointer-events-none"
+            style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24' }}
+          >
+            Match Cap: ${matchCapRemaining.toLocaleString()}
+          </span>
+        )}
+      </div>
 
       {/* Kill Switch Overlay */}
       {killSwitchActive && gamePhase === 'betting' && (
