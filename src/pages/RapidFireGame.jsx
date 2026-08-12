@@ -1761,8 +1761,9 @@ export default function RapidFireGame() {
         suppress={recoveryChecking || showRecoveryModal}
       />
 
-      {/* Main Layout: 3 columns, fills remaining height */}
-      <div className="flex gap-1.5 p-1.5 flex-1 min-h-0">
+      {/* Main Layout: full-width footer, 3 columns above */}
+      <div className="flex flex-col gap-1.5 p-1.5 flex-1 min-h-0">
+        <div className="flex gap-1.5 flex-1 min-h-0">
 
         {/* LEFT: History + Jackpots */}
         <div className="w-56 flex-shrink-0 flex flex-col gap-1.5 overflow-hidden">
@@ -1909,75 +1910,6 @@ export default function RapidFireGame() {
             </div>
           </div>
 
-          {/* Bottom controls */}
-          <div className="flex items-center gap-2 rounded-xl pt-1.5 px-3 pb-1.5 flex-shrink-0 w-full"
-            style={{
-              border: '3px solid #e8b84b',
-              boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
-              background: 'rgba(0,0,0,0.35)',
-            }}>
-            {/* Chip selector — far left */}
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              {CHIP_VALUES.map((v) =>
-              <button
-                key={v}
-                onClick={() => setSelectedChip(v)}
-                className={`relative flex-shrink-0 transition-all duration-150 rounded-full border-0 bg-transparent p-0
-                    ${selectedChip === v ? 'scale-125 drop-shadow-[0_0_6px_rgba(251,191,36,0.9)]' : 'opacity-75 hover:opacity-100 hover:scale-110'}`}
-                style={{ lineHeight: 0 }}
-              >
-                <Chip amount={v} scale={0.72} />
-              </button>
-              )}
-            </div>
-
-            {/* Player Bank + Dealer Button — directly beside the $1 chip */}
-            <div className="flex items-center gap-3 flex-shrink-0">
-              <div className="flex flex-col items-center">
-                <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Players Bank</span>
-                <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
-                  <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${(balances[activePlayer] ?? 100).toFixed(2)}</span>
-                </div>
-              </div>
-              {dealerMode ? (
-                <DealerButton gamePhase={gamePhase} totalBet={totalBet} onDeal={handleDealButtonPress} />
-              ) : (
-                <div style={{ width: 120, flexShrink: 0 }} />
-              )}
-              <div className="flex flex-col items-center">
-                <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Bet Sum Count</span>
-                <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
-                  <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${totalBet.toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Spacer */}
-            <div className="flex-1" />
-
-            {/* Clear button — fixed width so appearance doesn't shift layout */}
-            <div className="flex items-center gap-2 flex-shrink-0" style={{ minWidth: '80px', justifyContent: 'flex-end' }}>
-              {gamePhase === 'betting' && totalBet > 0 &&
-              <button
-                onClick={clearBets}
-                className="px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-300 text-xs font-semibold hover:bg-red-900/50 transition-all">
-                  Clear
-                </button>
-              }
-            </div>
-
-            {/* ⚙ Gear Button — always visible */}
-            <OnboardingIndicator>
-              <GearMenu
-                soundManager={soundManager}
-                boardTheme={boardTheme}
-                setBoardTheme={setBoardTheme}
-                onHowToPlay={() => setShowHowToPlay(true)}
-                onOpenStats={() => setShowStatsPanel(true)}
-                onResetBank={handleResetBank}
-              />
-            </OnboardingIndicator>
-          </div>
         </div>
 
         {/* RIGHT: Rank Bets | Side Bets | Payout Table */}
@@ -2044,6 +1976,78 @@ export default function RapidFireGame() {
               rankLockThreshold={versions?.rankLockThreshold ?? 1} />
             
           </div>
+        </div>
+      </div>
+
+        {/* Full-width footer bar — spans under all 3 columns */}
+        {/* Bottom controls */}
+        <div className="flex items-center gap-2 rounded-xl pt-1.5 px-3 pb-1.5 flex-shrink-0 w-full"
+          style={{
+            border: '3px solid #e8b84b',
+            boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
+            background: 'rgba(0,0,0,0.35)',
+          }}>
+          {/* Chip selector — far left */}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            {CHIP_VALUES.map((v) =>
+            <button
+              key={v}
+              onClick={() => setSelectedChip(v)}
+              className={`relative flex-shrink-0 transition-all duration-150 rounded-full border-0 bg-transparent p-0
+                  ${selectedChip === v ? 'scale-125 drop-shadow-[0_0_6px_rgba(251,191,36,0.9)]' : 'opacity-75 hover:opacity-100 hover:scale-110'}`}
+              style={{ lineHeight: 0 }}
+            >
+              <Chip amount={v} scale={0.72} />
+            </button>
+            )}
+          </div>
+
+          {/* Player Bank + Dealer Button — directly beside the $1 chip */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="flex flex-col items-center">
+              <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Players Bank</span>
+              <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
+                <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${(balances[activePlayer] ?? 100).toFixed(2)}</span>
+              </div>
+            </div>
+            {dealerMode ? (
+              <DealerButton gamePhase={gamePhase} totalBet={totalBet} onDeal={handleDealButtonPress} />
+            ) : (
+              <div style={{ width: 120, flexShrink: 0 }} />
+            )}
+            <div className="flex flex-col items-center">
+              <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Bet Sum Count</span>
+              <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
+                <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${totalBet.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Clear button — fixed width so appearance doesn't shift layout */}
+          <div className="flex items-center gap-2 flex-shrink-0" style={{ minWidth: '80px', justifyContent: 'flex-end' }}>
+            {gamePhase === 'betting' && totalBet > 0 &&
+            <button
+              onClick={clearBets}
+              className="px-3 py-1.5 rounded-lg border border-red-700/50 bg-red-900/30 text-red-300 text-xs font-semibold hover:bg-red-900/50 transition-all">
+                Clear
+              </button>
+            }
+          </div>
+
+          {/* ⚙ Gear Button — always visible */}
+          <OnboardingIndicator>
+            <GearMenu
+              soundManager={soundManager}
+              boardTheme={boardTheme}
+              setBoardTheme={setBoardTheme}
+              onHowToPlay={() => setShowHowToPlay(true)}
+              onOpenStats={() => setShowStatsPanel(true)}
+              onResetBank={handleResetBank}
+            />
+          </OnboardingIndicator>
         </div>
       </div>
     </div>
