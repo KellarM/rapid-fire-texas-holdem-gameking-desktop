@@ -1906,7 +1906,7 @@ export default function RapidFireGame() {
         {/* RIGHT: Rank Bets | Side Bets | Payout Table */}
         <div className="flex-shrink-0 flex flex-col gap-1.5" style={{ width: 263, overflow: 'visible' }}>
           {/* Rank Bets panel */}
-          <div className="rounded-xl p-2 flex flex-col" style={{ flex: '7 1 0', background: 'rgba(0,0,0,0.45)', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', overflow: 'visible' }}>
+          <div className="rounded-xl p-2 flex flex-col" style={{ flex: '6.5 1 0', background: 'rgba(0,0,0,0.45)', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', overflow: 'visible' }}>
             <RankBets
               rankBets={pRankBets}
               allRankBets={rankBets}
@@ -1935,7 +1935,7 @@ export default function RapidFireGame() {
             
           </div>
           {/* Side Bets panel */}
-          <div className="flex flex-col" style={{ flex: '5 1 0', overflow: 'visible' }}>
+          <div className="flex flex-col" style={{ flex: '5.5 1 0', overflow: 'visible' }}>
             <SideBets
               communityCards={communityCards}
               allRedBlackBets={redBlackBets}
