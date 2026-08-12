@@ -1787,8 +1787,9 @@ export default function RapidFireGame() {
               alignItems: 'center',
               padding: 0,
               borderRadius: '0.5rem',
-              border: '1px solid rgba(202,138,4,0.4)',
+              border: '3px solid #e8b84b',
               background: 'linear-gradient(90deg, rgba(78,47,0,0.5) 0%, rgba(83,37,0,0.5) 100%)',
+              boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
               boxSizing: 'border-box',
               position: 'relative',
             }}>
@@ -1915,7 +1916,7 @@ export default function RapidFireGame() {
         {/* RIGHT: Rank Bets | Side Bets | Payout Table */}
         <div className="flex-shrink-0 flex flex-col gap-1.5" style={{ width: 263, overflow: 'visible' }}>
           {/* Rank Bets panel */}
-          <div className="border rounded-xl p-2 flex flex-col slot-border-dormant" style={{ flex: '7 1 0', background: 'rgba(0,0,0,0.45)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.4)', overflow: 'visible' }}>
+          <div className="rounded-xl p-2 flex flex-col" style={{ flex: '7 1 0', background: 'rgba(0,0,0,0.45)', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', overflow: 'visible' }}>
             <RankBets
               rankBets={pRankBets}
               allRankBets={rankBets}
@@ -1944,7 +1945,7 @@ export default function RapidFireGame() {
             
           </div>
           {/* Side Bets panel */}
-          <div className={`border rounded-xl p-2 flex flex-col slot-border-dormant ${luminosityClass}`} style={{ flex: '5 1 0', background: 'rgba(0,0,0,0.45)', boxShadow: 'inset 0 0 20px rgba(0,0,0,0.4)', overflow: 'visible' }}>
+          <div className="rounded-xl p-2 flex flex-col" style={{ flex: '5 1 0', overflow: 'visible' }}>
             <SideBets
               communityCards={communityCards}
               allRedBlackBets={redBlackBets}
@@ -1973,7 +1974,8 @@ export default function RapidFireGame() {
               isRankBetPlaced={isRankBetPlaced}
               colorCap={Math.max(0, (totalHandAmt + totalRankAmt) - totalColorAmt)}
               riverCap={Math.max(0, (totalHandAmt + totalRankAmt + totalColorAmt) - (pLowHighBet?.amount || 0))}
-              rankLockThreshold={versions?.rankLockThreshold ?? 1} />
+              rankLockThreshold={versions?.rankLockThreshold ?? 1}
+              boardStateClass={luminosityClass} />
             
           </div>
         </div>
