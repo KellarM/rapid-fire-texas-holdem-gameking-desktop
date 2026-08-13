@@ -56,6 +56,8 @@ import { useIncompleteRoundRecovery } from '@/hooks/useIncompleteRoundRecovery';
 import RoundRecoveryModal from '@/components/game/RoundRecoveryModal';
 import { useGameSounds } from '@/hooks/useGameSounds';
 import { useDropChip } from '@/hooks/useDropChip';
+import { useIsMobile } from '@/hooks/use-mobile';
+import MobileGameLayout from '@/components/game/MobileGameLayout';
 import GearMenu from '@/components/game/GearMenu';
 import OnboardingIndicator from '@/components/game/OnboardingIndicator';
 
@@ -1645,6 +1647,117 @@ export default function RapidFireGame() {
     else if (gamePhase === 'lowHighBetting') handleDealRiver();
     else if (gamePhase === 'winner') handleNewRound();
   }, [gamePhase, totalBet, handleDealFlop, handleDealTurn, handleDealRiver, handleNewRound]);
+
+  // ── Mobile layout ────────────────────────────────────────────────────────
+  const isMobile = useIsMobile();
+  if (isMobile) {
+    return (
+      <>
+        <RoundRecoveryModal
+          isOpen={showRecoveryModal}
+          restoredState={recoveredState}
+          onResume={handleRecoveryResume}
+          onAbandon={handleRecoveryAbandon}
+        />
+        <style>{`@keyframes rfUnlockFadeOut{0%{opacity:0}10%{opacity:1}78%{opacity:1}100%{opacity:0}}`}</style>
+        <MobileGameLayout
+          gamePhase={gamePhase}
+          communityCards={communityCards}
+          maxHandBetsAllowed={maxHandBetsAllowed}
+          rankLockThreshold={versions?.rankLockThreshold}
+          dealerMessage={dealerMessage}
+          leadingHandIds={leadingHandIds}
+          winnerHandIds={winnerHandIds}
+          winningRedBlack={winningRedBlack}
+          winningLowHigh={winningLowHigh}
+          winningRank={winningRank}
+          leadingRank={leadingRank}
+          lastWinInfo={lastWinInfo}
+          playerCount={playerCount}
+          activePlayer={activePlayer}
+          balances={balances}
+          selectedChip={selectedChip}
+          handBets={handBets}
+          redBlackBets={redBlackBets}
+          rankBets={rankBets}
+          lowHighBets={lowHighBets}
+          countdownTime={countdownTime}
+          countdownActive={countdownActive}
+          onCloseWinDisplay={() => setLastWinInfo(null)}
+          killSwitchActive={killSwitchActive}
+          showUnlockFlash={showUnlockFlash}
+          sideBetGateOpen={sideBetGateOpen}
+          handBetCount={handBetCount}
+          rankBetCount={rankBetCount}
+          maxRankSlots={maxRankSlots}
+          luminosityClass=""
+          hoveredRankRow={hoveredRankRow}
+          hoveredRiverType={hoveredRiverType}
+          riverWinFlash={riverWinFlash}
+          isRankBetPlaced={isRankBetPlaced}
+          totalBet={totalBet}
+          history={history}
+          // Alerts
+          showHandLimitAlert={showHandLimitAlert}
+          showRankLimitAlert={showRankLimitAlert}
+          rankAlertType={rankAlertType}
+          showCapAlert={showCapAlert}
+          capAlertType={capAlertType}
+          showInsufficientFunds={showInsufficientFunds}
+          showAutoTrimToast={showAutoTrimToast}
+          showColorSideAlert={showColorSideAlert}
+          // Handlers
+          onHandBet={handleHandBet}
+          onRemoveHandBet={handleRemoveHandBet}
+          onDropChip={handleDropChip}
+          onRankBet={handleRankBet}
+          onRemoveRankBet={handleRemoveRankBet}
+          onMoveRankBet={handleMoveRankBet}
+          onRedBlackBet={handleRedBlackBet}
+          onRemoveRedBlackBet={handleRemoveRedBlackBet}
+          onLowHighBet={handleLowHighBet}
+          onRemoveLowHighBet={handleRemoveLowHighBet}
+          onSelectChip={setSelectedChip}
+          onClearBets={clearBets}
+          onCloseHandAlert={() => setShowHandLimitAlert(false)}
+          onCloseRankAlert={() => setShowRankLimitAlert(false)}
+          onCloseCapAlert={() => setShowCapAlert(false)}
+          onCloseInsufficientFunds={() => setShowInsufficientFunds(false)}
+          onHideAutoTrimToast={() => setShowAutoTrimToast(false)}
+          onCloseColorSideAlert={() => setShowColorSideAlert(false)}
+          // Tools
+          onOpenStats={() => setShowStatsPanel(true)}
+          onOpenMollySimulator={() => setShowMollySimulator(true)}
+          onOpenExploitHunter={() => setShowExploitHunter(true)}
+          onOpenComplianceReport={() => setShowComplianceReport(true)}
+          onOpenKsStrategyTest={() => setShowKsStrategyTest(true)}
+          onOpenGameTiming={() => setShowGameTiming(true)}
+          onOpenAnalytics={() => setShowAnalytics(true)}
+          onOpenVersions={() => setShowVersions(true)}
+          onOpenBellCurve={() => setShowBellCurve(true)}
+          onOpenArchetypeBattle={() => {}}
+          onOpenObserver={() => {}}
+          toolsVisible={toolbarVisible}
+          onSetHoveredRankRow={setHoveredRankRow}
+          onSetHoveredRiverType={setHoveredRiverType}
+          // v12-specific
+          handDisplayOrder={handDisplayOrder}
+          boardTheme={boardTheme}
+          soundManager={soundManager}
+          resetBankVisible={true}
+          onResetBank={handleResetBank}
+          activeColorSide={versions?.colorBothSides ? null : (['3R','4R','5R'].some(k => (pRedBlackBets[k]||0) > 0) ? 'red' : ['3B','4B','5B'].some(k => (pRedBlackBets[k]||0) > 0) ? 'black' : null)}
+          preloadSounds={preloadSounds}
+          onSetTheme={(t) => setBoardTheme(t)}
+          onOpenHelp={() => setShowHowToPlay(true)}
+          onDealerButton={handleDealFlop}
+          suppressHowToPlay={recoveryChecking || showRecoveryModal}
+          versions={versions}
+          versionsReady={versionsReady}
+        />
+      </>
+    );
+  }
 
   // ── Desktop layout ────────────────────────────────────────────────────────
   return (

@@ -19,7 +19,7 @@ import AutoTrimToast from './AutoTrimToast';
 import ColorSideAlert from './ColorSideAlert';
 import VolumeControl from './VolumeControl';
 
-const CHIP_VALUES = [5, 25, 100];
+const CHIP_VALUES = [0.01, 0.10, 0.50, 1];
 
 const LOGO_URLS = {
   red:   'https://media.base44.com/images/public/69f3a45ad82dff5b772d4de2/2667063a3_image.png',
@@ -144,6 +144,7 @@ export default function MobileGameLayout({
   gamePhase,
   communityCards,
   maxHandBetsAllowed = 1,
+  rankLockThreshold = undefined,
   dealerMessage,
   leadingHandIds,
   winnerHandIds,
@@ -162,6 +163,7 @@ export default function MobileGameLayout({
   lowHighBets,
   countdownTime,
   countdownActive,
+  onCloseWinDisplay,
   killSwitchActive,
   showUnlockFlash = false,
   sideBetGateOpen,
@@ -206,9 +208,11 @@ export default function MobileGameLayout({
   // Tools
   onOpenStats,
   onOpenMollySimulator,
+  onOpenArchetypeBattle,
   onOpenExploitHunter,
   onOpenComplianceReport,
   onOpenKsStrategyTest,
+  onOpenObserver,
   onOpenGameTiming,
   onOpenAnalytics,
   onOpenVersions,
@@ -226,6 +230,7 @@ export default function MobileGameLayout({
   preloadSounds,
   onSetTheme,
   onOpenHelp,
+  onDealerButton,
   suppressHowToPlay = false,
   versions = {},
   versionsReady = false,
@@ -235,6 +240,27 @@ export default function MobileGameLayout({
   const [gearMenuOpen, setGearMenuOpen] = React.useState(false);
   const [showHistory, setShowHistory] = React.useState(false);
   const [showHowToPlay, setShowHowToPlay] = React.useState(false);
+
+  // Mobile lock-board copy must mirror the live Versions setting.
+  // Prefer DB-loaded versions, then local cached Versions during load, then the explicit parent prop.
+  const cachedRankLockThreshold = React.useMemo(() => {
+    try {
+      const saved = localStorage.getItem('rapidFireGameVersions');
+      if (!saved) return undefined;
+      const parsed = JSON.parse(saved);
+      return parsed?.rankLockThreshold;
+    } catch {
+      return undefined;
+    }
+  }, [versionsReady, versions?.rankLockThreshold, rankLockThreshold]);
+
+  const rankLockAt = Number(
+    (versionsReady ? versions?.rankLockThreshold : undefined) ??
+    cachedRankLockThreshold ??
+    rankLockThreshold ??
+    versions?.rankLockThreshold ??
+    1
+  );
   const [muted, setMuted] = React.useState(false);
   const [volume, setVolume] = React.useState(0.4);
   React.useEffect(() => {
@@ -316,7 +342,7 @@ export default function MobileGameLayout({
 
           {/* Win display */}
           <div style={{flexShrink:0}}>
-            <DetailedPayoutDisplay winInfo={lastWinInfo} playerCount={playerCount} />
+            <DetailedPayoutDisplay winInfo={lastWinInfo} playerCount={playerCount} onClose={onCloseWinDisplay} />
           </div>
 
           {/* 5×2 Hand grid — flex:1 but capped so cards stay compact */}
@@ -407,6 +433,7 @@ export default function MobileGameLayout({
               handBetCount={handBetCount} maxRankSlots={maxRankSlots} rankBetCount={rankBetCount}
               unlockedRanks={new Set()} activePlayerId={pid} activeHandIds={activeHandIds}
               onAttemptLockedRank={()=>{}} onHoverRankRow={onSetHoveredRankRow}
+              rankLockThreshold={rankLockAt}
             />
           </div>
 
@@ -431,6 +458,7 @@ export default function MobileGameLayout({
               hoveredRankRow={hoveredRankRow} isRankBetPlaced={isRankBetPlaced}
               activeColorSide={activeColorSide} onColorSideConflict={onCloseColorSideAlert}
               compactLandscape={true}
+              rankLockThreshold={rankLockAt}
             />
           </div>
         </div>
@@ -501,6 +529,14 @@ export default function MobileGameLayout({
                   border:'1px solid rgba(234,179,8,0.4)',background:'rgba(234,179,8,0.08)',
                   color:'#fde047',fontSize:10,fontWeight:700,
                   display:'flex',alignItems:'center',justifyContent:'center',gap:3}}>❓ How to Play</button>
+            </div>
+            <div style={{borderTop:'1px solid rgba(234,179,8,0.12)',margin:'2px 0'}} />
+            <div style={{padding:'3px 10px'}}>
+              <button onClick={()=>{onOpenStats();setGearMenuOpen(false);}}
+                style={{width:'100%',padding:'5px 0',borderRadius:6,cursor:'pointer',
+                  border:'1px solid rgba(59,130,246,0.4)',background:'rgba(59,130,246,0.08)',
+                  color:'#93c5fd',fontSize:10,fontWeight:700,
+                  display:'flex',alignItems:'center',justifyContent:'center',gap:3}}>📊 Player Stats</button>
             </div>
           </div>
         )}
@@ -604,7 +640,7 @@ export default function MobileGameLayout({
 
       {/* ── Win/No-Win Modal ── */}
       <div className="flex-shrink-0 px-2">
-        <DetailedPayoutDisplay winInfo={lastWinInfo} playerCount={playerCount} />
+        <DetailedPayoutDisplay winInfo={lastWinInfo} playerCount={playerCount} onClose={onCloseWinDisplay} />
       </div>
 
       {/* ── Main game area ── */}
@@ -674,6 +710,7 @@ export default function MobileGameLayout({
                 activeHandIds={activeHandIds}
                 onAttemptLockedRank={() => {}}
                 onHoverRankRow={onSetHoveredRankRow}
+                rankLockThreshold={rankLockAt}
               />
             </div>
           </div>
@@ -731,23 +768,40 @@ export default function MobileGameLayout({
           ))}
         </div>
 
+        {/* Clear button — between chips and dealer */}
+        {gamePhase === 'betting' && totalBet > 0 && (
+          <button onClick={onClearBets} className="px-2 py-1 rounded-lg border border-red-700/50 bg-red-900/30 text-red-300 font-semibold flex-shrink-0" style={{ fontSize: '0.65rem' }}>
+            Clear
+          </button>
+        )}
+
         <div className="flex-1" />
 
-        {/* Balance */}
-        <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl border-2 border-yellow-500 bg-black flex-shrink-0">
-          <span className="text-yellow-400 font-black" style={{ fontSize: '0.65rem' }}>P{pid + 1}</span>
-          <span className="text-yellow-400 font-black" style={{ fontSize: '0.9rem', textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>
+        {/* Dealer button */}
+        {(gamePhase === 'betting' || gamePhase === 'flop' || gamePhase === 'lowHighBetting' || gamePhase === 'winner') && onDealerButton && (
+          <button
+            onClick={onDealerButton}
+            disabled={gamePhase === 'betting' && Object.keys(pHandBets).length === 0}
+            style={{
+              padding: '4px 10px', borderRadius: 8, border: '2px solid #4ade80',
+              background: '#15803d', color: '#fff', fontWeight: 900, fontSize: '0.65rem',
+              cursor: 'pointer', letterSpacing: '0.04em', flexShrink: 0,
+              opacity: (gamePhase === 'betting' && Object.keys(pHandBets).length === 0) ? 0.4 : 1,
+            }}
+          >
+            🂠 DEAL
+          </button>
+        )}
+
+        {/* Balance — no P1 label, compact */}
+        <div className="flex items-center px-2 py-1 rounded-xl border-2 border-yellow-500 bg-black flex-shrink-0">
+          <span className="text-yellow-400 font-black" style={{ fontSize: '0.85rem', textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>
             ${balance.toLocaleString()}
           </span>
         </div>
 
         {/* Gear menu button + dropdown */}
         <div className="flex items-center gap-1 flex-shrink-0" style={{ position: 'relative' }}>
-          {gamePhase === 'betting' && totalBet > 0 && (
-            <button onClick={onClearBets} className="px-2 py-1 rounded-lg border border-red-700/50 bg-red-900/30 text-red-300 font-semibold" style={{ fontSize: '0.65rem' }}>
-              Clear
-            </button>
-          )}
 
           {/* ⚙️ Gear button */}
           <button
@@ -902,6 +956,25 @@ export default function MobileGameLayout({
                 </button>
               </div>
 
+              <div style={{ borderTop: '1px solid rgba(234,179,8,0.12)', margin: '2px 0' }} />
+
+              {/* PLAYER STATS */}
+              <div style={{ padding: '6px 12px' }}>
+                <button
+                  onClick={() => { onOpenStats(); setGearMenuOpen(false); }}
+                  style={{
+                    width: '100%', padding: '7px 0', borderRadius: 8,
+                    border: '1px solid rgba(59,130,246,0.4)',
+                    background: 'rgba(59,130,246,0.08)',
+                    color: '#93c5fd', fontSize: 11, fontWeight: 700,
+                    cursor: 'pointer', letterSpacing: '0.04em',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                  }}
+                >
+                  📊 Player Stats
+                </button>
+              </div>
+
             </div>
           )}
 
@@ -956,9 +1029,11 @@ export default function MobileGameLayout({
           <ToolsMenu
             onOpenStats={onOpenStats}
             onOpenMollySimulator={onOpenMollySimulator}
+            onOpenArchetypeBattle={onOpenArchetypeBattle}
             onOpenExploitHunter={onOpenExploitHunter}
             onOpenComplianceReport={onOpenComplianceReport}
             onOpenKsStrategyTest={onOpenKsStrategyTest}
+            onOpenObserver={onOpenObserver}
             onOpenGameTiming={onOpenGameTiming}
             onOpenAnalytics={onOpenAnalytics}
             onOpenVersions={onOpenVersions}
