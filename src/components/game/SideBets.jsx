@@ -333,10 +333,10 @@ export default function SideBets({
             <div className="text-base mb-1" style={{ filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }}>
               🏆
             </div>
-            <span className="text-yellow-400 font-black text-xs mb-1 text-center px-2 leading-tight">
+            <span className="text-yellow-400 font-black text-sm mb-1 text-center px-2 leading-tight">
               UPGRADE YOUR WIN
             </span>
-            <span className="text-yellow-300/60 text-xs text-center px-3 leading-snug">
+            <span className="text-yellow-300/60 text-sm text-center px-3 leading-snug">
               Match your Rank bet total to your Hand bet total to unlock
             </span>
           </div>
@@ -419,10 +419,10 @@ export default function SideBets({
             {(gamePhase === 'betting' || gamePhase === 'flop') ? (
               <>
                 <div className="text-base mb-1">🔒</div>
-                <span className="text-yellow-400 font-black text-xs mb-1 text-center px-2 leading-tight">
+                <span className="text-yellow-400 font-black text-sm mb-1 text-center px-2 leading-tight">
                   OPENS AFTER TURN
                 </span>
-                <span className="text-yellow-300/60 text-xs text-center px-3 leading-snug">
+                <span className="text-yellow-300/60 text-sm text-center px-3 leading-snug">
                   River bet available once the Turn card is dealt
                 </span>
               </>
@@ -431,10 +431,10 @@ export default function SideBets({
                 <div className="text-base mb-1" style={{ filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }}>
                   🏆
                 </div>
-                <span className="text-yellow-400 font-black text-xs mb-1 text-center px-2 leading-tight">
+                <span className="text-yellow-400 font-black text-sm mb-1 text-center px-2 leading-tight">
                   UPGRADE YOUR WIN
                 </span>
-                <span className="text-yellow-300/60 text-xs text-center px-3 leading-snug">
+                <span className="text-yellow-300/60 text-sm text-center px-3 leading-snug">
                   Match your Rank bet total to your Hand bet total to unlock
                 </span>
               </>
