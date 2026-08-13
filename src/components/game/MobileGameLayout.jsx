@@ -637,7 +637,7 @@ export default function MobileGameLayout({
       {mobileLayout === 'B' ? (
         <>
 {/* ── Main game area ── */}
-      <div className="flex-1 min-h-0 px-2 pt-2 pb-0 flex flex-col gap-2" style={{ touchAction: 'none' }}>
+      <div className="flex-1 min-h-0 px-0.5 pt-2 pb-0 flex flex-col gap-2" style={{ touchAction: 'none' }}>
 
         {/* Rank + Color/River — clock floats at the top boundary overlapping both */}
         <div className="flex-1 min-h-0 flex gap-1.5" style={{ position: 'relative' }}>
@@ -781,7 +781,7 @@ export default function MobileGameLayout({
       ) : mobileLayout === 'C' ? (
         <>
 {/* ── Layout C: Rank/Color on top, Hands below, Community Cards at bottom ── */}
-      <div className="flex-1 min-h-0 px-2 pt-1 pb-0 flex flex-col gap-1" style={{ touchAction: 'none' }}>
+      <div className="flex-1 min-h-0 px-0.5 pt-1 pb-0 flex flex-col gap-1" style={{ touchAction: 'none' }}>
 
         {/* Rank + Color/River — at the top */}
         <div className="flex-1 min-h-0 flex gap-1.5" style={{ position: 'relative' }}>
@@ -931,7 +931,7 @@ export default function MobileGameLayout({
       </div>
 
       {/* ── Main game area ── */}
-      <div className="flex-1 min-h-0 px-2 pt-1 pb-0 flex flex-col gap-1.5" style={{ touchAction: 'none' }}>
+      <div className="flex-1 min-h-0 px-0.5 pt-1 pb-0 flex flex-col gap-1.5" style={{ touchAction: 'none' }}>
 
         {/* 10-hand grid — crypto-shuffled each round */}
         <div
