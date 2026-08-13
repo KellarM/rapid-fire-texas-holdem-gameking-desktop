@@ -36,25 +36,7 @@ function useUnlockPulse(rankKey, unlockedRanks) {
   return pulseActive;
 }
 
-const GOLD_LOCK_IMG = 'https://media.base44.com/images/public/6a24d1b67868eaf6bfafdb67/103f8d764_GoldLock.png';
-
-function LockIcon({ dim = false }) {
-  return (
-    <img
-      src={GOLD_LOCK_IMG}
-      alt="locked"
-      style={{
-        width: 42,
-        height: 42,
-        flexShrink: 0,
-        display: 'block',
-        objectFit: 'contain',
-        opacity: dim ? 0.85 : 1,
-        filter: dim ? 'brightness(0.8)' : 'drop-shadow(0 0 4px rgba(255,215,0,0.6))',
-      }}
-    />
-  );
-}
+const CARDS_IMG = 'https://base44.app/api/apps/69fcabf54838c8e18515a406/files/mp/public/69fcabf54838c8e18515a406/427629ce8_cards_transparent.png';
 
 function RankSlot({
   opt, rankBets, allRankBets, playerCount, canBet,
@@ -118,13 +100,13 @@ function RankSlot({
     textColor = 'text-black/60';
     oddsColor = 'text-black/60';
     buttonStyle = goldDim;
-    showDarkLock = true;
+    showDarkLock = false;
   } else {
     slotCls = 'border-black';
     textColor = 'text-black/50';
     oddsColor = 'text-black/50';
     buttonStyle = goldDim;
-    showDarkLock = true;
+    showDarkLock = false;
   }
 
   const showOdds = isActive || bet > 0 || (!fullyLocked && canBet);
@@ -208,8 +190,6 @@ function RankSlot({
             <span className={`whitespace-nowrap ${oddsColor}`} style={{ fontSize: '0.864rem', fontWeight: 900, lineHeight: 1, WebkitTextStroke: '0.4px currentColor' }}>
               {oddsLabel}
             </span>
-          ) : (fullyLocked || showDarkLock) ? (
-            <LockIcon dim={hardLocked} />
           ) : null}
         </div>
       </div>
@@ -317,12 +297,53 @@ export default function RankBets({
         )}
       </div>
 
-      {/* Kill Switch Overlay */}
+      {/* Blackout Overlay — No Card Bets Yet */}
+      {noHandBets && !killSwitchActive && gamePhase === 'betting' && (
+        <div
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl"
+          style={{
+            backdropFilter: 'blur(6px)',
+            background: 'linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(10,8,4,0.88) 100%)',
+            border: 'none',
+            boxShadow: 'inset 0 0 20px rgba(251,191,36,0.05)',
+          }}
+        >
+          <img
+            src={CARDS_IMG}
+            alt="cards"
+            style={{ width: 48, height: 'auto', marginBottom: 8, filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }}
+          />
+          <span className="text-yellow-400 font-black text-sm mb-1 text-center px-2 leading-tight">
+            RANK BOARD LOCKED
+          </span>
+          <span className="text-yellow-300/60 text-sm text-center px-3 leading-snug">
+            Place a Card bet to unlock Rankings
+          </span>
+        </div>
+      )}
+
+      {/* Blackout Overlay — Kill Switch (too many hands) */}
       {killSwitchActive && gamePhase === 'betting' && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl bg-black/80 border-2 border-red-700/60 backdrop-blur-sm">
-          <span className="text-red-400 font-black text-lg mb-1">LOCKED</span>
-          <span className="text-red-300 text-xs font-semibold text-center px-2">{rankLockThreshold}+ Hands: Side Bet Disabled</span>
-          <span className="text-red-400/60 text-xs mt-1 text-center px-2">Select fewer than {rankLockThreshold} {rankLockThreshold === 1 ? 'Hand' : 'Hands'} to Unlock</span>
+        <div
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl"
+          style={{
+            backdropFilter: 'blur(6px)',
+            background: 'linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(10,8,4,0.88) 100%)',
+            border: 'none',
+            boxShadow: 'inset 0 0 20px rgba(251,191,36,0.05)',
+          }}
+        >
+          <img
+            src={CARDS_IMG}
+            alt="cards"
+            style={{ width: 48, height: 'auto', marginBottom: 8, filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }}
+          />
+          <span className="text-yellow-400 font-black text-sm mb-1 text-center px-2 leading-tight">
+            RANK BOARD LOCKED
+          </span>
+          <span className="text-yellow-300/60 text-sm text-center px-3 leading-snug">
+            {rankLockThreshold}+ Hands selected — select fewer to unlock
+          </span>
         </div>
       )}
 
