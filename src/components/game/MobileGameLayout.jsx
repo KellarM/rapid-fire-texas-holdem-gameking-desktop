@@ -765,8 +765,15 @@ export default function MobileGameLayout({
         </div>
       </div>
 
-      {/* ── Bottom action bar ── */}
-      <div className="flex-shrink-0 px-2 py-1.5 border-t border-yellow-900/40 flex items-center gap-1.5 bg-black/40">
+      {/* ── Bottom action bar — gold-bordered like desktop ── */}
+      <div className="flex-shrink-0 px-2 py-1.5 flex items-center gap-1"
+        style={{
+          border: '3px solid #e8b84b',
+          boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
+          background: 'rgba(0,0,0,0.35)',
+          borderRadius: '0.75rem',
+          margin: '2px',
+        }}>
 
         {/* Chips */}
         <div className="flex items-center gap-0.5 flex-shrink-0">
@@ -794,23 +801,22 @@ export default function MobileGameLayout({
           </button>
         </div>
 
-        <div className="flex-1" />
-
-        {/* Dealer button */}
-        {(gamePhase === 'betting' || gamePhase === 'flop' || gamePhase === 'lowHighBetting' || gamePhase === 'winner') && onDealerButton && (
+        {/* Dealer button — fixed-width slot, visibility toggled to prevent layout shift */}
+        <div style={{ flexShrink: 0, width: 52, display: 'flex', justifyContent: 'center' }}>
           <button
             onClick={onDealerButton}
             disabled={gamePhase === 'betting' && Object.keys(pHandBets).length === 0}
             style={{
-              padding: '4px 10px', borderRadius: 8, border: '2px solid #4ade80',
+              padding: '4px 8px', borderRadius: 8, border: '2px solid #4ade80',
               background: '#15803d', color: '#fff', fontWeight: 900, fontSize: '0.65rem',
-              cursor: 'pointer', letterSpacing: '0.04em', flexShrink: 0,
+              cursor: 'pointer', letterSpacing: '0.04em',
+              visibility: (gamePhase === 'betting' || gamePhase === 'flop' || gamePhase === 'lowHighBetting' || gamePhase === 'winner') && onDealerButton ? 'visible' : 'hidden',
               opacity: (gamePhase === 'betting' && Object.keys(pHandBets).length === 0) ? 0.4 : 1,
             }}
           >
-            🂠 DEAL
+            DEAL
           </button>
-        )}
+        </div>
 
         {/* Balance — no P1 label, compact */}
         <div className="flex items-center px-2 py-1 rounded-xl border-2 border-yellow-500 bg-black flex-shrink-0">
