@@ -231,6 +231,7 @@ export default function MobileGameLayout({
   onSetTheme,
   onOpenHelp,
   onDealerButton,
+  mobileLayout = 'A',
   suppressHowToPlay = false,
   versions = {},
   versionsReady = false,
