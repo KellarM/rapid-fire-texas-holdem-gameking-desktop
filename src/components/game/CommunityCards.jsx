@@ -8,7 +8,7 @@ const GROUP_GAP = 20;
 const LABEL_H = 18;
 const LABEL_TOP_GAP = 6;
 
-function CardSlot({ card, index, active, cardW = CARD_W, cardH = CARD_H }) {
+function CardSlot({ card, index, active, cardW = CARD_W, cardH = CARD_H, cardSize = 'community' }) {
   return (
     <div style={{ width: cardW, height: cardH, flexShrink: 0, position: 'relative' }}>
       {card ? (
@@ -19,7 +19,7 @@ function CardSlot({ card, index, active, cardW = CARD_W, cardH = CARD_H }) {
           transition={{ duration: 0.4, delay: 0.05 * index }}
           style={{ width: cardW, height: cardH }}
         >
-          <PlayingCard card={card} size="community" glow={active} />
+          <PlayingCard card={card} size={cardSize} glow={active} />
         </motion.div>
       ) : (
         <div style={{ width: cardW, height: cardH, opacity: 0.9 }}>
@@ -34,7 +34,7 @@ function CardSlot({ card, index, active, cardW = CARD_W, cardH = CARD_H }) {
   );
 }
 
-function CardGroup({ cards, indices, label, hasCards, cardW = CARD_W, cardH = CARD_H, gap = GAP, labelH = LABEL_H, labelTopGap = LABEL_TOP_GAP }) {
+function CardGroup({ cards, indices, label, hasCards, cardW = CARD_W, cardH = CARD_H, gap = GAP, labelH = LABEL_H, labelTopGap = LABEL_TOP_GAP, cardSize = 'community' }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
       <div style={{ display: 'flex', gap }}>
@@ -46,6 +46,7 @@ function CardGroup({ cards, indices, label, hasCards, cardW = CARD_W, cardH = CA
             active={i === cards.length - 1 && cards.length > 0}
             cardW={cardW}
             cardH={cardH}
+            cardSize={cardSize}
           />
         ))}
       </div>
@@ -72,6 +73,7 @@ function CardGroup({ cards, indices, label, hasCards, cardW = CARD_W, cardH = CA
 }
 
 export default function CommunityCards({ cards = [], cardW = CARD_W, cardH = CARD_H, gap = GAP, groupGap = GROUP_GAP, labelH = LABEL_H, labelTopGap = LABEL_TOP_GAP }) {
+  const cardSize = cardW < CARD_W ? 'community-sm' : 'community';
   return (
     <div
       style={{
@@ -91,6 +93,7 @@ export default function CommunityCards({ cards = [], cardW = CARD_W, cardH = CAR
         gap={gap}
         labelH={labelH}
         labelTopGap={labelTopGap}
+        cardSize={cardSize}
       />
       <CardGroup
         cards={cards}
@@ -102,6 +105,7 @@ export default function CommunityCards({ cards = [], cardW = CARD_W, cardH = CAR
         gap={gap}
         labelH={labelH}
         labelTopGap={labelTopGap}
+        cardSize={cardSize}
       />
       <CardGroup
         cards={cards}
@@ -113,6 +117,7 @@ export default function CommunityCards({ cards = [], cardW = CARD_W, cardH = CAR
         gap={gap}
         labelH={labelH}
         labelTopGap={labelTopGap}
+        cardSize={cardSize}
       />
     </div>
   );

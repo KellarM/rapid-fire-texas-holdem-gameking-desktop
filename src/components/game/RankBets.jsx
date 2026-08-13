@@ -198,58 +198,80 @@ function RankSlot({
       {/* Chip overlay — absolute, floats over text, pointer-events none so clicks pass through */}
       {chipsHere.length > 0 && (
         <div
-          className="absolute inset-0 z-10 pointer-events-none flex flex-col justify-around"
-          style={{ padding: '3px 6px', overflow: 'visible' }}
+          className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center"
+          style={{ overflow: 'visible' }}
         >
-          {/* Row 1: P1–P5 */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 3, overflow: 'visible' }}>
-            {Array.from({ length: 5 }, (_, i) => {
-              const chip = chipsHere.find(c => c.pid === i);
-              if (!chip) return <span key={i} style={{ width: Math.round(24 * chipScale), height: Math.round(24 * chipScale) + 4, display: 'inline-block', flexShrink: 0 }} />;
-              return (
-                <Chip
-                  key={i}
-                  playerId={chip.pid}
-                  amount={chip.amt}
-                  scale={chipScale}
-                  draggable={gamePhase === 'betting' && chip.pid === activePlayerId}
-                  onDragStart={(e) => {
-                    e.stopPropagation();
-                    e.dataTransfer.setData('text/plain', JSON.stringify({ from: opt.key, type: 'rank', pid: chip.pid, amount: rankBets[opt.key] || 0 }));
-                    e.dataTransfer.effectAllowed = 'move';
-                  }}
-                  className="transition-transform hover:scale-110"
-                  title={`P${chip.pid + 1}: $${chip.amt}`}
-                  style={{ pointerEvents: 'auto', flexShrink: 0 }}
-                />
-              );
-            })}
-          </div>
-          {/* Row 2: P6–P10 */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: 3, overflow: 'visible' }}>
-            {Array.from({ length: 5 }, (_, i) => {
-              const pid = i + 5;
-              const chip = chipsHere.find(c => c.pid === pid);
-              if (!chip) return <span key={pid} style={{ width: Math.round(24 * chipScale), height: Math.round(24 * chipScale) + 4, display: 'inline-block', flexShrink: 0 }} />;
-              return (
-                <Chip
-                  key={pid}
-                  playerId={chip.pid}
-                  amount={chip.amt}
-                  scale={chipScale}
-                  draggable={gamePhase === 'betting' && chip.pid === activePlayerId}
-                  onDragStart={(e) => {
-                    e.stopPropagation();
-                    e.dataTransfer.setData('text/plain', JSON.stringify({ from: opt.key, type: 'rank', pid: chip.pid, amount: rankBets[opt.key] || 0 }));
-                    e.dataTransfer.effectAllowed = 'move';
-                  }}
-                  className="transition-transform hover:scale-110"
-                  title={`P${chip.pid + 1}: $${chip.amt}`}
-                  style={{ pointerEvents: 'auto', flexShrink: 0 }}
-                />
-              );
-            })}
-          </div>
+          {chipsHere.length === 1 ? (
+            /* Single player — one chip dead-center on the button */
+            <Chip
+              key={chipsHere[0].pid}
+              playerId={chipsHere[0].pid}
+              amount={chipsHere[0].amt}
+              scale={chipScale}
+              draggable={gamePhase === 'betting' && chipsHere[0].pid === activePlayerId}
+              onDragStart={(e) => {
+                e.stopPropagation();
+                e.dataTransfer.setData('text/plain', JSON.stringify({ from: opt.key, type: 'rank', pid: chipsHere[0].pid, amount: rankBets[opt.key] || 0 }));
+                e.dataTransfer.effectAllowed = 'move';
+              }}
+              className="transition-transform hover:scale-110"
+              title={`P${chipsHere[0].pid + 1}: $${chipsHere[0].amt}`}
+              style={{ pointerEvents: 'auto', flexShrink: 0 }}
+            />
+          ) : (
+            /* Multi-player — 2-row grid, centered */
+            <div className="flex flex-col justify-around" style={{ width: '100%', height: '100%', padding: '3px 6px', overflow: 'visible' }}>
+              {/* Row 1: P1–P5 */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 3, overflow: 'visible' }}>
+                {Array.from({ length: 5 }, (_, i) => {
+                  const chip = chipsHere.find(c => c.pid === i);
+                  if (!chip) return <span key={i} style={{ width: Math.round(24 * chipScale), height: Math.round(24 * chipScale) + 4, display: 'inline-block', flexShrink: 0 }} />;
+                  return (
+                    <Chip
+                      key={i}
+                      playerId={chip.pid}
+                      amount={chip.amt}
+                      scale={chipScale}
+                      draggable={gamePhase === 'betting' && chip.pid === activePlayerId}
+                      onDragStart={(e) => {
+                        e.stopPropagation();
+                        e.dataTransfer.setData('text/plain', JSON.stringify({ from: opt.key, type: 'rank', pid: chip.pid, amount: rankBets[opt.key] || 0 }));
+                        e.dataTransfer.effectAllowed = 'move';
+                      }}
+                      className="transition-transform hover:scale-110"
+                      title={`P${chip.pid + 1}: $${chip.amt}`}
+                      style={{ pointerEvents: 'auto', flexShrink: 0 }}
+                    />
+                  );
+                })}
+              </div>
+              {/* Row 2: P6–P10 */}
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 3, overflow: 'visible' }}>
+                {Array.from({ length: 5 }, (_, i) => {
+                  const pid = i + 5;
+                  const chip = chipsHere.find(c => c.pid === pid);
+                  if (!chip) return <span key={pid} style={{ width: Math.round(24 * chipScale), height: Math.round(24 * chipScale) + 4, display: 'inline-block', flexShrink: 0 }} />;
+                  return (
+                    <Chip
+                      key={pid}
+                      playerId={chip.pid}
+                      amount={chip.amt}
+                      scale={chipScale}
+                      draggable={gamePhase === 'betting' && chip.pid === activePlayerId}
+                      onDragStart={(e) => {
+                        e.stopPropagation();
+                        e.dataTransfer.setData('text/plain', JSON.stringify({ from: opt.key, type: 'rank', pid: chip.pid, amount: rankBets[opt.key] || 0 }));
+                        e.dataTransfer.effectAllowed = 'move';
+                      }}
+                      className="transition-transform hover:scale-110"
+                      title={`P${chip.pid + 1}: $${chip.amt}`}
+                      style={{ pointerEvents: 'auto', flexShrink: 0 }}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

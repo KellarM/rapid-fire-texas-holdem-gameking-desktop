@@ -1,7 +1,7 @@
 import React from 'react';
 import { getCardImageUrl } from '@/lib/cardImages';
 import HistoryRail from './HistoryRail';
-import { evaluateBestHand, FIXED_HANDS } from '@/lib/gameEngine';
+import { evaluateBestHand, FIXED_HANDS, getTotalHandBets, getTotalRankBets, getTotalColorBets } from '@/lib/gameEngine';
 import CommunityCards from './CommunityCards';
 import RankBets from './RankBets';
 import SideBets from './SideBets';
@@ -271,6 +271,13 @@ export default function MobileGameLayout({
   const pRankBets = rankBets[pid] || {};
   const pLowHighBet = lowHighBets[pid] || null;
   const activeHandIds = Object.keys(pHandBets).map(Number);
+  // ── Match cap calculations (same formulas as desktop layout) ──
+  const _totalHandAmt = getTotalHandBets(pHandBets);
+  const _totalRankAmt = getTotalRankBets(pRankBets);
+  const _totalColorAmt = getTotalColorBets(pRedBlackBets);
+  const matchCapRemaining = Math.max(0, _totalHandAmt - _totalRankAmt);
+  const colorCap = Math.max(0, (_totalHandAmt + _totalRankAmt) - _totalColorAmt);
+  const riverCap = Math.max(0, (_totalHandAmt + _totalRankAmt + _totalColorAmt) - (pLowHighBet?.amount || 0));
   const displayOrder = handDisplayOrder && handDisplayOrder.length === 10
     ? handDisplayOrder
     : FIXED_HANDS.map(h => h.id);
@@ -396,7 +403,7 @@ export default function MobileGameLayout({
               padding:'2px 6px', borderRadius:5, border:'1.5px solid #eab308', background:'#000' }}>
               <span style={{fontSize:7,fontWeight:900,color:'#facc15'}}>P{pid+1}</span>
               <span style={{fontSize:10,fontWeight:900,color:'#facc15',textShadow:'0 0 5px rgba(251,191,36,0.7)'}}>
-                ${balance.toLocaleString()}
+                ${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
 
@@ -714,6 +721,7 @@ export default function MobileGameLayout({
                 fontScale={0.65}
                 chipScale={0.42}
                 compactHeader={true}
+                matchCapRemaining={matchCapRemaining}
               />
             </div>
           </div>
@@ -749,6 +757,8 @@ export default function MobileGameLayout({
                 onColorSideConflict={onCloseColorSideAlert}
                 chipScale={0.42}
                 compactHeader={true}
+                colorCap={colorCap}
+                riverCap={riverCap}
               />
             </div>
           </div>
@@ -773,12 +783,16 @@ export default function MobileGameLayout({
           ))}
         </div>
 
-        {/* Clear button — between chips and dealer */}
-        {gamePhase === 'betting' && totalBet > 0 && (
-          <button onClick={onClearBets} className="px-2 py-1 rounded-lg border border-red-700/50 bg-red-900/30 text-red-300 font-semibold flex-shrink-0" style={{ fontSize: '0.65rem' }}>
+        {/* Clear button — fixed-width slot, visibility toggled to prevent layout shift */}
+        <div style={{ flexShrink: 0, width: 44, display: 'flex', justifyContent: 'center' }}>
+          <button
+            onClick={onClearBets}
+            className="px-2 py-1 rounded-lg border border-red-700/50 bg-red-900/30 text-red-300 font-semibold"
+            style={{ fontSize: '0.65rem', visibility: (gamePhase === 'betting' && totalBet > 0) ? 'visible' : 'hidden' }}
+          >
             Clear
           </button>
-        )}
+        </div>
 
         <div className="flex-1" />
 
@@ -801,7 +815,7 @@ export default function MobileGameLayout({
         {/* Balance — no P1 label, compact */}
         <div className="flex items-center px-2 py-1 rounded-xl border-2 border-yellow-500 bg-black flex-shrink-0">
           <span className="text-yellow-400 font-black" style={{ fontSize: '0.85rem', textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>
-            ${balance.toLocaleString()}
+            ${balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>
 
