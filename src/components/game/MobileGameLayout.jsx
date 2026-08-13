@@ -1269,7 +1269,8 @@ export default function MobileGameLayout({
 
             </div>
           )}
-
+        </div>
+      </div>
 
       {/* ── Community Cards (Layout C only — below footer) ── */}
       {mobileLayout === 'C' && (
@@ -1284,7 +1285,7 @@ export default function MobileGameLayout({
         </div>
       )}
 
-                    {/* ── How To Play Overlay ── */}
+      {/* ── How To Play Overlay ── */}
           <HowToPlayOverlay
             versions={versions}
             versionsReady={versionsReady}
@@ -1346,8 +1347,6 @@ export default function MobileGameLayout({
             onOpenBellCurve={onOpenBellCurve}
             toolsVisible={toolsVisible}
           />
-        </div>
-      </div>
     </div>
   );
 }
