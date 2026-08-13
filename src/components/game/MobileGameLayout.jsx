@@ -1136,18 +1136,27 @@ export default function MobileGameLayout({
               edges (not the small gear-button wrapper) with a width clamp so it
               can never render partially off-screen regardless of container width. */}
           {gearMenuOpen && (
-            <div style={{
-              position: 'fixed', bottom: 58, right: 8,
-              width: 180,
-              maxWidth: 'calc(100vw - 16px)',
-              maxHeight: '70vh',
-              overflowY: 'auto',
-              background: 'linear-gradient(160deg, rgba(30,10,0,0.97) 0%, rgba(50,20,0,0.97) 100%)',
-              border: '1px solid rgba(234,179,8,0.4)',
-              borderRadius: 12, padding: '8px 0',
-              boxShadow: '0 -4px 24px rgba(0,0,0,0.7)',
-              zIndex: 300,
-            }}>
+            <>
+            {/* Click-away backdrop — closes settings when clicking outside the panel */}
+            <div
+              style={{ position: 'fixed', inset: 0, zIndex: 299, background: 'transparent' }}
+              onClick={() => setGearMenuOpen(false)}
+            />
+            <div
+              style={{
+                position: 'fixed', bottom: 58, right: 8,
+                width: 180,
+                maxWidth: 'calc(100vw - 16px)',
+                maxHeight: '70vh',
+                overflowY: 'auto',
+                background: 'linear-gradient(160deg, rgba(30,10,0,0.97) 0%, rgba(50,20,0,0.97) 100%)',
+                border: '1px solid rgba(234,179,8,0.4)',
+                borderRadius: 12, padding: '8px 0',
+                boxShadow: '0 -4px 24px rgba(0,0,0,0.7)',
+                zIndex: 300,
+              }}
+              onClick={e => e.stopPropagation()}
+            >
               {/* Header */}
               <div style={{ padding: '2px 12px 8px', borderBottom: '1px solid rgba(234,179,8,0.2)', marginBottom: 4 }}>
                 <span style={{ fontSize: 11, fontWeight: 800, color: '#fde047', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Settings</span>
@@ -1297,6 +1306,7 @@ export default function MobileGameLayout({
               </div>
 
             </div>
+            </>
           )}
         </div>
       </div>
