@@ -330,7 +330,7 @@ export default function SideBets({
               boxShadow: 'inset 0 0 20px rgba(251,191,36,0.05)',
             }}
           >
-            <div className="text-lg mb-1" style={{ filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }}>
+            <div className="text-xl mb-1" style={{ filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }}>
               🏆
             </div>
             <span className="text-yellow-400 font-black text-sm mb-1 text-center px-2 leading-tight">
@@ -418,7 +418,7 @@ export default function SideBets({
           >
             {(gamePhase === 'betting' || gamePhase === 'flop') ? (
               <>
-                <div className="text-lg mb-1">🔒</div>
+                <div className="text-xl mb-1">🔒</div>
                 <span className="text-yellow-400 font-black text-sm mb-1 text-center px-2 leading-tight">
                   OPENS AFTER TURN
                 </span>
@@ -428,7 +428,7 @@ export default function SideBets({
               </>
             ) : (
               <>
-                <div className="text-lg mb-1" style={{ filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }}>
+                <div className="text-xl mb-1" style={{ filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }}>
                   🏆
                 </div>
                 <span className="text-yellow-400 font-black text-sm mb-1 text-center px-2 leading-tight">
