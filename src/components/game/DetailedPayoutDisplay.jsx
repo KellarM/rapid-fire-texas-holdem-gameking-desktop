@@ -170,7 +170,7 @@ function Quadrant({ title, wins, placedBets = [], accentColor }) {
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 
-export default function DetailedPayoutDisplay({ winInfo, playerCount = 1 }) {
+export default function DetailedPayoutDisplay({ winInfo, playerCount = 1, onClose }) {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
 
   const hasAnyWins = winInfo?.playerPayouts?.some(p => p.wins.length > 0) ?? false;
@@ -213,7 +213,7 @@ export default function DetailedPayoutDisplay({ winInfo, playerCount = 1 }) {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center pointer-events-auto"
             style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(3px)' }}
-            onClick={() => setCurrentPlayerIndex(-1)}
+            onClick={() => { setCurrentPlayerIndex(-1); onClose?.(); }}
           >
             {/* Modal panel — same 500×420 footprint as the win modal */}
             <motion.div
@@ -238,6 +238,23 @@ export default function DetailedPayoutDisplay({ winInfo, playerCount = 1 }) {
                 overflow: 'hidden',
               }}
             >
+              {/* Close button (X) — top-right corner */}
+              <button
+                onClick={(e) => { e.stopPropagation(); setCurrentPlayerIndex(-1); onClose?.(); }}
+                aria-label="Close"
+                style={{
+                  position: 'absolute', top: 10, right: 10, zIndex: 10,
+                  width: 28, height: 28, borderRadius: '50%',
+                  border: '1px solid rgba(255,255,255,0.25)',
+                  background: 'rgba(0,0,0,0.4)',
+                  color: 'rgba(255,255,255,0.8)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={16} />
+              </button>
+
               {/* Red accent top bar */}
               <div style={{ position:'absolute', top:0, left:0, right:0, height:4, background:'linear-gradient(90deg,#7f1d1d,#ef4444,#7f1d1d)', flexShrink:0 }} />
               {/* Red accent bottom bar */}
@@ -320,7 +337,10 @@ export default function DetailedPayoutDisplay({ winInfo, playerCount = 1 }) {
   return (
     <AnimatePresence>
       {hasAnyWins && nextWinnerIdx !== -1 && (
-        <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 pointer-events-auto z-50 flex items-center justify-center p-4"
+          onClick={() => { setCurrentPlayerIndex(winInfo.playerPayouts.length); onClose?.(); }}
+        >
           {(() => {
             const pid     = nextWinnerIdx;
             const payout  = winInfo.playerPayouts[pid];
@@ -340,6 +360,7 @@ export default function DetailedPayoutDisplay({ winInfo, playerCount = 1 }) {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.85 }}
                 className="pointer-events-auto relative"
+                onClick={(e) => e.stopPropagation()}
                 style={{
                   width: '500px',
                   maxWidth: '96vw',
@@ -354,6 +375,23 @@ export default function DetailedPayoutDisplay({ winInfo, playerCount = 1 }) {
                   overflow: 'hidden',
                 }}
               >
+                {/* Close button (X) — top-right corner */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); setCurrentPlayerIndex(winInfo.playerPayouts.length); onClose?.(); }}
+                  aria-label="Close"
+                  style={{
+                    position: 'absolute', top: 10, right: 10, zIndex: 10,
+                    width: 28, height: 28, borderRadius: '50%',
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    background: 'rgba(0,0,0,0.4)',
+                    color: 'rgba(255,255,255,0.85)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <X size={16} />
+                </button>
+
                 {/* Accent top bar */}
                 <div style={{ height: 3, background: accent, flexShrink: 0 }} />
 

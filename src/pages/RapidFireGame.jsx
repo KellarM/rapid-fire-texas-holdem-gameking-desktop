@@ -1977,7 +1977,7 @@ export default function RapidFireGame() {
           </div>
 
           {/* Detailed Payout Display */}
-          <DetailedPayoutDisplay winInfo={lastWinInfo} playerCount={playerCount} />
+          <DetailedPayoutDisplay winInfo={lastWinInfo} playerCount={playerCount} onClose={() => setLastWinInfo(null)} />
 
           {/* 10 Fixed Hands Grid */}
           <div className="flex-1 min-h-0 w-full" style={{ position: 'relative' }}>
