@@ -1897,7 +1897,7 @@ export default function RapidFireGame() {
               padding: 0,
               borderRadius: '0.5rem',
               border: '3px solid #e8b84b',
-              background: 'linear-gradient(90deg, rgba(78,47,0,0.5) 0%, rgba(83,37,0,0.5) 100%)',
+              background: 'rgba(0,0,0,0.45)',
               boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
               boxSizing: 'border-box',
               position: 'relative',
