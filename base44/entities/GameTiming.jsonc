@@ -31,6 +31,11 @@
       "default": true,
       "description": "true = Dealer Button mode (manual), false = Timing Feature mode (auto-progression)"
     },
+    "mobileLayout": {
+      "type": "string",
+      "default": "A",
+      "description": "Mobile portrait layout variant (\"A\" or \"B\")"
+    },
     "description": {
       "type": "string",
       "maxLength": 1000
