@@ -816,16 +816,21 @@ export default function MobileGameLayout({
             ⚙️
           </button>
 
-          {/* Gear dropdown — scrollable, pops up above */}
+          {/* Gear dropdown — scrollable, pops up above. Fixed to true viewport
+              edges (not the small gear-button wrapper) with a width clamp so it
+              can never render partially off-screen regardless of container width. */}
           {gearMenuOpen && (
             <div style={{
-              position: 'absolute', bottom: '110%', right: 0,
+              position: 'fixed', bottom: 58, right: 8,
               width: 180,
+              maxWidth: 'calc(100vw - 16px)',
+              maxHeight: '70vh',
+              overflowY: 'auto',
               background: 'linear-gradient(160deg, rgba(30,10,0,0.97) 0%, rgba(50,20,0,0.97) 100%)',
               border: '1px solid rgba(234,179,8,0.4)',
               borderRadius: 12, padding: '8px 0',
               boxShadow: '0 -4px 24px rgba(0,0,0,0.7)',
-              zIndex: 100,
+              zIndex: 300,
             }}>
               {/* Header */}
               <div style={{ padding: '2px 12px 8px', borderBottom: '1px solid rgba(234,179,8,0.2)', marginBottom: 4 }}>
