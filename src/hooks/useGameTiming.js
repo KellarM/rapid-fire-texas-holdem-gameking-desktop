@@ -13,6 +13,7 @@ const DEFAULT_TIMING = {
 };
 
 const DEALER_MODE_KEY = 'rfth_dealerMode';
+const MOBILE_LAYOUT_KEY = 'rfth_mobileLayout';
 
 function readLocalDealerMode() {
   try {
@@ -25,12 +26,27 @@ function writeLocalDealerMode(v) {
   try { localStorage.setItem(DEALER_MODE_KEY, String(v)); } catch {}
 }
 
+function readLocalMobileLayout() {
+  try {
+    const v = localStorage.getItem(MOBILE_LAYOUT_KEY);
+    return v || null;
+  } catch { return null; }
+}
+
+function writeLocalMobileLayout(v) {
+  try { localStorage.setItem(MOBILE_LAYOUT_KEY, String(v)); } catch {}
+}
+
 export function useGameTiming() {
   const [timing, setTiming] = useState(DEFAULT_TIMING);
   const [recordId, setRecordId] = useState(null);
   const timerRef = useRef(null);
   const [dealerMode, setDealerModeState] = useState(() => readLocalDealerMode());
-  const [mobileLayout, setMobileLayoutState] = useState('A');
+  const [mobileLayout, setMobileLayoutState] = useState(() => {
+    // Start from localStorage so there's no flash of wrong layout on mobile
+    return readLocalMobileLayout() || 'A';
+  });
+  const pendingLayoutRef = useRef(null); // stores layout value if set before recordId is ready
 
   // Load timing from DB on mount
   useEffect(() => {
@@ -44,14 +60,26 @@ export function useGameTiming() {
           setDealerModeState(!!rec.dealerMode);
           writeLocalDealerMode(!!rec.dealerMode);
         }
-        if (rec.mobileLayout) {
+        // DB is the source of truth for mobileLayout — but don't overwrite
+        // if the user already set a new value while we were loading
+        if (rec.mobileLayout && !pendingLayoutRef.current) {
           setMobileLayoutState(rec.mobileLayout);
+          writeLocalMobileLayout(rec.mobileLayout);
+        }
+        // If user set a layout before recordId was ready, persist it now
+        if (pendingLayoutRef.current && rec.id) {
+          const v = pendingLayoutRef.current;
+          pendingLayoutRef.current = null;
+          base44.entities.GameTiming.update(rec.id, { mobileLayout: v }).catch(() => {});
         }
       }
     }).catch(() => {});
   }, []);
 
   // Listen for timing updates saved from GameTimingModal
+  // NOTE: This reloads TIMING fields only. It must NOT overwrite mobileLayout,
+  // because the layout is managed independently and a timing save could race
+  // with a layout change, reverting it to the stale DB value.
   const reloadTiming = useCallback(() => {
     base44.entities.GameTiming.list().then(records => {
       if (records && records.length > 0) {
@@ -62,9 +90,8 @@ export function useGameTiming() {
           setDealerModeState(!!rec.dealerMode);
           writeLocalDealerMode(!!rec.dealerMode);
         }
-        if (rec.mobileLayout) {
-          setMobileLayoutState(rec.mobileLayout);
-        }
+        // Deliberately NOT touching mobileLayout here — it has its own
+        // persistence path and reloading timing shouldn't clobber it.
       }
     }).catch(() => {});
   }, []);
@@ -100,17 +127,22 @@ export function useGameTiming() {
   }, []);
 
   const setMobileLayout = useCallback(async (v) => {
+    // Update in-memory state immediately so the modal reflects the choice
     setMobileLayoutState(v);
+    // Cache to localStorage so mobile doesn't flash the wrong layout on load
+    writeLocalMobileLayout(v);
+
     try {
       if (recordId) {
         await base44.entities.GameTiming.update(recordId, { mobileLayout: v });
       } else {
-        const created = await base44.entities.GameTiming.create({ ...DEFAULT_TIMING, mobileLayout: v });
-        setRecordId(created.id);
+        // recordId not loaded yet — stash the value and persist when DB loads
+        pendingLayoutRef.current = v;
       }
     } catch (e) {
-      // Field might not exist on entity yet — state still updates in-memory
-      console.warn('mobileLayout not persisted:', e.message);
+      // DB write failed — localStorage still has the value, and in-memory
+      // state is correct. Next page load will try DB first, then localStorage.
+      console.warn('mobileLayout not persisted to DB:', e.message);
     }
   }, [recordId]);
 
