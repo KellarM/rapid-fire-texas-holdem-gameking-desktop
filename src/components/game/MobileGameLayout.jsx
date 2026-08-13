@@ -329,7 +329,7 @@ export default function MobileGameLayout({
             padding:'0 8px', overflow:'hidden',
             background:'linear-gradient(90deg,rgba(55,22,0,0.95),rgba(70,28,0,0.95))',
             borderBottom:'1px solid rgba(202,138,4,0.4)', whiteSpace:'nowrap' }}>
-            <DealerAnnouncement message={dealerMessage} phase={gamePhase} />
+            <DealerAnnouncement message={dealerMessage} phase={gamePhase} fontSize="0.6rem" height="16px" lineHeight="16px" />
           </div>
 
           {/* Community cards — 30px hard cap, scale(0.40) */}
@@ -600,7 +600,7 @@ export default function MobileGameLayout({
           overflow: 'hidden',
           whiteSpace: 'nowrap',
         }}>
-          <DealerAnnouncement message={dealerMessage} phase={gamePhase} />
+          <DealerAnnouncement message={dealerMessage} phase={gamePhase} fontSize="0.75rem" height="24px" lineHeight="24px" />
         </div>
       </div>
 
