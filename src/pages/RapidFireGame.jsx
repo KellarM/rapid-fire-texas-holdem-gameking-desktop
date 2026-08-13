@@ -1851,7 +1851,9 @@ export default function RapidFireGame() {
       <AnalyticsDashboard isOpen={showAnalytics} onClose={() => setShowAnalytics(false)} />
 
       <GameTimingModal isOpen={showGameTiming} onClose={() => setShowGameTiming(false)} onSaved={reloadTiming} dealerMode={dealerMode} onDealerModeChange={setDealerMode} />
-      <MobileLayoutModal current={mobileLayout} onSelect={(v) => { setMobileLayout(v); setShowMobileLayout(false); }} onClose={() => setShowMobileLayout(false)} />
+      {showMobileLayout && (
+        <MobileLayoutModal current={mobileLayout} onSelect={(v) => { setMobileLayout(v); setShowMobileLayout(false); }} onClose={() => setShowMobileLayout(false)} />
+      )}
       <GameVersionsModal isOpen={showVersions} onClose={() => setShowVersions(false)} />
       {showBellCurve && (
         <BellCurveModal
