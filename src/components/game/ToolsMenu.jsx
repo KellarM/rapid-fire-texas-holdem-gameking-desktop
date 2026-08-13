@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Wrench, Award, PieChart, Layers, Timer, LineChart, SlidersHorizontal, Shuffle, Shield } from 'lucide-react';
+import { Wrench, Award, PieChart, Layers, Timer, LineChart, SlidersHorizontal, Shuffle, Shield, Smartphone } from 'lucide-react';
 
 const TOOLS = [
   { icon: LineChart,  label: 'Analytics',                   type: 'analytics',        badge: 'NEW', badgeColor: 'bg-green-700/60 text-green-300 border-green-600/40' },
@@ -10,6 +10,7 @@ const TOOLS = [
   { icon: Shuffle,    label: 'Opposite Game Stats',        href: '/opposite-game-stats' },
   { icon: Layers,     label: 'Deck Inspector',             href: '/deck-inspector' },
   { icon: Timer,      label: 'Game Timing',                type: 'gameTiming'      },
+  { icon: Smartphone, label: 'Mobile Layout',              type: 'mobileLayout',     badge: 'NEW', badgeColor: 'bg-blue-700/60 text-blue-300 border-blue-600/40' },
   { icon: SlidersHorizontal, label: 'Versions',             type: 'versions',         badge: 'NEW', badgeColor: 'bg-purple-700/60 text-purple-300 border-purple-600/40' },
   { icon: SlidersHorizontal, label: 'Bell Curve',           type: 'bellCurve',        badge: 'NEW', badgeColor: 'bg-red-700/60 text-red-300 border-red-600/40' },
   { icon: Shield,     label: 'Max Bet Simulator',          href: '/max-bet-simulator', badge: 'NEW', badgeColor: 'bg-amber-700/60 text-amber-300 border-amber-600/40' },
@@ -18,6 +19,7 @@ const TOOLS = [
 export default function ToolsMenu({
   onOpenAnalytics,
   onOpenGameTiming,
+  onOpenMobileLayout,
   onOpenVersions,
   onOpenBellCurve,
   toolsVisible = true,
@@ -80,6 +82,7 @@ export default function ToolsMenu({
   const typeHandlers = {
     analytics:        onOpenAnalytics,
     gameTiming:        onOpenGameTiming,
+    mobileLayout:      onOpenMobileLayout,
     versions:          onOpenVersions,
     bellCurve:         onOpenBellCurve,
   };

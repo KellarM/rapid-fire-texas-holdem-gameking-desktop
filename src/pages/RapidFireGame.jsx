@@ -59,6 +59,7 @@ import { useDropChip } from '@/hooks/useDropChip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileGameLayout from '@/components/game/MobileGameLayout';
 import GearMenu from '@/components/game/GearMenu';
+import MobileLayoutModal from '@/components/game/MobileLayoutModal';
 import OnboardingIndicator from '@/components/game/OnboardingIndicator';
 
 
@@ -159,6 +160,7 @@ export default function RapidFireGame() {
   const [showAnalytics, setShowAnalytics] = useState(false);
   
   const [showGameTiming, setShowGameTiming] = useState(false);
+  const [showMobileLayout, setShowMobileLayout] = useState(false);
   const [showVersions, setShowVersions] = useState(false);
   const [showBellCurve, setShowBellCurve] = useState(false);
   const { config: bellCurveConfig, saveConfig: saveBellCurveConfig } = useBellCurveConfig();
@@ -1849,6 +1851,7 @@ export default function RapidFireGame() {
       <AnalyticsDashboard isOpen={showAnalytics} onClose={() => setShowAnalytics(false)} />
 
       <GameTimingModal isOpen={showGameTiming} onClose={() => setShowGameTiming(false)} onSaved={reloadTiming} dealerMode={dealerMode} onDealerModeChange={setDealerMode} />
+      <MobileLayoutModal current={mobileLayout} onSelect={(v) => { setMobileLayout(v); setShowMobileLayout(false); }} onClose={() => setShowMobileLayout(false)} />
       <GameVersionsModal isOpen={showVersions} onClose={() => setShowVersions(false)} />
       {showBellCurve && (
         <BellCurveModal
@@ -1960,7 +1963,7 @@ export default function RapidFireGame() {
             {/* Logo — left side, with ToolsMenu button below */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', userSelect: 'none', gap: '4px' }}>
               <img src={LOGO_URLS[boardTheme]} alt="Rapid Fire Texas Hold'em" style={{ width: '72px', height: 'auto', display: 'block', borderRadius: '8px' }} />
-              <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
+              <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenMobileLayout={() => setShowMobileLayout(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
             </div>
 
             <CommunityCards cards={communityCards} phase={gamePhase} />
@@ -2151,8 +2154,6 @@ export default function RapidFireGame() {
                 onHowToPlay={() => setShowHowToPlay(true)}
                 onOpenStats={() => setShowStatsPanel(true)}
                 onResetBank={handleResetBank}
-                mobileLayout={mobileLayout}
-                onSetMobileLayout={setMobileLayout}
               />
             </OnboardingIndicator>
           </div>

@@ -10,7 +10,7 @@ const COLORS = [
   { id: 'green', label: 'Green', dot: '#0a4a1e' },
 ];
 
-export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHowToPlay, onResetBank, onOpenStats, mobileLayout = 'A', onSetMobileLayout }) {
+export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHowToPlay, onResetBank, onOpenStats }) {
   const [open, setOpen] = useState(false);
   const [showPlayExamples, setShowPlayExamples] = useState(false);
   const ref = useRef(null);
@@ -88,32 +88,7 @@ export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHo
               </div>
             </div>
 
-            {/* Mobile Layout — desktop-only control, affects mobile portrait */}
-            <div>
-              <div style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(250,204,21,0.55)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Mobile Layout</div>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                {[
-                  { id: 'A', label: 'Layout A' },
-                  { id: 'B', label: 'Layout B' },
-                ].map(t => (
-                  <button key={t.id}
-                    onClick={() => onSetMobileLayout?.(t.id)}
-                    style={{
-                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
-                      padding: '8px 4px', borderRadius: '10px', cursor: 'pointer', fontWeight: 700,
-                      fontSize: '11px', color: mobileLayout === t.id ? '#fde047' : '#94a3b8',
-                      border: mobileLayout === t.id ? '2px solid #facc15' : '1px solid rgba(202,138,4,0.3)',
-                      background: mobileLayout === t.id ? 'rgba(100,60,0,0.6)' : 'rgba(0,0,0,0.3)',
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Sound */}
+{/* Sound */}
             {soundManager && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', borderTop: '1px solid rgba(202,138,4,0.15)', paddingTop: '8px' }}>
                 <span style={{ fontSize: '13px', color: '#e2d9a0', fontWeight: 600 }}>Sound</span>
