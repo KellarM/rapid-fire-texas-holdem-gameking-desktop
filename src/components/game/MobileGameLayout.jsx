@@ -11,7 +11,6 @@ import CountdownClock from './CountdownClock';
 import DetailedPayoutDisplay from './DetailedPayoutDisplay';
 import GameRulesModal from './GameRulesModal';
 import HowToPlayOverlay from './HowToPlayOverlay';
-import ToolsMenu from './ToolsMenu';
 import HandBetLimitAlert from './HandBetLimitAlert';
 import RankBetLimitAlert from './RankBetLimitAlert';
 import InsufficientFundsAlert from './InsufficientFundsAlert';
@@ -1333,20 +1332,6 @@ export default function MobileGameLayout({
               </div>
             </div>
           )}
-          <ToolsMenu
-            onOpenStats={onOpenStats}
-            onOpenMollySimulator={onOpenMollySimulator}
-            onOpenArchetypeBattle={onOpenArchetypeBattle}
-            onOpenExploitHunter={onOpenExploitHunter}
-            onOpenComplianceReport={onOpenComplianceReport}
-            onOpenKsStrategyTest={onOpenKsStrategyTest}
-            onOpenObserver={onOpenObserver}
-            onOpenGameTiming={onOpenGameTiming}
-            onOpenAnalytics={onOpenAnalytics}
-            onOpenVersions={onOpenVersions}
-            onOpenBellCurve={onOpenBellCurve}
-            toolsVisible={toolsVisible}
-          />
     </div>
   );
 }
