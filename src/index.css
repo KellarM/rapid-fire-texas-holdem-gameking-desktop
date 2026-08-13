@@ -261,7 +261,7 @@
 
 /* Metallic gold border — muted (inactive slot) */
 .slot-border-dormant {
-  border-color: #8B6914 !important;
+  border-color: #e8b84b !important;
   box-shadow:
     0 0 0 1px #000 inset,
     0 0 0 2px rgba(197,160,89,0.25) inset,
