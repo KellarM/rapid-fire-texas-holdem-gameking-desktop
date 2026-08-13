@@ -72,6 +72,8 @@ export default function SideBets({
   compactLandscape,   // landscape mode: hides headers, flips color grid to 3×2
   colorCap = 0,
   riverCap = 0,
+  chipScale = 0.6,
+  compactHeader = false,
 }) {
   const colorLocked = killSwitchActive || !rankBetActive;
   const riverLocked = !rankBetActive;
@@ -206,13 +208,13 @@ export default function SideBets({
             <div style={{ display: 'flex', justifyContent: 'center', gap: 2, overflow: 'visible' }}>
               {Array.from({ length: 5 }, (_, i) => {
                 const chip = chipsHere.find(c => c.pid === i);
-                if (!chip) return <span key={i} style={{ width: Math.round(24 * 0.6), height: Math.round(24 * 0.6) + 4, display: 'inline-block', flexShrink: 0 }} />;
+                if (!chip) return <span key={i} style={{ width: Math.round(24 * chipScale), height: Math.round(24 * chipScale) + 4, display: 'inline-block', flexShrink: 0 }} />;
                 return (
                   <Chip
                     key={i}
                     playerId={chip.pid}
                     amount={chip.amt}
-                    scale={0.6}
+                    scale={chipScale}
                     draggable={gamePhase === 'betting'}
                     onDragStart={(e) => {
                       e.stopPropagation();
@@ -232,13 +234,13 @@ export default function SideBets({
               {Array.from({ length: 5 }, (_, i) => {
                 const pid = i + 5;
                 const chip = chipsHere.find(c => c.pid === pid);
-                if (!chip) return <span key={pid} style={{ width: Math.round(24 * 0.6), height: Math.round(24 * 0.6) + 4, display: 'inline-block', flexShrink: 0 }} />;
+                if (!chip) return <span key={pid} style={{ width: Math.round(24 * chipScale), height: Math.round(24 * chipScale) + 4, display: 'inline-block', flexShrink: 0 }} />;
                 return (
                   <Chip
                     key={pid}
                     playerId={chip.pid}
                     amount={chip.amt}
-                    scale={0.6}
+                    scale={chipScale}
                     draggable={gamePhase === 'betting'}
                     onDragStart={(e) => {
                       e.stopPropagation();
@@ -298,7 +300,7 @@ export default function SideBets({
               className="text-xs font-black tracking-wider uppercase"
               style={{ fontSize: '0.7rem', letterSpacing: '0.1em', ...goldEmbossText }}
             >
-              Color Board
+              {compactHeader ? 'Color' : 'Color Board'}
             </span>
             {!colorLocked && (
               <span
@@ -515,13 +517,13 @@ export default function SideBets({
                     <div style={{ display: 'flex', justifyContent: 'center', gap: 2, overflow: 'visible' }}>
                       {Array.from({ length: 5 }, (_, i) => {
                         const chip = chipsHere.find(c => c.pid === i);
-                        if (!chip) return <span key={i} style={{ width: Math.round(24 * 0.6), height: Math.round(24 * 0.6) + 4, display: 'inline-block', flexShrink: 0 }} />;
+                        if (!chip) return <span key={i} style={{ width: Math.round(24 * chipScale), height: Math.round(24 * chipScale) + 4, display: 'inline-block', flexShrink: 0 }} />;
                         return (
                           <Chip
                             key={i}
                             playerId={chip.pid}
                             amount={chip.amt}
-                            scale={0.6}
+                            scale={chipScale}
                             title={`P${chip.pid + 1}: $${chip.amt}`}
                             style={{ flexShrink: 0, pointerEvents: 'auto' }}
                           />
@@ -533,13 +535,13 @@ export default function SideBets({
                       {Array.from({ length: 5 }, (_, i) => {
                         const pid = i + 5;
                         const chip = chipsHere.find(c => c.pid === pid);
-                        if (!chip) return <span key={pid} style={{ width: Math.round(24 * 0.6), height: Math.round(24 * 0.6) + 4, display: 'inline-block', flexShrink: 0 }} />;
+                        if (!chip) return <span key={pid} style={{ width: Math.round(24 * chipScale), height: Math.round(24 * chipScale) + 4, display: 'inline-block', flexShrink: 0 }} />;
                         return (
                           <Chip
                             key={pid}
                             playerId={chip.pid}
                             amount={chip.amt}
-                            scale={0.6}
+                            scale={chipScale}
                             title={`P${chip.pid + 1}: $${chip.amt}`}
                             style={{ flexShrink: 0, pointerEvents: 'auto' }}
                           />

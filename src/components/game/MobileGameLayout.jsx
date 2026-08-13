@@ -334,7 +334,7 @@ export default function MobileGameLayout({
             <div style={{ transform:'scale(0.40)', transformOrigin:'center center',
               display:'flex', alignItems:'center', flexShrink:0,
               width:'78%', justifyContent:'center', pointerEvents:'none' }}>
-              <CommunityCards cards={communityCards} phase={gamePhase} />
+              <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} />
             </div>
             <img src={LOGO_URLS[boardTheme]||LOGO_URLS.red} alt=""
               style={{width:9,height:'auto',borderRadius:2,flexShrink:0,opacity:0.7}} />
@@ -632,7 +632,7 @@ export default function MobileGameLayout({
         <div className="slot-border-dormant rounded-xl border-2 bg-black/35 flex items-center justify-center" style={{ height: 96, padding: '4px 6px' }}>
           <div className="flex items-center justify-center gap-2 w-full h-full">
             <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
-            <CommunityCards cards={communityCards} phase={gamePhase} />
+            <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} />
             <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
           </div>
         </div>
@@ -711,6 +711,9 @@ export default function MobileGameLayout({
                 onAttemptLockedRank={() => {}}
                 onHoverRankRow={onSetHoveredRankRow}
                 rankLockThreshold={rankLockAt}
+                fontScale={0.65}
+                chipScale={0.42}
+                compactHeader={true}
               />
             </div>
           </div>
@@ -744,6 +747,8 @@ export default function MobileGameLayout({
                 isRankBetPlaced={isRankBetPlaced}
                 activeColorSide={activeColorSide}
                 onColorSideConflict={onCloseColorSideAlert}
+                chipScale={0.42}
+                compactHeader={true}
               />
             </div>
           </div>

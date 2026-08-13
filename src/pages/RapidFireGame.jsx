@@ -1750,7 +1750,7 @@ export default function RapidFireGame() {
           preloadSounds={preloadSounds}
           onSetTheme={(t) => setBoardTheme(t)}
           onOpenHelp={() => setShowHowToPlay(true)}
-          onDealerButton={handleDealFlop}
+          onDealerButton={handleDealButtonPress}
           suppressHowToPlay={recoveryChecking || showRecoveryModal}
           versions={versions}
           versionsReady={versionsReady}

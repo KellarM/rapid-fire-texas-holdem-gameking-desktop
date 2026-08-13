@@ -43,6 +43,7 @@ function RankSlot({
   isWinner, isLeading, isKillLocked, isSlotLocked,
   onRankBet, onRemoveRankBet, onMoveRankBet, gamePhase, unlockedRanks, killSwitchActive, rankLockThreshold = 1,
   noHandBets, activePlayerId, activeHandIds, oddsLabel,
+  fontScale = 1, chipScale = 0.65,
 }) {
   const bet = rankBets[opt.key] || 0;
   const unlockPulse = useUnlockPulse(opt.key, unlockedRanks);
@@ -181,13 +182,13 @@ function RankSlot({
       >
         <span
           className={`text-left whitespace-nowrap ${textColor}`}
-          style={{ fontSize: '0.96rem', fontWeight: 900, letterSpacing: '0.01em', lineHeight: 1, flex: '0 0 auto', WebkitTextStroke: '0.4px currentColor' }}
+          style={{ fontSize: `${0.96 * fontScale}rem`, fontWeight: 900, letterSpacing: '0.01em', lineHeight: 1, flex: '0 0 auto', WebkitTextStroke: '0.4px currentColor' }}
         >
           {opt.label}
         </span>
         <div className="flex items-center justify-end flex-1 min-w-0" style={{ paddingLeft: 6 }}>
           {showOdds && oddsLabel ? (
-            <span className={`whitespace-nowrap ${oddsColor}`} style={{ fontSize: '0.864rem', fontWeight: 900, lineHeight: 1, WebkitTextStroke: '0.4px currentColor' }}>
+            <span className={`whitespace-nowrap ${oddsColor}`} style={{ fontSize: `${0.864 * fontScale}rem`, fontWeight: 900, lineHeight: 1, WebkitTextStroke: '0.4px currentColor' }}>
               {oddsLabel}
             </span>
           ) : null}
@@ -204,13 +205,13 @@ function RankSlot({
           <div style={{ display: 'flex', justifyContent: 'center', gap: 3, overflow: 'visible' }}>
             {Array.from({ length: 5 }, (_, i) => {
               const chip = chipsHere.find(c => c.pid === i);
-              if (!chip) return <span key={i} style={{ width: Math.round(24 * 0.65), height: Math.round(24 * 0.65) + 4, display: 'inline-block', flexShrink: 0 }} />;
+              if (!chip) return <span key={i} style={{ width: Math.round(24 * chipScale), height: Math.round(24 * chipScale) + 4, display: 'inline-block', flexShrink: 0 }} />;
               return (
                 <Chip
                   key={i}
                   playerId={chip.pid}
                   amount={chip.amt}
-                  scale={0.65}
+                  scale={chipScale}
                   draggable={gamePhase === 'betting' && chip.pid === activePlayerId}
                   onDragStart={(e) => {
                     e.stopPropagation();
@@ -229,13 +230,13 @@ function RankSlot({
             {Array.from({ length: 5 }, (_, i) => {
               const pid = i + 5;
               const chip = chipsHere.find(c => c.pid === pid);
-              if (!chip) return <span key={pid} style={{ width: Math.round(24 * 0.65), height: Math.round(24 * 0.65) + 4, display: 'inline-block', flexShrink: 0 }} />;
+              if (!chip) return <span key={pid} style={{ width: Math.round(24 * chipScale), height: Math.round(24 * chipScale) + 4, display: 'inline-block', flexShrink: 0 }} />;
               return (
                 <Chip
                   key={pid}
                   playerId={chip.pid}
                   amount={chip.amt}
-                  scale={0.65}
+                  scale={chipScale}
                   draggable={gamePhase === 'betting' && chip.pid === activePlayerId}
                   onDragStart={(e) => {
                     e.stopPropagation();
@@ -272,6 +273,9 @@ export default function RankBets({
   onAttemptLockedRank, onHoverRankRow,
   rankLockThreshold = 1,
   matchCapRemaining = 0,
+  fontScale = 1,
+  chipScale = 0.65,
+  compactHeader = false,
 }) {
   const canBet = gamePhase === 'betting' && !disabled && !killSwitchActive;
   // hasMathFilter removed: all ranks available when kill-switch is off
@@ -285,7 +289,7 @@ export default function RankBets({
           className="text-xs font-black tracking-wider uppercase"
           style={{ fontSize: '0.7rem', letterSpacing: '0.1em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
         >
-          Hand Ranking
+          {compactHeader ? 'Ranking' : 'Hand Ranking'}
         </span>
         {!noHandBets && !killSwitchActive && (
           <span
@@ -387,6 +391,8 @@ export default function RankBets({
                 activePlayerId={activePlayerId}
                 activeHandIds={activeHandIds}
                 oddsLabel={RANK_ODDS_LABELS[opt.key]}
+                fontScale={fontScale}
+                chipScale={chipScale}
               />
             </div>
           );
