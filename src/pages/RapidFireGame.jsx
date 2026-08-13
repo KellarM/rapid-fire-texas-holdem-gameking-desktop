@@ -1980,7 +1980,16 @@ export default function RapidFireGame() {
           <DetailedPayoutDisplay winInfo={lastWinInfo} playerCount={playerCount} onClose={() => setLastWinInfo(null)} />
 
           {/* 10 Fixed Hands Grid */}
-          <div className="flex-1 min-h-0 w-full" style={{ position: 'relative' }}>
+          <div className="flex-1 min-h-0 w-full" style={{
+            position: 'relative',
+            border: '3px solid #e8b84b',
+            borderRadius: '0.75rem',
+            boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
+            background: 'rgba(0,0,0,0.35)',
+            boxSizing: 'border-box',
+            padding: '4px',
+            overflow: 'visible',
+          }}>
             {/* Countdown clock overlay — Timing mode, centered over hand grid */}
             {!dealerMode && (
               <div style={{
