@@ -424,9 +424,11 @@ export default function SideBets({
                 <span className="text-yellow-400 font-black text-sm mb-1 text-center px-2 leading-tight">
                   OPENS AFTER TURN
                 </span>
-                <span className="text-yellow-300/60 text-sm text-center px-3 leading-snug">
-                  River bet available once the Turn card is dealt
-                </span>
+                {!compactHeader && (
+                  <span className="text-yellow-300/60 text-sm text-center px-3 leading-snug">
+                    River bet available once the Turn card is dealt
+                  </span>
+                )}
               </>
             ) : (
               <>
