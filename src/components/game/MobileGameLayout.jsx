@@ -781,7 +781,7 @@ export default function MobileGameLayout({
       ) : mobileLayout === 'C' ? (
         <>
 {/* ── Layout C: Rank/Color on top, Hands below, Community Cards at bottom ── */}
-      <div className="flex-1 min-h-0 px-2 pt-2 pb-0 flex flex-col gap-2" style={{ touchAction: 'none' }}>
+      <div className="flex-1 min-h-0 px-2 pt-1 pb-0 flex flex-col gap-1" style={{ touchAction: 'none' }}>
 
         {/* Rank + Color/River — at the top */}
         <div className="flex-1 min-h-0 flex gap-1.5" style={{ position: 'relative' }}>
@@ -874,7 +874,7 @@ export default function MobileGameLayout({
           style={{
             gridTemplateColumns: 'repeat(5, 1fr)',
             gridTemplateRows: 'repeat(2, 1fr)',
-            height: '36%',
+            height: '44%',
             border: '3px solid #e8b84b',
             borderRadius: '0.75rem',
             boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
@@ -1313,8 +1313,8 @@ export default function MobileGameLayout({
 
       {/* ── Community Cards (Layout C only — below footer) ── */}
       {mobileLayout === 'C' && (
-        <div className="flex-shrink-0 px-2 pt-2 pb-2">
-          <div className="rounded-xl bg-black/35 flex items-center justify-center" style={{ height: 96, padding: '4px 6px', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', boxSizing: 'border-box' }}>
+        <div className="flex-shrink-0 px-2 pt-0 pb-1">
+          <div className="bg-black/35 flex items-center justify-center" style={{ height: 88, padding: '4px 6px', border: '3px solid #e8b84b', borderRadius: '0.75rem', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', boxSizing: 'border-box' }}>
             <div className="flex items-center justify-center gap-2 w-full h-full">
               <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
               <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} />
