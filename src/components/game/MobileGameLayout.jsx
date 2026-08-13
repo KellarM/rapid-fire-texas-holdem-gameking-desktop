@@ -727,7 +727,7 @@ export default function MobileGameLayout({
           </div>
 
           {/* Color + River board */}
-          <div className={`flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden ${luminosityClass}`} style={{ background: 'rgba(0,0,0,0.45)', padding: '6px' }}>
+          <div className={`flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden ${luminosityClass}`} style={{ background: 'transparent', padding: '0px' }}>
             <div className="flex-1 min-h-0 overflow-hidden">
               <SideBets
                 communityCards={communityCards}
