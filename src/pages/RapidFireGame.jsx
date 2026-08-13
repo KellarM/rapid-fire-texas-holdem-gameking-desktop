@@ -205,7 +205,7 @@ export default function RapidFireGame() {
   }, [boardTheme]);
 
   // Game timing
-  const { timing, dealerMode, setDealerMode, startTimer, stopTimer, reloadTiming } = useGameTiming();
+  const { timing, dealerMode, setDealerMode, mobileLayout, setMobileLayout, startTimer, stopTimer, reloadTiming } = useGameTiming();
 
   // ── Mode: true (default) = Dealer Button, false = Timing Feature ──────────
   // Dealer mode = current live behaviour (player-controlled via DealerButton).
@@ -1749,6 +1749,7 @@ export default function RapidFireGame() {
           activeColorSide={versions?.colorBothSides ? null : (['3R','4R','5R'].some(k => (pRedBlackBets[k]||0) > 0) ? 'red' : ['3B','4B','5B'].some(k => (pRedBlackBets[k]||0) > 0) ? 'black' : null)}
           preloadSounds={preloadSounds}
           onSetTheme={(t) => setBoardTheme(t)}
+          mobileLayout={mobileLayout}
           onOpenHelp={() => setShowHowToPlay(true)}
           onDealerButton={handleDealButtonPress}
           suppressHowToPlay={recoveryChecking || showRecoveryModal}
@@ -2150,6 +2151,8 @@ export default function RapidFireGame() {
                 onHowToPlay={() => setShowHowToPlay(true)}
                 onOpenStats={() => setShowStatsPanel(true)}
                 onResetBank={handleResetBank}
+                mobileLayout={mobileLayout}
+                onSetMobileLayout={setMobileLayout}
               />
             </OnboardingIndicator>
           </div>

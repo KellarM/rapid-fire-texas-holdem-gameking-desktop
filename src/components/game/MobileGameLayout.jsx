@@ -634,7 +634,143 @@ export default function MobileGameLayout({
         </div>
       )}
 
-      {/* ── Community Cards ── */}
+      {mobileLayout === 'B' ? (
+        <>
+{/* ── Main game area ── */}
+      <div className="flex-1 min-h-0 px-2 pt-1 pb-0 flex flex-col gap-1.5" style={{ touchAction: 'none' }}>
+
+        {/* Rank + Color/River — clock floats at the top boundary overlapping both */}
+        <div className="flex-1 min-h-0 flex gap-1.5" style={{ position: 'relative' }}>
+          {/* Clock overlaps bottom of hand grid and top of rank/color boards */}
+          <div style={{
+            position: 'absolute',
+            top: -26,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 30,
+            pointerEvents: 'none',
+          }}>
+            <CountdownClock timeRemaining={countdownTime} isActive={countdownActive} phase={gamePhase} />
+          </div>
+
+          {/* Rank board */}
+          <div className="flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden" style={{ background: 'rgba(0,0,0,0.45)', padding: '6px', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)' }}>
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <RankBets
+                rankBets={pRankBets}
+                allRankBets={rankBets}
+                playerCount={playerCount}
+                onRankBet={onRankBet}
+                onRemoveRankBet={onRemoveRankBet}
+                onMoveRankBet={onMoveRankBet}
+                gamePhase={gamePhase}
+                winningRank={winningRank}
+                leadingRank={leadingRank}
+                disabled={balance < selectedChip}
+                killSwitchActive={killSwitchActive}
+                handBetCount={handBetCount}
+                maxRankSlots={maxRankSlots}
+                rankBetCount={rankBetCount}
+                unlockedRanks={new Set()}
+                activePlayerId={pid}
+                activeHandIds={activeHandIds}
+                onAttemptLockedRank={() => {}}
+                onHoverRankRow={onSetHoveredRankRow}
+                rankLockThreshold={rankLockAt}
+                fontScale={0.65}
+                chipScale={0.42}
+                compactHeader={true}
+                matchCapRemaining={matchCapRemaining}
+              />
+            </div>
+          </div>
+
+          {/* Color + River board */}
+          <div className={`flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden ${luminosityClass}`} style={{ background: 'transparent', padding: '0px' }}>
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <SideBets
+                communityCards={communityCards}
+                allRedBlackBets={redBlackBets}
+                allLowHighBets={lowHighBets}
+                redBlackBets={pRedBlackBets}
+                lowHighBet={pLowHighBet}
+                onRedBlackBet={onRedBlackBet}
+                onRemoveRedBlackBet={onRemoveRedBlackBet}
+                onLowHighBet={onLowHighBet}
+                onRemoveLowHighBet={onRemoveLowHighBet}
+                gamePhase={gamePhase}
+                winningRedBlack={winningRedBlack}
+                winningLowHigh={winningLowHigh}
+                disabled={gamePhase === 'betting' ? balance < selectedChip : gamePhase === 'lowHighBetting' ? balance < selectedChip : true}
+                killSwitchActive={killSwitchActive}
+                rankBetActive={sideBetGateOpen}
+                playerCount={playerCount}
+                totalInvestment={totalBet}
+                hoveredRiverType={hoveredRiverType}
+                onHoverRiver={onSetHoveredRiverType}
+                riverWinFlash={riverWinFlash}
+                selectedChip={selectedChip}
+                hoveredRankRow={hoveredRankRow}
+                isRankBetPlaced={isRankBetPlaced}
+                activeColorSide={activeColorSide}
+                onColorSideConflict={onCloseColorSideAlert}
+                chipScale={0.42}
+                compactHeader={true}
+                colorCap={colorCap}
+                riverCap={riverCap}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 10-hand grid — crypto-shuffled each round */}
+        <div
+          className="flex-shrink-0 relative grid gap-1"
+          style={{ gridTemplateColumns: 'repeat(5, 1fr)', gridTemplateRows: 'repeat(2, 1fr)', height: '36%' }}
+        >
+          {displayOrder.map(hid => {
+            const hand = FIXED_HANDS.find(h => h.id === hid);
+            if (!hand) return null;
+            return (
+              <MobileHandCard
+                key={hand.id}
+                hand={hand}
+                isLeading={leadingHandIds.includes(hand.id)}
+                isWinner={winnerHandIds.includes(hand.id)}
+                communityCards={communityCards}
+                betAmount={pHandBets[hand.id] || 0}
+                onBet={onHandBet}
+                onRemoveBet={onRemoveHandBet}
+                gamePhase={gamePhase}
+                disabled={balance < selectedChip && !pHandBets[hand.id]}
+                disabledByConstraint={!pHandBets[hand.id] && handBetCount >= maxHandBetsAllowed}
+                onAttemptLockedBet={() => {}}
+              />
+            );
+          })}
+        </div>
+
+        {/* ── Community Cards ── */}
+      <div className="flex-shrink-0 px-2 pt-1">
+        <div className="slot-border-dormant rounded-xl border-2 bg-black/35 flex items-center justify-center" style={{ height: 96, padding: '4px 6px' }}>
+          <div className="flex items-center justify-center gap-2 w-full h-full">
+            <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
+            <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} />
+            <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
+          </div>
+        </div>
+      </div>
+
+      {/* ── Win/No-Win Modal ── */}
+      <div className="flex-shrink-0 px-2">
+        <DetailedPayoutDisplay winInfo={lastWinInfo} playerCount={playerCount} onClose={onCloseWinDisplay} />
+      </div>
+
+              </>
+      ) : (
+        <>
+{/* ── Community Cards ── */}
       <div className="flex-shrink-0 px-2 pt-1">
         <div className="slot-border-dormant rounded-xl border-2 bg-black/35 flex items-center justify-center" style={{ height: 96, padding: '4px 6px' }}>
           <div className="flex items-center justify-center gap-2 w-full h-full">
@@ -765,7 +901,8 @@ export default function MobileGameLayout({
         </div>
       </div>
 
-      {/* ── Bottom action bar — gold-bordered like desktop ── */}
+              </>
+      )}{/* ── Bottom action bar — gold-bordered like desktop ── */}
       <div className="flex-shrink-0 px-2 py-1.5 flex items-center gap-1"
         style={{
           border: '3px solid #e8b84b',

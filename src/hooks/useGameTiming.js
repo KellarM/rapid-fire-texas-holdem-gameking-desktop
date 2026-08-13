@@ -9,6 +9,7 @@ const DEFAULT_TIMING = {
   riverReveal: 5,
   endOfRound: 14,
   dealerMode: true, // default: Dealer Button mode (safe)
+  mobileLayout: 'A', // default: Layout A (current mobile portrait arrangement)
 };
 
 const DEALER_MODE_KEY = 'rfth_dealerMode';
@@ -29,6 +30,7 @@ export function useGameTiming() {
   const [recordId, setRecordId] = useState(null);
   const timerRef = useRef(null);
   const [dealerMode, setDealerModeState] = useState(() => readLocalDealerMode());
+  const [mobileLayout, setMobileLayoutState] = useState('A');
 
   // Load timing from DB on mount
   useEffect(() => {
@@ -41,6 +43,9 @@ export function useGameTiming() {
         if (rec.dealerMode !== undefined && rec.dealerMode !== null) {
           setDealerModeState(!!rec.dealerMode);
           writeLocalDealerMode(!!rec.dealerMode);
+        }
+        if (rec.mobileLayout) {
+          setMobileLayoutState(rec.mobileLayout);
         }
       }
     }).catch(() => {});
@@ -56,6 +61,9 @@ export function useGameTiming() {
         if (rec.dealerMode !== undefined && rec.dealerMode !== null) {
           setDealerModeState(!!rec.dealerMode);
           writeLocalDealerMode(!!rec.dealerMode);
+        }
+        if (rec.mobileLayout) {
+          setMobileLayoutState(rec.mobileLayout);
         }
       }
     }).catch(() => {});
@@ -91,5 +99,20 @@ export function useGameTiming() {
     writeLocalDealerMode(v);
   }, []);
 
-  return { timing, recordId, dealerMode, setDealerMode, startTimer, stopTimer, reloadTiming };
+  const setMobileLayout = useCallback(async (v) => {
+    setMobileLayoutState(v);
+    try {
+      if (recordId) {
+        await base44.entities.GameTiming.update(recordId, { mobileLayout: v });
+      } else {
+        const created = await base44.entities.GameTiming.create({ ...DEFAULT_TIMING, mobileLayout: v });
+        setRecordId(created.id);
+      }
+    } catch (e) {
+      // Field might not exist on entity yet — state still updates in-memory
+      console.warn('mobileLayout not persisted:', e.message);
+    }
+  }, [recordId]);
+
+  return { timing, recordId, dealerMode, setDealerMode, mobileLayout, setMobileLayout, startTimer, stopTimer, reloadTiming };
 }
