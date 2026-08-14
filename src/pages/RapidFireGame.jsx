@@ -64,7 +64,7 @@ import OnboardingIndicator from '@/components/game/OnboardingIndicator';
 
 
 // STARTING_BALANCE = 100 (managed server-side via usePlayerSession)
-const CHIP_VALUES = [0.01, 0.05, 0.10, 0.25, 0.50, 1];
+const CHIP_VALUES = [0.50, 0.25, 0.10, 0.05, 0.02, 0.01];
 const MAX_HAND_BET_AMOUNT = 5000;
 const DEFAULT_CHIP = 0.01;
 const PLAYER_COUNT_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];

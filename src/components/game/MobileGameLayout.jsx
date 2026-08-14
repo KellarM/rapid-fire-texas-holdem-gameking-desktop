@@ -18,7 +18,7 @@ import AutoTrimToast from './AutoTrimToast';
 import ColorSideAlert from './ColorSideAlert';
 import VolumeControl from './VolumeControl';
 
-const CHIP_VALUES = [0.01, 0.10, 0.50, 1];
+const CHIP_VALUES = [0.50, 0.25, 0.05, 0.01];
 
 const LOGO_URLS = {
   red:   'https://media.base44.com/images/public/69f3a45ad82dff5b772d4de2/2667063a3_image.png',
