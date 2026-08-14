@@ -1230,11 +1230,12 @@ export default function MobileGameLayout({
               onClick={() => setGearMenuOpen(false)}
             />
             <div
+              className="no-scrollbar"
               style={{
-                position: 'fixed', bottom: 58, right: 8,
-                width: 210,
+                position: 'fixed', bottom: 58, right: 8, top: 8,
+                width: 230,
                 maxWidth: 'calc(100vw - 16px)',
-                maxHeight: '75vh',
+                maxHeight: 'calc(100vh - 66px)',
                 overflowY: 'auto',
                 background: 'linear-gradient(170deg, #1a0f00 0%, #0a0500 100%)',
                 border: '3px solid #e8b84b',

@@ -327,3 +327,13 @@ body.theme-blue .velvet-board {
 body.theme-green .velvet-board {
   background: radial-gradient(circle at center, #0d6e2e 0%, #074a1c 60%, #022610 100%);
 }
+/* ── No-scrollbar utility (used by mobile gear/settings dropdown) ── */
+.no-scrollbar {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE/Edge legacy */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;               /* Chrome/Safari/WebKit */
+  width: 0;
+  height: 0;
+}
