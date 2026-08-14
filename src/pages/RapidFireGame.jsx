@@ -450,7 +450,7 @@ export default function RapidFireGame() {
 
   // Active player helpers
   const pid = activePlayer;
-  const balance = balances[pid] ?? 100;
+  const balance = balances[pid] ?? 20;
   const pHandBets = handBets[pid] || {};
   const pRedBlackBets = redBlackBets[pid] || {};
   const pRankBets = rankBets[pid] || {};
@@ -2139,7 +2139,7 @@ export default function RapidFireGame() {
             <div className="flex flex-col items-center">
               <span className="text-yellow-400/80 text-[10px] font-bold leading-none tracking-widest uppercase mb-0.5">Players Bank</span>
               <div className="flex items-center justify-center px-4 py-2 rounded-xl border-2 border-yellow-500 bg-black" style={{ minWidth: '110px' }}>
-                <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${(balances[activePlayer] ?? 100).toFixed(2)}</span>
+                <span className="text-yellow-400 font-black text-lg leading-none tracking-tight" style={{ textShadow: '0 0 8px rgba(251,191,36,0.7)' }}>${(balances[activePlayer] ?? 20).toFixed(2)}</span>
               </div>
             </div>
             {dealerMode ? (

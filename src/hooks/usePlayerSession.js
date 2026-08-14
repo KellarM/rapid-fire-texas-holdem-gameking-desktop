@@ -10,7 +10,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { PlayerSession } from '@/api/entities';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-export const STARTING_BALANCE  = 100;
+export const STARTING_BALANCE  = 20;
 export const NUM_PLAYERS       = 10;
 const DEVICE_KEY               = 'rfth_device_id';
 const SESSION_ID_KEY           = 'rfth_session_id';

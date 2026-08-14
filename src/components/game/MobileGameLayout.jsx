@@ -236,7 +236,7 @@ export default function MobileGameLayout({
   versionsReady = false,
 }) {
   const pid = activePlayer;
-  const balance = balances[pid] ?? 10000;
+  const balance = balances[pid] ?? 20;
   const [gearMenuOpen, setGearMenuOpen] = React.useState(false);
   const [showHistory, setShowHistory] = React.useState(false);
   const [showHowToPlay, setShowHowToPlay] = React.useState(false);
