@@ -474,18 +474,29 @@ export default function RapidFireGame() {
   // Unlock flash state
   const [showUnlockFlash, setShowUnlockFlash] = useState(false);
   const prevGateRef = useRef(false);
+  const unlockFlashTimerRef = useRef(null);
   useEffect(() => {
     if (sideBetGateOpen && !prevGateRef.current) {
       setShowUnlockFlash(true);
-      const t = setTimeout(() => setShowUnlockFlash(false), 4000);
+      if (unlockFlashTimerRef.current) clearTimeout(unlockFlashTimerRef.current);
+      unlockFlashTimerRef.current = setTimeout(() => setShowUnlockFlash(false), 8000);
       prevGateRef.current = true;
-      return () => clearTimeout(t);
+      return () => { if (unlockFlashTimerRef.current) clearTimeout(unlockFlashTimerRef.current); };
     }
     if (!sideBetGateOpen) {
       prevGateRef.current = false;
       setShowUnlockFlash(false);
     }
   }, [sideBetGateOpen]);
+
+  // Early-kill: if River betting phase opens before the 8s timer expires,
+  // clear the popup immediately so the River board is fully visible.
+  useEffect(() => {
+    if (gamePhase === 'lowHighBetting' && showUnlockFlash) {
+      if (unlockFlashTimerRef.current) clearTimeout(unlockFlashTimerRef.current);
+      setShowUnlockFlash(false);
+    }
+  }, [gamePhase, showUnlockFlash]);
 
   // Greed Engine: live total investment for active player
   const totalInvestment =
@@ -1661,7 +1672,7 @@ export default function RapidFireGame() {
           onResume={handleRecoveryResume}
           onAbandon={handleRecoveryAbandon}
         />
-        <style>{`@keyframes rfUnlockFadeOut{0%{opacity:0}10%{opacity:1}78%{opacity:1}100%{opacity:0}}`}</style>
+        <style>{`@keyframes rfUnlockFadeOut{0%{opacity:0}5%{opacity:1}88%{opacity:1}100%{opacity:0}}`}</style>
         <MobileGameLayout
           gamePhase={gamePhase}
           communityCards={communityCards}
@@ -1772,7 +1783,7 @@ export default function RapidFireGame() {
         onResume={handleRecoveryResume}
         onAbandon={handleRecoveryAbandon}
       />
-      <style>{`@keyframes rfUnlockFadeOut{0%{opacity:0}10%{opacity:1}78%{opacity:1}100%{opacity:0}}`}</style>
+      <style>{`@keyframes rfUnlockFadeOut{0%{opacity:0}5%{opacity:1}88%{opacity:1}100%{opacity:0}}`}</style>
       <div className={`velvet-board h-screen w-screen overflow-hidden text-white flex flex-col theme-${boardTheme}`} onClick={preloadSounds} onTouchStart={preloadSounds}>
 
       {/* Alerts */}
@@ -1921,7 +1932,7 @@ export default function RapidFireGame() {
               background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
               border: '2px solid #eab308',
               boxShadow: '0 0 40px rgba(234,179,8,0.5), 0 8px 32px rgba(0,0,0,0.8)',
-              animation: 'rfUnlockFadeOut 4s ease forwards',
+              animation: 'rfUnlockFadeOut 8s ease forwards',
               pointerEvents: 'none',
               padding: '16px 28px',
               gap: 0,

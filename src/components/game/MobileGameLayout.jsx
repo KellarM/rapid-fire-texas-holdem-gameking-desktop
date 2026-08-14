@@ -310,7 +310,7 @@ export default function MobileGameLayout({
           <div style={{ position:'fixed', top:'10%', left:'31%', transform:'translateX(-50%)', zIndex:9999,
             display:'flex', flexDirection:'column', alignItems:'center', borderRadius:8,
             background:'linear-gradient(160deg,rgba(0,0,0,0.97),rgba(25,12,0,0.98))',
-            border:'2px solid #eab308', animation:'rfUnlockFadeOut 4s ease forwards',
+            border:'2px solid #eab308', animation:'rfUnlockFadeOut 8s ease forwards',
             pointerEvents:'none', padding:'6px 12px', gap:2 }}>
             <span style={{fontSize:9,fontWeight:900,color:'#eab308',letterSpacing:'0.1em',textTransform:'uppercase'}}>🔓 Bonus Bets Unlocked</span>
             <span style={{fontSize:8,color:'#f87171',fontWeight:700}}>🔴 Color Board Open</span>
@@ -675,7 +675,7 @@ export default function MobileGameLayout({
                 background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
                 border: '2px solid #eab308',
                 boxShadow: '0 0 20px rgba(234,179,8,0.5)',
-                animation: 'rfUnlockFadeOut 4s ease forwards',
+                animation: 'rfUnlockFadeOut 8s ease forwards',
                 pointerEvents: 'none',
                 padding: '4px 6px',
                 gap: 1,
@@ -845,7 +845,7 @@ export default function MobileGameLayout({
                 background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
                 border: '2px solid #eab308',
                 boxShadow: '0 0 20px rgba(234,179,8,0.5)',
-                animation: 'rfUnlockFadeOut 4s ease forwards',
+                animation: 'rfUnlockFadeOut 8s ease forwards',
                 pointerEvents: 'none',
                 padding: '4px 6px',
                 gap: 1,
@@ -1058,7 +1058,7 @@ export default function MobileGameLayout({
                 background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
                 border: '2px solid #eab308',
                 boxShadow: '0 0 20px rgba(234,179,8,0.5)',
-                animation: 'rfUnlockFadeOut 4s ease forwards',
+                animation: 'rfUnlockFadeOut 8s ease forwards',
                 pointerEvents: 'none',
                 padding: '4px 6px',
                 gap: 1,
