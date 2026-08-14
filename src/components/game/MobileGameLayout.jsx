@@ -677,7 +677,7 @@ export default function MobileGameLayout({
                 onAttemptLockedRank={() => {}}
                 onHoverRankRow={onSetHoveredRankRow}
                 rankLockThreshold={rankLockAt}
-                fontScale={0.65}
+                fontScale={0.85}
                 chipScale={0.42}
                 compactHeader={true}
                 matchCapRemaining={matchCapRemaining}
@@ -821,7 +821,7 @@ export default function MobileGameLayout({
                 onAttemptLockedRank={() => {}}
                 onHoverRankRow={onSetHoveredRankRow}
                 rankLockThreshold={rankLockAt}
-                fontScale={0.65}
+                fontScale={0.85}
                 chipScale={0.42}
                 compactHeader={true}
                 matchCapRemaining={matchCapRemaining}
@@ -1008,7 +1008,7 @@ export default function MobileGameLayout({
                 onAttemptLockedRank={() => {}}
                 onHoverRankRow={onSetHoveredRankRow}
                 rankLockThreshold={rankLockAt}
-                fontScale={0.65}
+                fontScale={0.85}
                 chipScale={0.42}
                 compactHeader={true}
                 matchCapRemaining={matchCapRemaining}
