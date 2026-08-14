@@ -604,35 +604,7 @@ export default function MobileGameLayout({
         </div>
       </div>
 
-      {/* ── Bonus Bets Unlocked — fixed overlay, floats over board, nothing moves ── */}
-      {showUnlockFlash && (
-        <div style={{
-          position: 'fixed',
-          top: '18%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 9999,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: '0.6rem',
-          background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
-          border: '2px solid #eab308',
-          boxShadow: '0 0 30px rgba(234,179,8,0.5)',
-          animation: 'rfUnlockFadeOut 4s ease forwards',
-          pointerEvents: 'none',
-          padding: '14px 24px',
-          minWidth: '220px',
-          gap: 4,
-        }}>
-          <span style={{ fontSize: 13, fontWeight: 900, color: '#eab308', letterSpacing: '0.12em', textTransform: 'uppercase', textAlign: 'center' }}>🔓 Bonus Bets Unlocked</span>
-          <div style={{ height: 6 }} />
-          <span style={{ fontSize: 11, color: '#f87171', fontWeight: 700, textAlign: 'center' }}>🔴 Color Board Open</span>
-          <span style={{ fontSize: 11, color: '#60a5fa', fontWeight: 700, textAlign: 'center' }}>🌊 River Bet Available</span>
-          <span style={{ fontSize: 10, color: '#94a3b8', fontWeight: 600, textAlign: 'center' }}>After The Turn Card</span>
-        </div>
-      )}
+      {/* Bonus Bets Unlocked — moved into River board wrappers below */}
 
       {mobileLayout === 'B' ? (
         <>
@@ -685,8 +657,34 @@ export default function MobileGameLayout({
             </div>
           </div>
 
-          {/* Color + River board */}
-          <div className={`flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden ${luminosityClass}`} style={{ background: 'transparent', padding: '0px' }}>
+          {/* Color + River board — River on bottom, popup anchored here */}
+          <div className={`flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden ${luminosityClass}`} style={{ background: 'transparent', padding: '0px', position: 'relative' }}>
+            {showUnlockFlash && (
+              <div style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                width: '100%',
+                height: '38%',
+                zIndex: 50,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '0.5rem',
+                background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
+                border: '2px solid #eab308',
+                boxShadow: '0 0 20px rgba(234,179,8,0.5)',
+                animation: 'rfUnlockFadeOut 4s ease forwards',
+                pointerEvents: 'none',
+                padding: '4px 6px',
+                gap: 1,
+              }}>
+                <span style={{ fontSize: 9, fontWeight: 900, color: '#eab308', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center', lineHeight: 1.1 }}>🔓 Bonus Bets Unlocked</span>
+                <span style={{ fontSize: 8, color: '#f87171', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🔴 Color Board Open</span>
+                <span style={{ fontSize: 8, color: '#60a5fa', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🌊 River After Turn</span>
+              </div>
+            )}
             <div className="flex-1 min-h-0 overflow-hidden">
               <SideBets
                 communityCards={communityCards}
@@ -829,8 +827,34 @@ export default function MobileGameLayout({
             </div>
           </div>
 
-          {/* Color + River board — River on top in Layout C */}
-          <div className={`flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden ${luminosityClass}`} style={{ background: 'transparent', padding: '0px' }}>
+          {/* Color + River board — River on top in Layout C, popup anchored here */}
+          <div className={`flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden ${luminosityClass}`} style={{ background: 'transparent', padding: '0px', position: 'relative' }}>
+            {showUnlockFlash && (
+              <div style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '38%',
+                zIndex: 50,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '0.5rem',
+                background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
+                border: '2px solid #eab308',
+                boxShadow: '0 0 20px rgba(234,179,8,0.5)',
+                animation: 'rfUnlockFadeOut 4s ease forwards',
+                pointerEvents: 'none',
+                padding: '4px 6px',
+                gap: 1,
+              }}>
+                <span style={{ fontSize: 9, fontWeight: 900, color: '#eab308', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center', lineHeight: 1.1 }}>🔓 Bonus Bets Unlocked</span>
+                <span style={{ fontSize: 8, color: '#f87171', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🔴 Color Board Open</span>
+                <span style={{ fontSize: 8, color: '#60a5fa', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🌊 River After Turn</span>
+              </div>
+            )}
             <div className="flex-1 min-h-0 overflow-hidden">
               <SideBets
                 communityCards={communityCards}
@@ -1016,8 +1040,34 @@ export default function MobileGameLayout({
             </div>
           </div>
 
-          {/* Color + River board */}
-          <div className={`flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden ${luminosityClass}`} style={{ background: 'transparent', padding: '0px' }}>
+          {/* Color + River board — River on bottom, popup anchored here */}
+          <div className={`flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden ${luminosityClass}`} style={{ background: 'transparent', padding: '0px', position: 'relative' }}>
+            {showUnlockFlash && (
+              <div style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                width: '100%',
+                height: '38%',
+                zIndex: 50,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '0.5rem',
+                background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
+                border: '2px solid #eab308',
+                boxShadow: '0 0 20px rgba(234,179,8,0.5)',
+                animation: 'rfUnlockFadeOut 4s ease forwards',
+                pointerEvents: 'none',
+                padding: '4px 6px',
+                gap: 1,
+              }}>
+                <span style={{ fontSize: 9, fontWeight: 900, color: '#eab308', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center', lineHeight: 1.1 }}>🔓 Bonus Bets Unlocked</span>
+                <span style={{ fontSize: 8, color: '#f87171', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🔴 Color Board Open</span>
+                <span style={{ fontSize: 8, color: '#60a5fa', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🌊 River After Turn</span>
+              </div>
+            )}
             <div className="flex-1 min-h-0 overflow-hidden">
               <SideBets
                 communityCards={communityCards}
