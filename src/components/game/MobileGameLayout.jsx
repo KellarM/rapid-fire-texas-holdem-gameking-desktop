@@ -113,7 +113,7 @@ function MobileHandCard({
       {communityCards && communityCards.length > 0 && (() => {
         const ev = evaluateBestHand(hand.cards, communityCards);
         return ev && ev.name !== 'No Hand' && ev.name !== 'High Card'
-          ? <div style={{ fontSize: '0.38rem', color: isActive ? '#000' : '#a8956a', fontWeight: 700, lineHeight: 1, textAlign: 'center', flexShrink: 0 }}>{ev.name}</div>
+          ? <div style={{ fontSize: '0.38rem', color: isActive ? '#000' : '#a8956a', fontWeight: 800, lineHeight: 1, textAlign: 'center', flexShrink: 0 }}>{ev.name}</div>
           : <div style={{ fontSize: '0.38rem', lineHeight: 1, flexShrink: 0 }}>&nbsp;</div>;
       })()}
 
@@ -313,8 +313,8 @@ export default function MobileGameLayout({
             border:'2px solid #eab308', animation:'rfUnlockFadeOut 8s ease forwards',
             pointerEvents:'none', padding:'6px 12px', gap:2 }}>
             <span style={{fontSize:9,fontWeight:900,color:'#eab308',letterSpacing:'0.1em',textTransform:'uppercase'}}>🔓 Bonus Bets Unlocked</span>
-            <span style={{fontSize:8,color:'#f87171',fontWeight:700}}>🔴 Color Board Open</span>
-            <span style={{fontSize:8,color:'#60a5fa',fontWeight:700}}>🌊 River Bet — After Turn</span>
+            <span style={{fontSize:8,color:'#f87171',fontWeight:800}}>🔴 Color Board Open</span>
+            <span style={{fontSize:8,color:'#60a5fa',fontWeight:800}}>🌊 River Bet — After Turn</span>
           </div>
         )}
 
@@ -410,14 +410,14 @@ export default function MobileGameLayout({
             {gamePhase==='betting' && totalBet>0 && (
               <button onClick={onClearBets} style={{flexShrink:0,padding:'2px 4px',borderRadius:4,
                 border:'1px solid rgba(239,68,68,0.5)',background:'rgba(127,29,29,0.4)',
-                color:'#fca5a5',fontSize:8,fontWeight:700,cursor:'pointer'}}>Clear</button>
+                color:'#fca5a5',fontSize:8,fontWeight:800,cursor:'pointer'}}>Clear</button>
             )}
 
             <button onClick={()=>setGearMenuOpen(o=>!o)}
               style={{flexShrink:0,width:22,height:22,borderRadius:5,
                 border:'1px solid rgba(234,179,8,0.5)',
                 background:gearMenuOpen?'rgba(234,179,8,0.2)':'rgba(0,0,0,0.5)',
-                color:'#fde047',display:'flex',alignItems:'center',justifyContent:'center',
+                color:'#1a1200',display:'flex',alignItems:'center',justifyContent:'center',
                 fontSize:11,cursor:'pointer'}}>⚙️</button>
           </div>
         </div>
@@ -483,7 +483,7 @@ export default function MobileGameLayout({
             <div style={{ padding:'10px 14px 8px',
               background:'linear-gradient(180deg, rgba(232,184,75,0.12) 0%, transparent 100%)',
               borderBottom:'2px solid #e8b84b' }}>
-              <span style={{fontSize:13,fontWeight:900,color:'#fde047',letterSpacing:'0.14em',fontFamily:"'Oswald', sans-serif"}}>SETTINGS</span>
+              <span style={{fontSize:13,fontWeight:900,color:'#1a1200',letterSpacing:'0.14em',fontFamily:"'Oswald', sans-serif"}}>SETTINGS</span>
             </div>
 
             {/* Action buttons */}
@@ -491,46 +491,46 @@ export default function MobileGameLayout({
               {resetBankVisible && (
                 <button onClick={()=>{onResetBank();setGearMenuOpen(false);}}
                   style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
-                    border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
-                    color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                    border:'2px solid #8a6218',background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
+                    color:'#1a1200',fontSize:12,fontWeight:800,fontFamily:"'Oswald', sans-serif",
                     letterSpacing:'0.04em',textAlign:'left'}}
-                  onMouseEnter={e=>{e.currentTarget.style.background='rgba(100,55,0,0.6)';e.currentTarget.style.border='1.5px solid #e8b84b';}}
-                  onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,35,0,0.4)';e.currentTarget.style.border='1.5px solid rgba(232,184,75,0.4)';}}
+                  onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a';}}
+                  onMouseLeave={e=>{e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218';}}
                 >Reset Bank</button>
               )}
 
               <GameRulesModal asMenuItem buttonStyle={{
                 width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
-                border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
-                color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                border:'2px solid #8a6218',background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
+                color:'#1a1200',fontSize:12,fontWeight:800,fontFamily:"'Oswald', sans-serif",
                 letterSpacing:'0.04em',textAlign:'left',display:'flex',alignItems:'center',
-              }} buttonHoverStyle={{ background:'rgba(100,55,0,0.6)', border:'1.5px solid #e8b84b' }} />
+              }} buttonHoverStyle={{ background:'linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)', border:'2px solid #a8792a' }} />
 
               <button onClick={()=>{setShowHistory(true);setGearMenuOpen(false);}}
                 style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
-                  border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
-                  color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                  border:'2px solid #8a6218',background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
+                  color:'#1a1200',fontSize:12,fontWeight:800,fontFamily:"'Oswald', sans-serif",
                   letterSpacing:'0.04em',textAlign:'left'}}
-                onMouseEnter={e=>{e.currentTarget.style.background='rgba(100,55,0,0.6)';e.currentTarget.style.border='1.5px solid #e8b84b';}}
-                onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,35,0,0.4)';e.currentTarget.style.border='1.5px solid rgba(232,184,75,0.4)';}}
+                onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a';}}
+                onMouseLeave={e=>{e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218';}}
               >Hand History</button>
 
               <button onClick={()=>{if(onOpenHelp)onOpenHelp();else setShowHowToPlay(true);setGearMenuOpen(false);}}
                 style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
-                  border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
-                  color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                  border:'2px solid #8a6218',background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
+                  color:'#1a1200',fontSize:12,fontWeight:800,fontFamily:"'Oswald', sans-serif",
                   letterSpacing:'0.04em',textAlign:'left'}}
-                onMouseEnter={e=>{e.currentTarget.style.background='rgba(100,55,0,0.6)';e.currentTarget.style.border='1.5px solid #e8b84b';}}
-                onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,35,0,0.4)';e.currentTarget.style.border='1.5px solid rgba(232,184,75,0.4)';}}
+                onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a';}}
+                onMouseLeave={e=>{e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218';}}
               >How To Play</button>
 
               <button onClick={()=>{onOpenStats();setGearMenuOpen(false);}}
                 style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
-                  border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
-                  color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                  border:'2px solid #8a6218',background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
+                  color:'#1a1200',fontSize:12,fontWeight:800,fontFamily:"'Oswald', sans-serif",
                   letterSpacing:'0.04em',textAlign:'left'}}
-                onMouseEnter={e=>{e.currentTarget.style.background='rgba(100,55,0,0.6)';e.currentTarget.style.border='1.5px solid #e8b84b';}}
-                onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,35,0,0.4)';e.currentTarget.style.border='1.5px solid rgba(232,184,75,0.4)';}}
+                onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a';}}
+                onMouseLeave={e=>{e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218';}}
               >Player Stats</button>
             </div>
 
@@ -538,14 +538,14 @@ export default function MobileGameLayout({
 
             {/* Board Color */}
             <div style={{ padding:'10px 12px' }}>
-              <div style={{fontSize:9,fontWeight:700,color:'rgba(253,224,71,0.65)',letterSpacing:'0.14em',textTransform:'uppercase',fontFamily:"'Oswald', sans-serif",marginBottom:6}}>Board Color</div>
+              <div style={{fontSize:9,fontWeight:800,color:'rgba(253,224,71,0.65)',letterSpacing:'0.14em',textTransform:'uppercase',fontFamily:"'Oswald', sans-serif",marginBottom:6}}>Board Color</div>
               <div style={{display:'flex',gap:6}}>
                 {[{id:'red',label:'Red',dot:'#dc2626'},{id:'blue',label:'Blue',dot:'#2563eb'},{id:'green',label:'Green',dot:'#16a34a'}].map(t=>{
                   const selected = boardTheme===t.id;
                   return (
                     <button key={t.id} onClick={()=>{if(onSetTheme)onSetTheme(t.id);}}
                       style={{flex:1,padding:'7px 4px',borderRadius:8,cursor:'pointer',
-                        fontFamily:"'Oswald', sans-serif",fontSize:10,fontWeight:700,
+                        fontFamily:"'Oswald', sans-serif",fontSize:10,fontWeight:800,
                         color:selected?'#fde047':'#94a3b8',
                         border:selected?'2.5px solid #e8b84b':'1.5px solid rgba(232,184,75,0.4)',
                         background:selected?'rgba(100,60,0,0.5)':'rgba(0,0,0,0.3)',
@@ -565,9 +565,9 @@ export default function MobileGameLayout({
 
             {/* Sound (bottom) */}
             <div style={{ padding:'10px 12px 12px' }}>
-              <div style={{fontSize:9,fontWeight:700,color:'rgba(253,224,71,0.65)',letterSpacing:'0.14em',textTransform:'uppercase',fontFamily:"'Oswald', sans-serif",marginBottom:6}}>Sound</div>
+              <div style={{fontSize:9,fontWeight:800,color:'rgba(253,224,71,0.65)',letterSpacing:'0.14em',textTransform:'uppercase',fontFamily:"'Oswald', sans-serif",marginBottom:6}}>Sound</div>
               <div style={{display:'flex',alignItems:'center',gap:8,padding:'7px 10px',borderRadius:8,
-                border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(0,0,0,0.35)'}}>
+                border:'2px solid #8a6218',background:'rgba(0,0,0,0.35)'}}>
                 <button onClick={()=>setMuted(m=>!m)}
                   style={{padding:'0 10px',height:30,borderRadius:6,cursor:'pointer',flexShrink:0,
                     border:`1.5px solid ${muted?'#dc2626':'#e8b84b'}`,
@@ -591,10 +591,10 @@ export default function MobileGameLayout({
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',
               padding:'8px 12px',borderBottom:'1px solid rgba(234,179,8,0.3)',
               background:'rgba(20,8,0,0.98)',flexShrink:0}}>
-              <span style={{color:'#fde047',fontWeight:800,fontSize:12,letterSpacing:'0.08em',textTransform:'uppercase'}}>📜 Hand History</span>
+              <span style={{color:'#1a1200',fontWeight:800,fontSize:12,letterSpacing:'0.08em',textTransform:'uppercase'}}>📜 Hand History</span>
               <button onClick={()=>setShowHistory(false)}
                 style={{width:28,height:28,borderRadius:6,border:'1px solid rgba(234,179,8,0.5)',
-                  background:'rgba(234,179,8,0.15)',color:'#fde047',fontSize:14,fontWeight:900,
+                  background:'rgba(234,179,8,0.15)',color:'#1a1200',fontSize:14,fontWeight:900,
                   cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>✕</button>
             </div>
             <div style={{flex:1,minHeight:0,padding:'8px',overflowY:'auto'}}>
@@ -718,8 +718,8 @@ export default function MobileGameLayout({
                 gap: 1,
               }}>
                 <span style={{ fontSize: 9, fontWeight: 900, color: '#eab308', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center', lineHeight: 1.1 }}>🔓 Bonus Bets Unlocked</span>
-                <span style={{ fontSize: 8, color: '#f87171', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🔴 Color Board Open</span>
-                <span style={{ fontSize: 8, color: '#60a5fa', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🌊 River After Turn</span>
+                <span style={{ fontSize: 8, color: '#f87171', fontWeight: 800, textAlign: 'center', lineHeight: 1.1 }}>🔴 Color Board Open</span>
+                <span style={{ fontSize: 8, color: '#60a5fa', fontWeight: 800, textAlign: 'center', lineHeight: 1.1 }}>🌊 River After Turn</span>
               </div>
             )}
             <div className="flex-1 min-h-0 overflow-hidden">
@@ -888,8 +888,8 @@ export default function MobileGameLayout({
                 gap: 1,
               }}>
                 <span style={{ fontSize: 9, fontWeight: 900, color: '#eab308', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center', lineHeight: 1.1 }}>🔓 Bonus Bets Unlocked</span>
-                <span style={{ fontSize: 8, color: '#f87171', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🔴 Color Board Open</span>
-                <span style={{ fontSize: 8, color: '#60a5fa', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🌊 River After Turn</span>
+                <span style={{ fontSize: 8, color: '#f87171', fontWeight: 800, textAlign: 'center', lineHeight: 1.1 }}>🔴 Color Board Open</span>
+                <span style={{ fontSize: 8, color: '#60a5fa', fontWeight: 800, textAlign: 'center', lineHeight: 1.1 }}>🌊 River After Turn</span>
               </div>
             )}
             <div className="flex-1 min-h-0 overflow-hidden">
@@ -1101,8 +1101,8 @@ export default function MobileGameLayout({
                 gap: 1,
               }}>
                 <span style={{ fontSize: 9, fontWeight: 900, color: '#eab308', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center', lineHeight: 1.1 }}>🔓 Bonus Bets Unlocked</span>
-                <span style={{ fontSize: 8, color: '#f87171', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🔴 Color Board Open</span>
-                <span style={{ fontSize: 8, color: '#60a5fa', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🌊 River After Turn</span>
+                <span style={{ fontSize: 8, color: '#f87171', fontWeight: 800, textAlign: 'center', lineHeight: 1.1 }}>🔴 Color Board Open</span>
+                <span style={{ fontSize: 8, color: '#60a5fa', fontWeight: 800, textAlign: 'center', lineHeight: 1.1 }}>🌊 River After Turn</span>
               </div>
             )}
             <div className="flex-1 min-h-0 overflow-hidden">
@@ -1212,7 +1212,7 @@ export default function MobileGameLayout({
             style={{
               width: 32, height: 32, borderRadius: 8, border: '1px solid rgba(234,179,8,0.5)',
               background: gearMenuOpen ? 'rgba(234,179,8,0.2)' : 'rgba(0,0,0,0.5)',
-              color: '#fde047', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: '#1a1200', display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0, fontSize: 16,
             }}
           >
@@ -1252,7 +1252,7 @@ export default function MobileGameLayout({
                 borderBottom: '2px solid #e8b84b',
                 display: 'flex', alignItems: 'center', gap: 6,
               }}>
-                <span style={{ fontSize: 14, fontWeight: 900, color: '#fde047', letterSpacing: '0.14em', fontFamily: "'Oswald', sans-serif" }}>
+                <span style={{ fontSize: 14, fontWeight: 900, color: '#1a1200', letterSpacing: '0.14em', fontFamily: "'Oswald', sans-serif" }}>
                   SETTINGS
                 </span>
               </div>
@@ -1266,15 +1266,15 @@ export default function MobileGameLayout({
                     onClick={() => { onResetBank(); setGearMenuOpen(false); }}
                     style={{
                       width: '100%', padding: '10px 12px', borderRadius: 8,
-                      border: '1.5px solid rgba(232,184,75,0.4)',
-                      background: 'rgba(60,35,0,0.4)',
-                      color: '#fde047', fontSize: 13, fontWeight: 700,
+                      border: '2px solid #8a6218',
+                      background: 'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
+                      color: '#1a1200', fontSize: 13, fontWeight: 800,
                       fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
                       cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8,
                       transition: 'all 0.15s',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)'; e.currentTarget.style.border = '2px solid #a8792a'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)'; e.currentTarget.style.border = '2px solid #8a6218'; }}
                   >
                     Reset Bank
                   </button>
@@ -1283,28 +1283,28 @@ export default function MobileGameLayout({
                 {/* Game Rules */}
                 <GameRulesModal asMenuItem buttonStyle={{
                   width: '100%', padding: '10px 12px', borderRadius: 8,
-                  border: '1.5px solid rgba(232,184,75,0.4)',
-                  background: 'rgba(60,35,0,0.4)',
-                  color: '#fde047', fontSize: 13, fontWeight: 700,
+                  border: '2px solid #8a6218',
+                  background: 'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
+                  color: '#1a1200', fontSize: 13, fontWeight: 800,
                   fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
                   transition: 'all 0.15s', textAlign: 'left',
-                }} buttonHoverStyle={{ background: 'rgba(100,55,0,0.6)', border: '1.5px solid #e8b84b' }} />
+                }} buttonHoverStyle={{ background: 'linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)', border: '2px solid #a8792a' }} />
 
                 {/* Hand History */}
                 <button
                   onClick={() => { setShowHistory(true); setGearMenuOpen(false); }}
                   style={{
                     width: '100%', padding: '10px 12px', borderRadius: 8,
-                    border: '1.5px solid rgba(232,184,75,0.4)',
-                    background: 'rgba(60,35,0,0.4)',
-                    color: '#fde047', fontSize: 13, fontWeight: 700,
+                    border: '2px solid #8a6218',
+                    background: 'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
+                    color: '#1a1200', fontSize: 13, fontWeight: 800,
                     fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8,
                     transition: 'all 0.15s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)'; e.currentTarget.style.border = '2px solid #a8792a'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)'; e.currentTarget.style.border = '2px solid #8a6218'; }}
                 >
                   Hand History
                 </button>
@@ -1318,15 +1318,15 @@ export default function MobileGameLayout({
                   }}
                   style={{
                     width: '100%', padding: '10px 12px', borderRadius: 8,
-                    border: '1.5px solid rgba(232,184,75,0.4)',
-                    background: 'rgba(60,35,0,0.4)',
-                    color: '#fde047', fontSize: 13, fontWeight: 700,
+                    border: '2px solid #8a6218',
+                    background: 'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
+                    color: '#1a1200', fontSize: 13, fontWeight: 800,
                     fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8,
                     transition: 'all 0.15s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)'; e.currentTarget.style.border = '2px solid #a8792a'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)'; e.currentTarget.style.border = '2px solid #8a6218'; }}
                 >
                   How To Play
                 </button>
@@ -1336,15 +1336,15 @@ export default function MobileGameLayout({
                   onClick={() => { onOpenStats(); setGearMenuOpen(false); }}
                   style={{
                     width: '100%', padding: '10px 12px', borderRadius: 8,
-                    border: '1.5px solid rgba(232,184,75,0.4)',
-                    background: 'rgba(60,35,0,0.4)',
-                    color: '#fde047', fontSize: 13, fontWeight: 700,
+                    border: '2px solid #8a6218',
+                    background: 'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
+                    color: '#1a1200', fontSize: 13, fontWeight: 800,
                     fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8,
                     transition: 'all 0.15s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)'; e.currentTarget.style.border = '2px solid #a8792a'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)'; e.currentTarget.style.border = '2px solid #8a6218'; }}
                 >
                   Player Stats
                 </button>
@@ -1355,7 +1355,7 @@ export default function MobileGameLayout({
               {/* ═══ BOARD COLOR ═══ */}
               <div style={{ padding: '10px 12px' }}>
                 <div style={{
-                  fontSize: 10, fontWeight: 700, color: 'rgba(253,224,71,0.65)',
+                  fontSize: 10, fontWeight: 800, color: 'rgba(253,224,71,0.65)',
                   letterSpacing: '0.14em', textTransform: 'uppercase',
                   fontFamily: "'Oswald', sans-serif", marginBottom: 7,
                 }}>
@@ -1377,7 +1377,7 @@ export default function MobileGameLayout({
                           border: selected ? '2.5px solid #e8b84b' : '1.5px solid rgba(232,184,75,0.4)',
                           background: selected ? 'rgba(100,60,0,0.5)' : 'rgba(0,0,0,0.3)',
                           color: selected ? '#fde047' : '#94a3b8',
-                          fontSize: 11, fontWeight: 700,
+                          fontSize: 11, fontWeight: 800,
                           fontFamily: "'Oswald', sans-serif",
                           cursor: 'pointer',
                           display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
@@ -1403,7 +1403,7 @@ export default function MobileGameLayout({
               {/* ═══ SOUND (Bottom section) ═══ */}
               <div style={{ padding: '10px 12px 12px' }}>
                 <div style={{
-                  fontSize: 10, fontWeight: 700, color: 'rgba(253,224,71,0.65)',
+                  fontSize: 10, fontWeight: 800, color: 'rgba(253,224,71,0.65)',
                   letterSpacing: '0.14em', textTransform: 'uppercase',
                   fontFamily: "'Oswald', sans-serif", marginBottom: 7,
                 }}>
@@ -1412,7 +1412,7 @@ export default function MobileGameLayout({
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 8,
                   padding: '8px 10px', borderRadius: 8,
-                  border: '1.5px solid rgba(232,184,75,0.4)',
+                  border: '2px solid #8a6218',
                   background: 'rgba(0,0,0,0.35)',
                 }}>
                   {/* Mute button — text only */}
@@ -1436,7 +1436,7 @@ export default function MobileGameLayout({
                   <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{
-                        fontSize: 9, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: '0.06em',
+                        fontSize: 9, fontWeight: 800, fontFamily: "'Oswald', sans-serif", letterSpacing: '0.06em',
                         color: muted ? '#6b7280' : 'rgba(253,224,71,0.7)',
                       }}>
                         VOL
@@ -1501,7 +1501,7 @@ export default function MobileGameLayout({
                 background: 'rgba(20,8,0,0.95)',
                 flexShrink: 0,
               }}>
-                <span style={{ color: '#fde047', fontWeight: 800, fontSize: 14, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                <span style={{ color: '#1a1200', fontWeight: 800, fontSize: 14, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
                   📜 Hand History
                 </span>
                 <button
@@ -1510,7 +1510,7 @@ export default function MobileGameLayout({
                     width: 32, height: 32, borderRadius: 8,
                     border: '1px solid rgba(234,179,8,0.5)',
                     background: 'rgba(234,179,8,0.15)',
-                    color: '#fde047', fontSize: 18, fontWeight: 900,
+                    color: '#1a1200', fontSize: 18, fontWeight: 900,
                     cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                     lineHeight: 1,
                   }}
