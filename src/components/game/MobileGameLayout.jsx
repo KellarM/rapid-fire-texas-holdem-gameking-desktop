@@ -486,97 +486,55 @@ export default function MobileGameLayout({
               <span style={{fontSize:13,fontWeight:900,color:'#fde047',letterSpacing:'0.14em',fontFamily:"'Oswald', sans-serif"}}>SETTINGS</span>
             </div>
 
-            {/* Action buttons — gold style, new layout */}
-            <div style={{ padding:'10px 12px', display:'flex', flexDirection:'column', gap:8 }}>
-
-              {/* Top row: 3 vertical-text buttons, left to right */}
-              <div style={{ display:'flex', gap:6, height:110 }}>
-
-                {/* Game Rules */}
-                <GameRulesModal asMenuItem buttonStyle={{
-                  flex:1,padding:'10px 4px',borderRadius:8,cursor:'pointer',
-                  border:'2px solid #8a6218',
-                  background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
-                  color:'#1a1200',fontSize:12,fontWeight:800,
-                  fontFamily:"'Oswald', sans-serif",letterSpacing:'0.04em',
-                  boxShadow:'inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(0,0,0,0.45)',
-                  display:'flex',alignItems:'center',justifyContent:'center',
-                  writingMode:'vertical-rl',textOrientation:'upright',
-                  transition:'all 0.15s',
-                }} buttonHoverStyle={{
-                  background:'linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)',
-                  border:'2px solid #a8792a',
-                }} />
-
-                {/* Player Stats */}
-                <button onClick={()=>{onOpenStats();setGearMenuOpen(false);}}
-                  style={{
-                    flex:1,padding:'10px 4px',borderRadius:8,cursor:'pointer',
-                    border:'2px solid #8a6218',
-                    background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
-                    color:'#1a1200',fontSize:12,fontWeight:800,
-                    fontFamily:"'Oswald', sans-serif",letterSpacing:'0.04em',
-                    boxShadow:'inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(0,0,0,0.45)',
-                    display:'flex',alignItems:'center',justifyContent:'center',
-                    writingMode:'vertical-rl',textOrientation:'upright',
-                    transition:'all 0.15s',
-                  }}
-                  onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a';}}
-                  onMouseLeave={e=>{e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218';}}
-                >Player Stats</button>
-
-                {/* How To Play */}
-                <button onClick={()=>{if(onOpenHelp)onOpenHelp();else setShowHowToPlay(true);setGearMenuOpen(false);}}
-                  style={{
-                    flex:1,padding:'10px 4px',borderRadius:8,cursor:'pointer',
-                    border:'2px solid #8a6218',
-                    background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
-                    color:'#1a1200',fontSize:12,fontWeight:800,
-                    fontFamily:"'Oswald', sans-serif",letterSpacing:'0.04em',
-                    boxShadow:'inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(0,0,0,0.45)',
-                    display:'flex',alignItems:'center',justifyContent:'center',
-                    writingMode:'vertical-rl',textOrientation:'upright',
-                    transition:'all 0.15s',
-                  }}
-                  onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a';}}
-                  onMouseLeave={e=>{e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218';}}
-                >How To Play</button>
-              </div>
-
-              {/* Hand History — full width, horizontal */}
-              <button onClick={()=>{setShowHistory(true);setGearMenuOpen(false);}}
-                style={{
-                  width:'100%',padding:'10px 14px',borderRadius:8,cursor:'pointer',
-                  border:'2px solid #8a6218',
-                  background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
-                  color:'#1a1200',fontSize:13,fontWeight:800,
-                  fontFamily:"'Oswald', sans-serif",letterSpacing:'0.04em',
-                  boxShadow:'inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(0,0,0,0.45)',
-                  textAlign:'center',transition:'all 0.15s',
-                }}
-                onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a';}}
-                onMouseLeave={e=>{e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218';}}
-              >Hand History</button>
-
-              {/* Reset Bank — full width, bottom */}
+            {/* Action buttons */}
+            <div style={{ padding:'10px 12px', display:'flex', flexDirection:'column', gap:6 }}>
               {resetBankVisible && (
                 <button onClick={()=>{onResetBank();setGearMenuOpen(false);}}
-                  style={{
-                    width:'100%',padding:'10px 14px',borderRadius:8,cursor:'pointer',
-                    border:'2px solid #8a6218',
-                    background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
-                    color:'#1a1200',fontSize:13,fontWeight:800,
-                    fontFamily:"'Oswald', sans-serif",letterSpacing:'0.04em',
-                    boxShadow:'inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(0,0,0,0.45)',
-                    textAlign:'center',transition:'all 0.15s',
-                  }}
-                  onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a';}}
-                  onMouseLeave={e=>{e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218';}}
+                  style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
+                    border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
+                    color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                    letterSpacing:'0.04em',textAlign:'left'}}
+                  onMouseEnter={e=>{e.currentTarget.style.background='rgba(100,55,0,0.6)';e.currentTarget.style.border='1.5px solid #e8b84b';}}
+                  onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,35,0,0.4)';e.currentTarget.style.border='1.5px solid rgba(232,184,75,0.4)';}}
                 >Reset Bank</button>
               )}
+
+              <GameRulesModal asMenuItem buttonStyle={{
+                width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
+                border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
+                color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                letterSpacing:'0.04em',textAlign:'left',display:'flex',alignItems:'center',
+              }} buttonHoverStyle={{ background:'rgba(100,55,0,0.6)', border:'1.5px solid #e8b84b' }} />
+
+              <button onClick={()=>{setShowHistory(true);setGearMenuOpen(false);}}
+                style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
+                  border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
+                  color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                  letterSpacing:'0.04em',textAlign:'left'}}
+                onMouseEnter={e=>{e.currentTarget.style.background='rgba(100,55,0,0.6)';e.currentTarget.style.border='1.5px solid #e8b84b';}}
+                onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,35,0,0.4)';e.currentTarget.style.border='1.5px solid rgba(232,184,75,0.4)';}}
+              >Hand History</button>
+
+              <button onClick={()=>{if(onOpenHelp)onOpenHelp();else setShowHowToPlay(true);setGearMenuOpen(false);}}
+                style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
+                  border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
+                  color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                  letterSpacing:'0.04em',textAlign:'left'}}
+                onMouseEnter={e=>{e.currentTarget.style.background='rgba(100,55,0,0.6)';e.currentTarget.style.border='1.5px solid #e8b84b';}}
+                onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,35,0,0.4)';e.currentTarget.style.border='1.5px solid rgba(232,184,75,0.4)';}}
+              >How To Play</button>
+
+              <button onClick={()=>{onOpenStats();setGearMenuOpen(false);}}
+                style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
+                  border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
+                  color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                  letterSpacing:'0.04em',textAlign:'left'}}
+                onMouseEnter={e=>{e.currentTarget.style.background='rgba(100,55,0,0.6)';e.currentTarget.style.border='1.5px solid #e8b84b';}}
+                onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,35,0,0.4)';e.currentTarget.style.border='1.5px solid rgba(232,184,75,0.4)';}}
+              >Player Stats</button>
             </div>
 
-                        <div style={{height:0,borderTop:'1px solid rgba(232,184,75,0.4)'}} />
+            <div style={{height:0,borderTop:'1px solid rgba(232,184,75,0.4)'}} />
 
             {/* Board Color */}
             <div style={{ padding:'10px 12px' }}>
@@ -1299,101 +1257,100 @@ export default function MobileGameLayout({
                 </span>
               </div>
 
-              {/* ═══ ACTION BUTTONS — gold style, new layout ═══ */}
-              <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {/* ═══ ACTION BUTTONS ═══ */}
+              <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
 
-                {/* Top row: 3 vertical-text buttons, left to right */}
-                <div style={{ display: 'flex', gap: 6, height: 120 }}>
-
-                  {/* Game Rules */}
-                  <GameRulesModal asMenuItem buttonStyle={{
-                    flex:1,padding:'12px 6px',borderRadius:8,cursor:'pointer',
-                    border:'2px solid #8a6218',
-                    background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
-                    color:'#1a1200',fontSize:13,fontWeight:800,
-                    fontFamily:"'Oswald', sans-serif",letterSpacing:'0.04em',
-                    boxShadow:'inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(0,0,0,0.45)',
-                    display:'flex',alignItems:'center',justifyContent:'center',
-                    writingMode:'vertical-rl',textOrientation:'upright',
-                    transition:'all 0.15s',
-                  }} buttonHoverStyle={{
-                    background:'linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)',
-                    border:'2px solid #a8792a',
-                  }} />
-
-                  {/* Player Stats */}
-                  <button onClick={() => { onOpenStats(); setGearMenuOpen(false); }}
+                {/* Reset Bank */}
+                {resetBankVisible && (
+                  <button
+                    onClick={() => { onResetBank(); setGearMenuOpen(false); }}
                     style={{
-                      flex:1,padding:'12px 6px',borderRadius:8,cursor:'pointer',
-                      border:'2px solid #8a6218',
-                      background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
-                      color:'#1a1200',fontSize:13,fontWeight:800,
-                      fontFamily:"'Oswald', sans-serif",letterSpacing:'0.04em',
-                      boxShadow:'inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(0,0,0,0.45)',
-                      display:'flex',alignItems:'center',justifyContent:'center',
-                      writingMode:'vertical-rl',textOrientation:'upright',
-                      transition:'all 0.15s',
+                      width: '100%', padding: '10px 12px', borderRadius: 8,
+                      border: '1.5px solid rgba(232,184,75,0.4)',
+                      background: 'rgba(60,35,0,0.4)',
+                      color: '#fde047', fontSize: 13, fontWeight: 700,
+                      fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8,
+                      transition: 'all 0.15s',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218'; }}
-                  >Player Stats</button>
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
+                  >
+                    Reset Bank
+                  </button>
+                )}
 
-                  {/* How To Play */}
-                  <button onClick={() => {
+                {/* Game Rules */}
+                <GameRulesModal asMenuItem buttonStyle={{
+                  width: '100%', padding: '10px 12px', borderRadius: 8,
+                  border: '1.5px solid rgba(232,184,75,0.4)',
+                  background: 'rgba(60,35,0,0.4)',
+                  color: '#fde047', fontSize: 13, fontWeight: 700,
+                  fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
+                  transition: 'all 0.15s', textAlign: 'left',
+                }} buttonHoverStyle={{ background: 'rgba(100,55,0,0.6)', border: '1.5px solid #e8b84b' }} />
+
+                {/* Hand History */}
+                <button
+                  onClick={() => { setShowHistory(true); setGearMenuOpen(false); }}
+                  style={{
+                    width: '100%', padding: '10px 12px', borderRadius: 8,
+                    border: '1.5px solid rgba(232,184,75,0.4)',
+                    background: 'rgba(60,35,0,0.4)',
+                    color: '#fde047', fontSize: 13, fontWeight: 700,
+                    fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8,
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
+                >
+                  Hand History
+                </button>
+
+                {/* How To Play */}
+                <button
+                  onClick={() => {
                     if (onOpenHelp) onOpenHelp();
                     else setShowHowToPlay(true);
                     setGearMenuOpen(false);
                   }}
-                    style={{
-                      flex:1,padding:'12px 6px',borderRadius:8,cursor:'pointer',
-                      border:'2px solid #8a6218',
-                      background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
-                      color:'#1a1200',fontSize:13,fontWeight:800,
-                      fontFamily:"'Oswald', sans-serif",letterSpacing:'0.04em',
-                      boxShadow:'inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(0,0,0,0.45)',
-                      display:'flex',alignItems:'center',justifyContent:'center',
-                      writingMode:'vertical-rl',textOrientation:'upright',
-                      transition:'all 0.15s',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218'; }}
-                  >How To Play</button>
-                </div>
-
-                {/* Hand History — full width, horizontal */}
-                <button onClick={() => { setShowHistory(true); setGearMenuOpen(false); }}
                   style={{
-                    width:'100%',padding:'12px 14px',borderRadius:8,cursor:'pointer',
-                    border:'2px solid #8a6218',
-                    background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
-                    color:'#1a1200',fontSize:14,fontWeight:800,
-                    fontFamily:"'Oswald', sans-serif",letterSpacing:'0.04em',
-                    boxShadow:'inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(0,0,0,0.45)',
-                    textAlign:'center',transition:'all 0.15s',
+                    width: '100%', padding: '10px 12px', borderRadius: 8,
+                    border: '1.5px solid rgba(232,184,75,0.4)',
+                    background: 'rgba(60,35,0,0.4)',
+                    color: '#fde047', fontSize: 13, fontWeight: 700,
+                    fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8,
+                    transition: 'all 0.15s',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218'; }}
-                >Hand History</button>
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
+                >
+                  How To Play
+                </button>
 
-                {/* Reset Bank — full width, bottom */}
-                {resetBankVisible && (
-                  <button onClick={() => { onResetBank(); setGearMenuOpen(false); }}
-                    style={{
-                      width:'100%',padding:'12px 14px',borderRadius:8,cursor:'pointer',
-                      border:'2px solid #8a6218',
-                      background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
-                      color:'#1a1200',fontSize:14,fontWeight:800,
-                      fontFamily:"'Oswald', sans-serif",letterSpacing:'0.04em',
-                      boxShadow:'inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(0,0,0,0.45)',
-                      textAlign:'center',transition:'all 0.15s',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218'; }}
-                  >Reset Bank</button>
-                )}
+                {/* Player Stats */}
+                <button
+                  onClick={() => { onOpenStats(); setGearMenuOpen(false); }}
+                  style={{
+                    width: '100%', padding: '10px 12px', borderRadius: 8,
+                    border: '1.5px solid rgba(232,184,75,0.4)',
+                    background: 'rgba(60,35,0,0.4)',
+                    color: '#fde047', fontSize: 13, fontWeight: 700,
+                    fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8,
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
+                >
+                  Player Stats
+                </button>
               </div>
 
-                            <div style={{ height: 0, borderTop: '1px solid rgba(232,184,75,0.4)' }} />
+              <div style={{ height: 0, borderTop: '1px solid rgba(232,184,75,0.4)' }} />
 
               {/* ═══ BOARD COLOR ═══ */}
               <div style={{ padding: '10px 12px' }}>
