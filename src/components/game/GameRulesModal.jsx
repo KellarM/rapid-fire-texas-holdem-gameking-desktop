@@ -140,8 +140,9 @@ function VersionBadge({ label, value }) {
   );
 }
 
-export default function GameRulesModal({ asMenuItem = false }) {
+export default function GameRulesModal({ asMenuItem = false, buttonStyle = null, buttonHoverStyle = null }) {
   const [open, setOpen] = useState(false);
+  const [menuHover, setMenuHover] = useState(false);
   const [v, setV] = useState(DEFAULT_VERSIONS);
   const [bellCurve, setBellCurve] = useState({ handReductions: HAND_BET_REDUCTIONS, rankReductions: RANK_BET_REDUCTIONS });
 
@@ -163,16 +164,22 @@ export default function GameRulesModal({ asMenuItem = false }) {
       {asMenuItem ? (
         <button
           onClick={() => setOpen(true)}
-          style={{
-            width: '100%', padding: '7px 0', borderRadius: 8,
-            border: '1px solid rgba(59,130,246,0.4)',
-            background: 'rgba(59,130,246,0.08)',
-            color: '#93c5fd', fontSize: 11, fontWeight: 700,
-            cursor: 'pointer', letterSpacing: '0.04em',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
-          }}
+          onMouseEnter={() => setMenuHover(true)}
+          onMouseLeave={() => setMenuHover(false)}
+          style={
+            buttonStyle
+              ? (menuHover && buttonHoverStyle ? { ...buttonStyle, ...buttonHoverStyle } : buttonStyle)
+              : {
+                  width: '100%', padding: '10px 12px', borderRadius: 8,
+                  border: '1.5px solid rgba(232,184,75,0.4)',
+                  background: 'rgba(60,35,0,0.4)',
+                  color: '#fde047', fontSize: 13, fontWeight: 700,
+                  fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
+                }
+          }
         >
-          📖 Game Rules
+          Game Rules
         </button>
       ) : (
         <button

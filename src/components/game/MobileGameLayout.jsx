@@ -472,79 +472,116 @@ export default function MobileGameLayout({
 
         {/* Gear dropdown */}
         {gearMenuOpen && (
-          <div style={{ position:'fixed', bottom:36, right:4, width:168, zIndex:500,
-            background:'linear-gradient(160deg,rgba(20,8,0,0.98),rgba(40,15,0,0.98))',
-            border:'1px solid rgba(234,179,8,0.45)', borderRadius:12, padding:'7px 0',
-            boxShadow:'0 -4px 24px rgba(0,0,0,0.8)' }}
+          <div style={{ position:'fixed', bottom:36, right:4, width:190, zIndex:500,
+            background:'linear-gradient(170deg,#1a0f00 0%,#0a0500 100%)',
+            border:'3px solid #e8b84b', borderRadius:14,
+            boxShadow:'0 0 0 1px #000 inset, 0 -4px 24px rgba(0,0,0,0.8), 0 0 16px rgba(232,184,75,0.15)',
+            padding:0, maxHeight:'75vh', overflowY:'auto' }}
             onClick={e=>e.stopPropagation()}>
-            <div style={{padding:'2px 10px 6px',borderBottom:'1px solid rgba(234,179,8,0.2)',marginBottom:3}}>
-              <span style={{fontSize:10,fontWeight:800,color:'#fde047',letterSpacing:'0.08em',textTransform:'uppercase'}}>Settings</span>
+
+            {/* Title */}
+            <div style={{ padding:'10px 14px 8px',
+              background:'linear-gradient(180deg, rgba(232,184,75,0.12) 0%, transparent 100%)',
+              borderBottom:'2px solid #e8b84b' }}>
+              <span style={{fontSize:13,fontWeight:900,color:'#fde047',letterSpacing:'0.14em',fontFamily:"'Oswald', sans-serif"}}>SETTINGS</span>
             </div>
-            <div style={{padding:'4px 10px'}}>
-              <div style={{fontSize:8,fontWeight:700,color:'rgba(253,224,71,0.6)',letterSpacing:'0.06em',textTransform:'uppercase',marginBottom:3}}>Board Color</div>
-              <div style={{display:'flex',gap:4}}>
-                {[{id:'red',label:'Red',dot:'#dc2626'},{id:'blue',label:'Blue',dot:'#2563eb'},{id:'green',label:'Green',dot:'#16a34a'}].map(t=>(
-                  <button key={t.id} onClick={()=>{if(onSetTheme)onSetTheme(t.id);setGearMenuOpen(false);}}
-                    style={{flex:1,padding:'3px 2px',borderRadius:5,cursor:'pointer',fontSize:8,fontWeight:700,
-                      border:boardTheme===t.id?'1.5px solid #fde047':'1px solid rgba(234,179,8,0.25)',
-                      background:boardTheme===t.id?'rgba(234,179,8,0.15)':'rgba(255,255,255,0.04)',
-                      color:boardTheme===t.id?'#fde047':'#94a3b8',
-                      display:'flex',flexDirection:'column',alignItems:'center',gap:2}}>
-                    <span style={{width:9,height:9,borderRadius:'50%',background:t.dot,display:'block'}} />
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div style={{borderTop:'1px solid rgba(234,179,8,0.12)',margin:'2px 0'}} />
-            <div style={{padding:'4px 10px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <span style={{fontSize:10,fontWeight:700,color:'#cbd5e1'}}>Sound</span>
-              <div style={{display:'flex',alignItems:'center',gap:3}}>
-                <button onClick={()=>setMuted(m=>!m)}
-                  style={{width:22,height:22,borderRadius:4,border:'1px solid rgba(234,179,8,0.35)',
-                    background:muted?'rgba(220,38,38,0.2)':'rgba(234,179,8,0.1)',
-                    color:muted?'#f87171':'#fde047',fontSize:10,cursor:'pointer',
-                    display:'flex',alignItems:'center',justifyContent:'center'}}>{muted?'🔇':'🔊'}</button>
-                <input type="range" min="0" max="1" step="0.05" value={volume}
-                  onChange={e=>{setVolume(parseFloat(e.target.value));setMuted(false);}}
-                  style={{width:44,accentColor:'#eab308'}} />
-              </div>
-            </div>
-            <div style={{borderTop:'1px solid rgba(234,179,8,0.12)',margin:'2px 0'}} />
-            <div style={{padding:'3px 10px'}}><GameRulesModal asMenuItem /></div>
-            <div style={{borderTop:'1px solid rgba(234,179,8,0.12)',margin:'2px 0'}} />
-            {resetBankVisible && (<>
-              <div style={{padding:'3px 10px'}}>
+
+            {/* Action buttons */}
+            <div style={{ padding:'10px 12px', display:'flex', flexDirection:'column', gap:6 }}>
+              {resetBankVisible && (
                 <button onClick={()=>{onResetBank();setGearMenuOpen(false);}}
-                  style={{width:'100%',padding:'5px 0',borderRadius:6,cursor:'pointer',
-                    border:'1px solid rgba(234,179,8,0.4)',background:'rgba(234,179,8,0.08)',
-                    color:'#fde047',fontSize:10,fontWeight:700}}>💰 Reset Bank</button>
-              </div>
-              <div style={{borderTop:'1px solid rgba(234,179,8,0.12)',margin:'2px 0'}} />
-            </>)}
-            <div style={{padding:'3px 10px'}}>
+                  style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
+                    border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
+                    color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                    letterSpacing:'0.04em',textAlign:'left'}}
+                  onMouseEnter={e=>{e.currentTarget.style.background='rgba(100,55,0,0.6)';e.currentTarget.style.border='1.5px solid #e8b84b';}}
+                  onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,35,0,0.4)';e.currentTarget.style.border='1.5px solid rgba(232,184,75,0.4)';}}
+                >Reset Bank</button>
+              )}
+
+              <GameRulesModal asMenuItem buttonStyle={{
+                width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
+                border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
+                color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                letterSpacing:'0.04em',textAlign:'left',display:'flex',alignItems:'center',
+              }} buttonHoverStyle={{ background:'rgba(100,55,0,0.6)', border:'1.5px solid #e8b84b' }} />
+
               <button onClick={()=>{setShowHistory(true);setGearMenuOpen(false);}}
-                style={{width:'100%',padding:'5px 0',borderRadius:6,cursor:'pointer',
-                  border:'1px solid rgba(234,179,8,0.4)',background:'rgba(234,179,8,0.08)',
-                  color:'#fde047',fontSize:10,fontWeight:700,
-                  display:'flex',alignItems:'center',justifyContent:'center',gap:3}}>📜 Hand History</button>
-            </div>
-            <div style={{borderTop:'1px solid rgba(234,179,8,0.12)',margin:'2px 0'}} />
-            <div style={{padding:'3px 10px'}}>
+                style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
+                  border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
+                  color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                  letterSpacing:'0.04em',textAlign:'left'}}
+                onMouseEnter={e=>{e.currentTarget.style.background='rgba(100,55,0,0.6)';e.currentTarget.style.border='1.5px solid #e8b84b';}}
+                onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,35,0,0.4)';e.currentTarget.style.border='1.5px solid rgba(232,184,75,0.4)';}}
+              >Hand History</button>
+
               <button onClick={()=>{if(onOpenHelp)onOpenHelp();else setShowHowToPlay(true);setGearMenuOpen(false);}}
-                style={{width:'100%',padding:'5px 0',borderRadius:6,cursor:'pointer',
-                  border:'1px solid rgba(234,179,8,0.4)',background:'rgba(234,179,8,0.08)',
-                  color:'#fde047',fontSize:10,fontWeight:700,
-                  display:'flex',alignItems:'center',justifyContent:'center',gap:3}}>❓ How to Play</button>
-            </div>
-            <div style={{borderTop:'1px solid rgba(234,179,8,0.12)',margin:'2px 0'}} />
-            <div style={{padding:'3px 10px'}}>
+                style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
+                  border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
+                  color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                  letterSpacing:'0.04em',textAlign:'left'}}
+                onMouseEnter={e=>{e.currentTarget.style.background='rgba(100,55,0,0.6)';e.currentTarget.style.border='1.5px solid #e8b84b';}}
+                onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,35,0,0.4)';e.currentTarget.style.border='1.5px solid rgba(232,184,75,0.4)';}}
+              >How To Play</button>
+
               <button onClick={()=>{onOpenStats();setGearMenuOpen(false);}}
-                style={{width:'100%',padding:'5px 0',borderRadius:6,cursor:'pointer',
-                  border:'1px solid rgba(59,130,246,0.4)',background:'rgba(59,130,246,0.08)',
-                  color:'#93c5fd',fontSize:10,fontWeight:700,
-                  display:'flex',alignItems:'center',justifyContent:'center',gap:3}}>📊 Player Stats</button>
+                style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
+                  border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(60,35,0,0.4)',
+                  color:'#fde047',fontSize:12,fontWeight:700,fontFamily:"'Oswald', sans-serif",
+                  letterSpacing:'0.04em',textAlign:'left'}}
+                onMouseEnter={e=>{e.currentTarget.style.background='rgba(100,55,0,0.6)';e.currentTarget.style.border='1.5px solid #e8b84b';}}
+                onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,35,0,0.4)';e.currentTarget.style.border='1.5px solid rgba(232,184,75,0.4)';}}
+              >Player Stats</button>
             </div>
+
+            <div style={{height:0,borderTop:'1px solid rgba(232,184,75,0.4)'}} />
+
+            {/* Board Color */}
+            <div style={{ padding:'10px 12px' }}>
+              <div style={{fontSize:9,fontWeight:700,color:'rgba(253,224,71,0.65)',letterSpacing:'0.14em',textTransform:'uppercase',fontFamily:"'Oswald', sans-serif",marginBottom:6}}>Board Color</div>
+              <div style={{display:'flex',gap:6}}>
+                {[{id:'red',label:'Red',dot:'#dc2626'},{id:'blue',label:'Blue',dot:'#2563eb'},{id:'green',label:'Green',dot:'#16a34a'}].map(t=>{
+                  const selected = boardTheme===t.id;
+                  return (
+                    <button key={t.id} onClick={()=>{if(onSetTheme)onSetTheme(t.id);}}
+                      style={{flex:1,padding:'7px 4px',borderRadius:8,cursor:'pointer',
+                        fontFamily:"'Oswald', sans-serif",fontSize:10,fontWeight:700,
+                        color:selected?'#fde047':'#94a3b8',
+                        border:selected?'2.5px solid #e8b84b':'1.5px solid rgba(232,184,75,0.4)',
+                        background:selected?'rgba(100,60,0,0.5)':'rgba(0,0,0,0.3)',
+                        display:'flex',flexDirection:'column',alignItems:'center',gap:4,
+                        boxShadow:selected?'0 0 8px rgba(232,184,75,0.2)':'none'}}>
+                      <span style={{width:16,height:16,borderRadius:'50%',background:t.dot,display:'block',
+                        border:selected?'2px solid #fde047':'1.5px solid rgba(255,255,255,0.25)',
+                        boxShadow:selected?`0 0 6px ${t.dot}`:'none'}} />
+                      {t.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div style={{height:0,borderTop:'1px solid rgba(232,184,75,0.4)'}} />
+
+            {/* Sound (bottom) */}
+            <div style={{ padding:'10px 12px 12px' }}>
+              <div style={{fontSize:9,fontWeight:700,color:'rgba(253,224,71,0.65)',letterSpacing:'0.14em',textTransform:'uppercase',fontFamily:"'Oswald', sans-serif",marginBottom:6}}>Sound</div>
+              <div style={{display:'flex',alignItems:'center',gap:8,padding:'7px 10px',borderRadius:8,
+                border:'1.5px solid rgba(232,184,75,0.4)',background:'rgba(0,0,0,0.35)'}}>
+                <button onClick={()=>setMuted(m=>!m)}
+                  style={{padding:'0 10px',height:30,borderRadius:6,cursor:'pointer',flexShrink:0,
+                    border:`1.5px solid ${muted?'#dc2626':'#e8b84b'}`,
+                    background:muted?'rgba(220,38,38,0.15)':'rgba(232,184,75,0.1)',
+                    color:muted?'#f87171':'#fde047',fontSize:10,fontWeight:800,
+                    fontFamily:"'Oswald', sans-serif",letterSpacing:'0.05em',whiteSpace:'nowrap'}}>
+                  {muted?'MUTED':'MUTE'}
+                </button>
+                <input type="range" min="0" max="1" step="0.05" value={muted?0:volume}
+                  onChange={e=>{setVolume(parseFloat(e.target.value));setMuted(false);}}
+                  style={{flex:1,height:5,cursor:'pointer',accentColor:'#e8b84b'}} />
+              </div>
+            </div>
+
           </div>
         )}
 
@@ -1218,7 +1255,6 @@ export default function MobileGameLayout({
                 <span style={{ fontSize: 14, fontWeight: 900, color: '#fde047', letterSpacing: '0.14em', fontFamily: "'Oswald', sans-serif" }}>
                   SETTINGS
                 </span>
-                <span style={{ fontSize: 13, opacity: 0.5 }}>⚙</span>
               </div>
 
               {/* ═══ ACTION BUTTONS ═══ */}
@@ -1240,18 +1276,20 @@ export default function MobileGameLayout({
                     onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
                   >
-                    <span style={{ fontSize: 14 }}>💰</span> Reset Bank
+                    Reset Bank
                   </button>
                 )}
 
                 {/* Game Rules */}
-                <div style={{
-                  borderRadius: 8, overflow: 'hidden',
+                <GameRulesModal asMenuItem buttonStyle={{
+                  width: '100%', padding: '10px 12px', borderRadius: 8,
                   border: '1.5px solid rgba(232,184,75,0.4)',
                   background: 'rgba(60,35,0,0.4)',
-                }}>
-                  <GameRulesModal asMenuItem />
-                </div>
+                  color: '#fde047', fontSize: 13, fontWeight: 700,
+                  fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
+                  transition: 'all 0.15s', textAlign: 'left',
+                }} buttonHoverStyle={{ background: 'rgba(100,55,0,0.6)', border: '1.5px solid #e8b84b' }} />
 
                 {/* Hand History */}
                 <button
@@ -1268,7 +1306,7 @@ export default function MobileGameLayout({
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
                 >
-                  <span style={{ fontSize: 14 }}>📜</span> Hand History
+                  Hand History
                 </button>
 
                 {/* How To Play */}
@@ -1290,7 +1328,7 @@ export default function MobileGameLayout({
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
                 >
-                  <span style={{ fontSize: 14 }}>❓</span> How To Play
+                  How To Play
                 </button>
 
                 {/* Player Stats */}
@@ -1308,7 +1346,7 @@ export default function MobileGameLayout({
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
                 >
-                  <span style={{ fontSize: 14 }}>📊</span> Player Stats
+                  Player Stats
                 </button>
               </div>
 
@@ -1377,21 +1415,21 @@ export default function MobileGameLayout({
                   border: '1.5px solid rgba(232,184,75,0.4)',
                   background: 'rgba(0,0,0,0.35)',
                 }}>
-                  {/* Mute button */}
+                  {/* Mute button — text only */}
                   <button
                     onClick={() => setMuted(m => !m)}
-                    title={muted ? 'Unmute' : 'Mute'}
                     style={{
-                      width: 34, height: 34, borderRadius: 8, cursor: 'pointer',
+                      padding: '0 12px', height: 34, borderRadius: 8, cursor: 'pointer',
                       border: `1.5px solid ${muted ? '#dc2626' : '#e8b84b'}`,
                       background: muted ? 'rgba(220,38,38,0.15)' : 'rgba(232,184,75,0.1)',
                       color: muted ? '#f87171' : '#fde047',
-                      fontSize: 15, flexShrink: 0,
+                      fontSize: 11, fontWeight: 800, flexShrink: 0,
+                      fontFamily: "'Oswald', sans-serif", letterSpacing: '0.05em', whiteSpace: 'nowrap',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       transition: 'all 0.15s',
                     }}
                   >
-                    {muted ? '🔇' : '🔊'}
+                    {muted ? 'MUTED' : 'MUTE'}
                   </button>
 
                   {/* Volume slider — inline */}

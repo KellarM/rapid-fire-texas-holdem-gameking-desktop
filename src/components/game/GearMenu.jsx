@@ -42,26 +42,23 @@ const sectionLabel = {
   marginBottom: '8px',
 };
 
+// Gold-gradient pill style — matches the Rank Board position buttons
 const actionBtn = {
-  display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px',
-  padding: '12px 16px', cursor: 'pointer', fontSize: '14px',
-  color: GOLD_BRIGHT, fontWeight: 700, borderRadius: '8px',
-  border: `1px solid ${GOLD_DIM}`,
-  background: 'rgba(60,35,0,0.4)', width: '100%',
-  fontFamily: FONT, letterSpacing: '0.04em',
+  display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
+  padding: '14px 18px', cursor: 'pointer', fontSize: '15px',
+  color: '#1a1200', fontWeight: 800, borderRadius: '10px',
+  border: '2px solid #8a6218',
+  background: 'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.55), 0 2px 5px rgba(0,0,0,0.45)',
+  width: '100%',
+  fontFamily: FONT, letterSpacing: '0.02em',
   transition: 'all 0.15s', textAlign: 'left',
 };
 
 const actionBtnHover = {
-  background: 'rgba(100,55,0,0.6)',
-  border: `1px solid ${GOLD}`,
-  boxShadow: '0 0 8px rgba(232,184,75,0.2)',
-};
-
-const actionBtnAccent = {
-  ...actionBtn,
-  border: `1.5px solid ${GOLD}`,
-  background: 'rgba(80,45,0,0.6)',
+  background: 'linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)',
+  border: '2px solid #a8792a',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.65), 0 3px 8px rgba(0,0,0,0.55)',
 };
 
 export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHowToPlay, onResetBank, onOpenStats }) {
@@ -116,7 +113,6 @@ export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHo
               <span style={{ fontSize: '17px', fontWeight: 900, color: GOLD_BRIGHT, letterSpacing: '0.16em', fontFamily: FONT }}>
                 SETTINGS
               </span>
-              <span style={{ fontSize: '16px', opacity: 0.5 }}>⚙</span>
             </div>
 
             {/* ═══ ACTION BUTTONS ═══ */}
@@ -126,50 +122,43 @@ export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHo
               <button
                 style={actionBtn}
                 onMouseEnter={e => Object.assign(e.currentTarget.style, actionBtnHover)}
-                onMouseLeave={e => { e.currentTarget.style.background = actionBtn.background; e.currentTarget.style.border = actionBtn.border; e.currentTarget.style.boxShadow = ''; }}
+                onMouseLeave={e => Object.assign(e.currentTarget.style, actionBtn)}
                 onClick={() => { onResetBank(); setOpen(false); }}
               >
-                <span style={{ fontSize: '16px' }}>💰</span> Reset Bank
+                Reset Bank
               </button>
 
               {/* Game Rules */}
-              <div style={{
-                borderRadius: '8px',
-                border: `1px solid ${GOLD_DIM}`,
-                background: 'rgba(60,35,0,0.4)',
-                overflow: 'hidden',
-              }}>
-                <GameRulesModal asMenuItem />
-              </div>
+              <GameRulesModal asMenuItem buttonStyle={actionBtn} buttonHoverStyle={actionBtnHover} />
 
               {/* How To Play */}
               <button
                 style={actionBtn}
                 onMouseEnter={e => Object.assign(e.currentTarget.style, actionBtnHover)}
-                onMouseLeave={e => { e.currentTarget.style.background = actionBtn.background; e.currentTarget.style.border = actionBtn.border; e.currentTarget.style.boxShadow = ''; }}
+                onMouseLeave={e => Object.assign(e.currentTarget.style, actionBtn)}
                 onClick={() => { onHowToPlay(); setOpen(false); }}
               >
-                <span style={{ fontSize: '16px' }}>📋</span> How To Play
+                How To Play
               </button>
 
               {/* Player Stats */}
               <button
                 style={actionBtn}
                 onMouseEnter={e => Object.assign(e.currentTarget.style, actionBtnHover)}
-                onMouseLeave={e => { e.currentTarget.style.background = actionBtn.background; e.currentTarget.style.border = actionBtn.border; e.currentTarget.style.boxShadow = ''; }}
+                onMouseLeave={e => Object.assign(e.currentTarget.style, actionBtn)}
                 onClick={() => { onOpenStats(); setOpen(false); }}
               >
-                <span style={{ fontSize: '16px' }}>📊</span> Player Stats
+                Player Stats
               </button>
 
               {/* Play Examples */}
               <button
-                style={actionBtnAccent}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(120,65,0,0.8)'; e.currentTarget.style.boxShadow = '0 0 12px rgba(232,184,75,0.25)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = actionBtnAccent.background; e.currentTarget.style.boxShadow = ''; }}
+                style={actionBtn}
+                onMouseEnter={e => Object.assign(e.currentTarget.style, actionBtnHover)}
+                onMouseLeave={e => Object.assign(e.currentTarget.style, actionBtn)}
                 onClick={() => { setShowPlayExamples(true); setOpen(false); }}
               >
-                <span style={{ fontSize: '16px' }}>🎬</span> Play Examples
+                Play Examples
               </button>
             </div>
 
