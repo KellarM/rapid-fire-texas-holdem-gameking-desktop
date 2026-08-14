@@ -483,7 +483,7 @@ export default function MobileGameLayout({
             <div style={{ padding:'10px 14px 8px',
               background:'linear-gradient(180deg, rgba(232,184,75,0.12) 0%, transparent 100%)',
               borderBottom:'2px solid #e8b84b' }}>
-              <span style={{fontSize:13,fontWeight:900,color:'#1a1200',letterSpacing:'0.14em',fontFamily:"'Oswald', sans-serif"}}>SETTINGS</span>
+              <span style={{fontSize:13,fontWeight:900,color:'#fde047',letterSpacing:'0.14em',fontFamily:"'Oswald', sans-serif"}}>SETTINGS</span>
             </div>
 
             {/* Action buttons */}
@@ -1232,7 +1232,7 @@ export default function MobileGameLayout({
             <div
               className="no-scrollbar"
               style={{
-                position: 'fixed', bottom: 58, right: 8, top: 8,
+                position: 'fixed', bottom: 58, right: 8,
                 width: 230,
                 maxWidth: 'calc(100vw - 16px)',
                 maxHeight: 'calc(100vh - 66px)',
@@ -1253,7 +1253,7 @@ export default function MobileGameLayout({
                 borderBottom: '2px solid #e8b84b',
                 display: 'flex', alignItems: 'center', gap: 6,
               }}>
-                <span style={{ fontSize: 14, fontWeight: 900, color: '#1a1200', letterSpacing: '0.14em', fontFamily: "'Oswald', sans-serif" }}>
+                <span style={{ fontSize: 14, fontWeight: 900, color: '#fde047', letterSpacing: '0.14em', fontFamily: "'Oswald', sans-serif" }}>
                   SETTINGS
                 </span>
               </div>
