@@ -468,8 +468,10 @@ export function isKillSwitchActive(handBetCount, rankLockThreshold = 1) {
 // total rank bets EXACTLY EQUAL total hand bets (strict equality).
 // If rank < hand or rank > hand, the gate is closed.
 export function isSideBetGateOpen(handBets, rankBets) {
-  const totalHand = Object.values(handBets || {}).reduce((s, v) => s + v, 0);
-  const totalRank = Object.values(rankBets || {}).reduce((s, v) => s + v, 0);
+  // Convert to integer cents before comparison to avoid floating-point drift
+  // (e.g. 9 x 0.01 = 0.09 vs 0.05 + 0.02 + 0.02 = 0.09000000000000001)
+  const totalHand = Math.round(Object.values(handBets || {}).reduce((s, v) => s + v, 0) * 100);
+  const totalRank = Math.round(Object.values(rankBets || {}).reduce((s, v) => s + v, 0) * 100);
   return totalHand > 0 && totalRank === totalHand;
 }
 
