@@ -1187,7 +1187,7 @@ export default function MobileGameLayout({
               can never render partially off-screen regardless of container width. */}
           {gearMenuOpen && (
             <>
-            {/* Click-away backdrop — closes settings when clicking outside the panel */}
+            {/* Click-away backdrop */}
             <div
               style={{ position: 'fixed', inset: 0, zIndex: 299, background: 'transparent' }}
               onClick={() => setGearMenuOpen(false)}
@@ -1195,128 +1195,83 @@ export default function MobileGameLayout({
             <div
               style={{
                 position: 'fixed', bottom: 58, right: 8,
-                width: 180,
+                width: 210,
                 maxWidth: 'calc(100vw - 16px)',
-                maxHeight: '70vh',
+                maxHeight: '75vh',
                 overflowY: 'auto',
-                background: 'linear-gradient(160deg, rgba(30,10,0,0.97) 0%, rgba(50,20,0,0.97) 100%)',
-                border: '1px solid rgba(234,179,8,0.4)',
-                borderRadius: 12, padding: '8px 0',
-                boxShadow: '0 -4px 24px rgba(0,0,0,0.7)',
+                background: 'linear-gradient(170deg, #1a0f00 0%, #0a0500 100%)',
+                border: '3px solid #e8b84b',
+                borderRadius: 14,
+                boxShadow: '0 0 0 1px #000 inset, 0 -4px 24px rgba(0,0,0,0.7), 0 0 16px rgba(232,184,75,0.15)',
                 zIndex: 300,
+                padding: 0,
               }}
               onClick={e => e.stopPropagation()}
             >
-              {/* Header */}
-              <div style={{ padding: '2px 12px 8px', borderBottom: '1px solid rgba(234,179,8,0.2)', marginBottom: 4 }}>
-                <span style={{ fontSize: 11, fontWeight: 800, color: '#fde047', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Settings</span>
+              {/* ═══ TITLE BAR ═══ */}
+              <div style={{
+                padding: '10px 14px 8px',
+                background: 'linear-gradient(180deg, rgba(232,184,75,0.12) 0%, transparent 100%)',
+                borderBottom: '2px solid #e8b84b',
+                display: 'flex', alignItems: 'center', gap: 6,
+              }}>
+                <span style={{ fontSize: 14, fontWeight: 900, color: '#fde047', letterSpacing: '0.14em', fontFamily: "'Oswald', sans-serif" }}>
+                  SETTINGS
+                </span>
+                <span style={{ fontSize: 13, opacity: 0.5 }}>⚙</span>
               </div>
 
-              {/* COLOR THEME */}
-              <div style={{ padding: '6px 12px' }}>
-                <div style={{ fontSize: 9, fontWeight: 700, color: 'rgba(253,224,71,0.6)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 5 }}>Board Color</div>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  {[
-                    { id: 'red',   label: 'Red',   dot: '#dc2626' },
-                    { id: 'blue',  label: 'Blue',  dot: '#2563eb' },
-                    { id: 'green', label: 'Green', dot: '#16a34a' },
-                  ].map(t => (
-                    <button
-                      key={t.id}
-                      onClick={() => { if (onSetTheme) onSetTheme(t.id); }}
-                      style={{
-                        flex: 1, padding: '4px 2px', borderRadius: 6,
-                        border: boardTheme === t.id ? '1.5px solid #fde047' : '1px solid rgba(234,179,8,0.25)',
-                        background: boardTheme === t.id ? 'rgba(234,179,8,0.15)' : 'rgba(255,255,255,0.04)',
-                        color: boardTheme === t.id ? '#fde047' : '#94a3b8',
-                        fontSize: 9, fontWeight: 700, cursor: 'pointer',
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
-                      }}
-                    >
-                      <span style={{ width: 12, height: 12, borderRadius: '50%', background: t.dot, display: 'block', border: boardTheme === t.id ? '1.5px solid #fde047' : '1px solid rgba(255,255,255,0.2)' }} />
-                      {t.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              {/* ═══ ACTION BUTTONS ═══ */}
+              <div style={{ padding: '10px 12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
 
-              <div style={{ borderTop: '1px solid rgba(234,179,8,0.12)', margin: '2px 0' }} />
-
-              {/* SOUND */}
-              <div style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span style={{ fontSize: 11, fontWeight: 700, color: '#cbd5e1' }}>Sound</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <button
-                    onClick={() => setMuted(m => !m)}
-                    style={{
-                      width: 28, height: 28, borderRadius: 6,
-                      border: '1px solid rgba(234,179,8,0.35)',
-                      background: muted ? 'rgba(220,38,38,0.2)' : 'rgba(234,179,8,0.1)',
-                      color: muted ? '#f87171' : '#fde047',
-                      fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}
-                  >
-                    {muted ? '🔇' : '🔊'}
-                  </button>
-                  <input
-                    type="range" min="0" max="1" step="0.05"
-                    value={volume}
-                    onChange={e => { setVolume(parseFloat(e.target.value)); setMuted(false); }}
-                    style={{ width: 60, accentColor: '#eab308' }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ borderTop: '1px solid rgba(234,179,8,0.12)', margin: '2px 0' }} />
-
-              {/* RESET BANK */}
-              {resetBankVisible && (
-                <div style={{ padding: '6px 12px' }}>
+                {/* Reset Bank */}
+                {resetBankVisible && (
                   <button
                     onClick={() => { onResetBank(); setGearMenuOpen(false); }}
                     style={{
-                      width: '100%', padding: '7px 0', borderRadius: 8,
-                      border: '1px solid rgba(234,179,8,0.4)',
-                      background: 'rgba(234,179,8,0.08)',
-                      color: '#fde047', fontSize: 11, fontWeight: 700,
-                      cursor: 'pointer', letterSpacing: '0.04em',
+                      width: '100%', padding: '10px 12px', borderRadius: 8,
+                      border: '1.5px solid rgba(232,184,75,0.4)',
+                      background: 'rgba(60,35,0,0.4)',
+                      color: '#fde047', fontSize: 13, fontWeight: 700,
+                      fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8,
+                      transition: 'all 0.15s',
                     }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
                   >
-                    💰 Reset Bank
+                    <span style={{ fontSize: 14 }}>💰</span> Reset Bank
                   </button>
+                )}
+
+                {/* Game Rules */}
+                <div style={{
+                  borderRadius: 8, overflow: 'hidden',
+                  border: '1.5px solid rgba(232,184,75,0.4)',
+                  background: 'rgba(60,35,0,0.4)',
+                }}>
+                  <GameRulesModal asMenuItem />
                 </div>
-              )}
 
-              <div style={{ borderTop: '1px solid rgba(234,179,8,0.12)', margin: '2px 0' }} />
-
-              {/* GAME RULES */}
-              <div style={{ padding: '6px 12px' }}>
-                <GameRulesModal asMenuItem />
-              </div>
-
-              <div style={{ borderTop: '1px solid rgba(234,179,8,0.12)', margin: '2px 0' }} />
-
-              {/* HISTORY RAIL */}
-              <div style={{ padding: '6px 12px' }}>
+                {/* Hand History */}
                 <button
                   onClick={() => { setShowHistory(true); setGearMenuOpen(false); }}
                   style={{
-                    width: '100%', padding: '7px 0', borderRadius: 8,
-                    border: '1px solid rgba(234,179,8,0.4)',
-                    background: 'rgba(234,179,8,0.08)',
-                    color: '#fde047', fontSize: 11, fontWeight: 700,
-                    cursor: 'pointer', letterSpacing: '0.04em',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                    width: '100%', padding: '10px 12px', borderRadius: 8,
+                    border: '1.5px solid rgba(232,184,75,0.4)',
+                    background: 'rgba(60,35,0,0.4)',
+                    color: '#fde047', fontSize: 13, fontWeight: 700,
+                    fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8,
+                    transition: 'all 0.15s',
                   }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
                 >
-                  📜 Hand History
+                  <span style={{ fontSize: 14 }}>📜</span> Hand History
                 </button>
-              </div>
 
-              <div style={{ borderTop: '1px solid rgba(234,179,8,0.12)', margin: '2px 0' }} />
-
-              {/* HOW TO PLAY */}
-              <div style={{ padding: '6px 12px' }}>
+                {/* How To Play */}
                 <button
                   onClick={() => {
                     if (onOpenHelp) onOpenHelp();
@@ -1324,35 +1279,145 @@ export default function MobileGameLayout({
                     setGearMenuOpen(false);
                   }}
                   style={{
-                    width: '100%', padding: '7px 0', borderRadius: 8,
-                    border: '1px solid rgba(234,179,8,0.4)',
-                    background: 'rgba(234,179,8,0.08)',
-                    color: '#fde047', fontSize: 11, fontWeight: 700,
-                    cursor: 'pointer', letterSpacing: '0.04em',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                    width: '100%', padding: '10px 12px', borderRadius: 8,
+                    border: '1.5px solid rgba(232,184,75,0.4)',
+                    background: 'rgba(60,35,0,0.4)',
+                    color: '#fde047', fontSize: 13, fontWeight: 700,
+                    fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8,
+                    transition: 'all 0.15s',
                   }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
                 >
-                  ❓ How to Play
+                  <span style={{ fontSize: 14 }}>❓</span> How To Play
                 </button>
-              </div>
 
-              <div style={{ borderTop: '1px solid rgba(234,179,8,0.12)', margin: '2px 0' }} />
-
-              {/* PLAYER STATS */}
-              <div style={{ padding: '6px 12px' }}>
+                {/* Player Stats */}
                 <button
                   onClick={() => { onOpenStats(); setGearMenuOpen(false); }}
                   style={{
-                    width: '100%', padding: '7px 0', borderRadius: 8,
-                    border: '1px solid rgba(59,130,246,0.4)',
-                    background: 'rgba(59,130,246,0.08)',
-                    color: '#93c5fd', fontSize: 11, fontWeight: 700,
-                    cursor: 'pointer', letterSpacing: '0.04em',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
+                    width: '100%', padding: '10px 12px', borderRadius: 8,
+                    border: '1.5px solid rgba(232,184,75,0.4)',
+                    background: 'rgba(60,35,0,0.4)',
+                    color: '#fde047', fontSize: 13, fontWeight: 700,
+                    fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 8,
+                    transition: 'all 0.15s',
                   }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(100,55,0,0.6)'; e.currentTarget.style.border = '1.5px solid #e8b84b'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(60,35,0,0.4)'; e.currentTarget.style.border = '1.5px solid rgba(232,184,75,0.4)'; }}
                 >
-                  📊 Player Stats
+                  <span style={{ fontSize: 14 }}>📊</span> Player Stats
                 </button>
+              </div>
+
+              <div style={{ height: 0, borderTop: '1px solid rgba(232,184,75,0.4)' }} />
+
+              {/* ═══ BOARD COLOR ═══ */}
+              <div style={{ padding: '10px 12px' }}>
+                <div style={{
+                  fontSize: 10, fontWeight: 700, color: 'rgba(253,224,71,0.65)',
+                  letterSpacing: '0.14em', textTransform: 'uppercase',
+                  fontFamily: "'Oswald', sans-serif", marginBottom: 7,
+                }}>
+                  Board Color
+                </div>
+                <div style={{ display: 'flex', gap: 7 }}>
+                  {[
+                    { id: 'red',   label: 'Red',   dot: '#dc2626' },
+                    { id: 'blue',  label: 'Blue',  dot: '#2563eb' },
+                    { id: 'green', label: 'Green', dot: '#16a34a' },
+                  ].map(t => {
+                    const selected = boardTheme === t.id;
+                    return (
+                      <button
+                        key={t.id}
+                        onClick={() => { if (onSetTheme) onSetTheme(t.id); }}
+                        style={{
+                          flex: 1, padding: '8px 4px', borderRadius: 8,
+                          border: selected ? '2.5px solid #e8b84b' : '1.5px solid rgba(232,184,75,0.4)',
+                          background: selected ? 'rgba(100,60,0,0.5)' : 'rgba(0,0,0,0.3)',
+                          color: selected ? '#fde047' : '#94a3b8',
+                          fontSize: 11, fontWeight: 700,
+                          fontFamily: "'Oswald', sans-serif",
+                          cursor: 'pointer',
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                          transition: 'all 0.15s',
+                          boxShadow: selected ? '0 0 8px rgba(232,184,75,0.2)' : 'none',
+                        }}
+                      >
+                        <span style={{
+                          width: 18, height: 18, borderRadius: '50%', background: t.dot,
+                          display: 'block',
+                          border: selected ? '2px solid #fde047' : '1.5px solid rgba(255,255,255,0.25)',
+                          boxShadow: selected ? `0 0 6px ${t.dot}` : 'none',
+                        }} />
+                        {t.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div style={{ height: 0, borderTop: '1px solid rgba(232,184,75,0.4)' }} />
+
+              {/* ═══ SOUND (Bottom section) ═══ */}
+              <div style={{ padding: '10px 12px 12px' }}>
+                <div style={{
+                  fontSize: 10, fontWeight: 700, color: 'rgba(253,224,71,0.65)',
+                  letterSpacing: '0.14em', textTransform: 'uppercase',
+                  fontFamily: "'Oswald', sans-serif", marginBottom: 7,
+                }}>
+                  Sound
+                </div>
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '8px 10px', borderRadius: 8,
+                  border: '1.5px solid rgba(232,184,75,0.4)',
+                  background: 'rgba(0,0,0,0.35)',
+                }}>
+                  {/* Mute button */}
+                  <button
+                    onClick={() => setMuted(m => !m)}
+                    title={muted ? 'Unmute' : 'Mute'}
+                    style={{
+                      width: 34, height: 34, borderRadius: 8, cursor: 'pointer',
+                      border: `1.5px solid ${muted ? '#dc2626' : '#e8b84b'}`,
+                      background: muted ? 'rgba(220,38,38,0.15)' : 'rgba(232,184,75,0.1)',
+                      color: muted ? '#f87171' : '#fde047',
+                      fontSize: 15, flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {muted ? '🔇' : '🔊'}
+                  </button>
+
+                  {/* Volume slider — inline */}
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{
+                        fontSize: 9, fontWeight: 700, fontFamily: "'Oswald', sans-serif", letterSpacing: '0.06em',
+                        color: muted ? '#6b7280' : 'rgba(253,224,71,0.7)',
+                      }}>
+                        VOL
+                      </span>
+                      <span style={{
+                        fontSize: 10, fontWeight: 800, fontFamily: "'Oswald', sans-serif",
+                        color: muted ? '#6b7280' : '#fde047',
+                      }}>
+                        {muted ? 'MUTED' : `${Math.round(volume * 100)}%`}
+                      </span>
+                    </div>
+                    <input
+                      type="range" min="0" max="1" step="0.05"
+                      value={muted ? 0 : volume}
+                      onChange={e => { setVolume(parseFloat(e.target.value)); setMuted(false); }}
+                      style={{ width: '100%', height: 5, cursor: 'pointer', accentColor: '#e8b84b' }}
+                    />
+                  </div>
+                </div>
               </div>
 
             </div>

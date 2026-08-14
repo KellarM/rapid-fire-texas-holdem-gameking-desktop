@@ -1,19 +1,79 @@
 import { useState } from 'react';
 import { useRef, useEffect } from 'react';
 import GameRulesModal from '@/components/game/GameRulesModal';
-import VolumeControl from '@/components/game/VolumeControl';
 import PlayExamplesModal from '@/components/game/PlayExamplesModal';
 
 const COLORS = [
-  { id: 'red',   label: 'Red',   dot: '#b30000' },
-  { id: 'blue',  label: 'Blue',  dot: '#0a2a6e' },
-  { id: 'green', label: 'Green', dot: '#0a4a1e' },
+  { id: 'red',   label: 'Red',   dot: '#dc2626' },
+  { id: 'blue',  label: 'Blue',  dot: '#2563eb' },
+  { id: 'green', label: 'Green', dot: '#16a34a' },
 ];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SHARED STYLE TOKENS — Oswald everywhere, gold casino aesthetic
+// ═══════════════════════════════════════════════════════════════════════════
+const FONT = "'Oswald', sans-serif";
+const GOLD = '#e8b84b';
+const GOLD_BRIGHT = '#fde047';
+const GOLD_DIM = 'rgba(232,184,75,0.4)';
+
+const panelStyle = {
+  position: 'absolute', bottom: '44px', right: 0,
+  background: 'linear-gradient(170deg, #1a0f00 0%, #0a0500 100%)',
+  border: `3px solid ${GOLD}`,
+  borderRadius: '14px',
+  width: '290px',
+  boxShadow: `0 0 0 1px #000 inset, 0 8px 40px rgba(0,0,0,0.85), 0 0 20px rgba(232,184,75,0.15)`,
+  zIndex: 200,
+  padding: '0',
+  display: 'flex', flexDirection: 'column',
+  overflow: 'hidden',
+};
+
+const sectionDivider = {
+  height: 0,
+  borderTop: `1px solid ${GOLD_DIM}`,
+  margin: 0,
+};
+
+const sectionLabel = {
+  fontSize: '11px', fontWeight: 700, color: 'rgba(253,224,71,0.65)',
+  letterSpacing: '0.14em', textTransform: 'uppercase', fontFamily: FONT,
+  marginBottom: '8px',
+};
+
+const actionBtn = {
+  display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px',
+  padding: '12px 16px', cursor: 'pointer', fontSize: '14px',
+  color: GOLD_BRIGHT, fontWeight: 700, borderRadius: '8px',
+  border: `1px solid ${GOLD_DIM}`,
+  background: 'rgba(60,35,0,0.4)', width: '100%',
+  fontFamily: FONT, letterSpacing: '0.04em',
+  transition: 'all 0.15s', textAlign: 'left',
+};
+
+const actionBtnHover = {
+  background: 'rgba(100,55,0,0.6)',
+  border: `1px solid ${GOLD}`,
+  boxShadow: '0 0 8px rgba(232,184,75,0.2)',
+};
+
+const actionBtnAccent = {
+  ...actionBtn,
+  border: `1.5px solid ${GOLD}`,
+  background: 'rgba(80,45,0,0.6)',
+};
 
 export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHowToPlay, onResetBank, onOpenStats }) {
   const [open, setOpen] = useState(false);
   const [showPlayExamples, setShowPlayExamples] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [volume, setVolume] = useState(0.4);
   const ref = useRef(null);
+
+  useEffect(() => {
+    if (soundManager) soundManager.setAmbientVolume(muted ? 0 : volume);
+  }, [muted, volume, soundManager]);
 
   useEffect(() => {
     function handleClick(e) {
@@ -23,123 +83,191 @@ export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHo
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  const actionBtnStyle = {
-    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-    padding: '11px 14px', cursor: 'pointer', fontSize: '13px',
-    color: '#e2d9a0', fontWeight: 700, borderRadius: '8px',
-    border: '1px solid rgba(202,138,4,0.4)',
-    background: 'rgba(60,35,0,0.5)', width: '100%',
-    transition: 'background 0.15s',
-  };
-
   return (
     <>
       <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
+        {/* Gear button */}
         <button
           onClick={() => setOpen(o => !o)}
           title="Settings"
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: '34px', height: '34px', borderRadius: '8px', cursor: 'pointer',
-            border: open ? '1px solid rgba(234,179,8,0.8)' : '1px solid rgba(202,138,4,0.4)',
-            background: open ? 'rgba(120,70,0,0.45)' : 'rgba(0,0,0,0.45)',
-            color: '#facc15', fontSize: '18px', lineHeight: 1,
+            width: '38px', height: '38px', borderRadius: '8px', cursor: 'pointer',
+            border: open ? `2px solid ${GOLD}` : `1px solid ${GOLD_DIM}`,
+            background: open ? 'rgba(120,70,0,0.5)' : 'rgba(0,0,0,0.5)',
+            color: GOLD_BRIGHT, fontSize: '20px', lineHeight: 1,
             transition: 'all 0.15s',
+            boxShadow: open ? `0 0 10px rgba(232,184,75,0.3)` : 'none',
           }}
         >
           ⚙
         </button>
 
         {open && (
-          <div style={{
-            position: 'absolute', bottom: '42px', right: 0,
-            background: 'linear-gradient(160deg, #1a0f00 0%, #0f0800 100%)',
-            border: '2px solid rgba(202,138,4,0.5)',
-            borderRadius: '14px', width: '220px',
-            boxShadow: '0 8px 40px rgba(0,0,0,0.85)', zIndex: 200,
-            padding: '14px 12px', display: 'flex', flexDirection: 'column', gap: '10px',
-          }}>
+          <div style={panelStyle} onClick={e => e.stopPropagation()}>
 
-            {/* Title */}
-            <div style={{ paddingBottom: '6px', borderBottom: '1px solid rgba(202,138,4,0.25)' }}>
-              <span style={{ fontSize: '14px', fontWeight: 900, color: '#facc15', letterSpacing: '0.1em', fontFamily: 'Oswald, sans-serif' }}>SETTINGS</span>
+            {/* ═══ TITLE BAR ═══ */}
+            <div style={{
+              padding: '14px 16px 12px',
+              background: 'linear-gradient(180deg, rgba(232,184,75,0.12) 0%, transparent 100%)',
+              borderBottom: `2px solid ${GOLD}`,
+              display: 'flex', alignItems: 'center', gap: '8px',
+            }}>
+              <span style={{ fontSize: '17px', fontWeight: 900, color: GOLD_BRIGHT, letterSpacing: '0.16em', fontFamily: FONT }}>
+                SETTINGS
+              </span>
+              <span style={{ fontSize: '16px', opacity: 0.5 }}>⚙</span>
             </div>
 
-            {/* Board Color */}
-            <div>
-              <div style={{ fontSize: '10px', fontWeight: 700, color: 'rgba(250,204,21,0.55)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '8px' }}>Board Color</div>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                {COLORS.map(t => (
-                  <button key={t.id}
-                    onClick={() => setBoardTheme(t.id)}
-                    style={{
-                      flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-                      padding: '8px 4px', borderRadius: '10px', cursor: 'pointer', fontWeight: 700,
-                      fontSize: '11px', color: boardTheme === t.id ? '#fde047' : '#94a3b8',
-                      border: boardTheme === t.id ? '2px solid #facc15' : '1px solid rgba(202,138,4,0.3)',
-                      background: boardTheme === t.id ? 'rgba(100,60,0,0.6)' : 'rgba(0,0,0,0.3)',
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    <span style={{ width: '16px', height: '16px', borderRadius: '50%', background: t.dot, border: '2px solid rgba(255,255,255,0.3)', display: 'block' }} />
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            {/* ═══ ACTION BUTTONS ═══ */}
+            <div style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
 
-{/* Sound */}
-            {soundManager && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', borderTop: '1px solid rgba(202,138,4,0.15)', paddingTop: '8px' }}>
-                <span style={{ fontSize: '13px', color: '#e2d9a0', fontWeight: 600 }}>Sound</span>
-                <div style={{ marginLeft: 'auto' }}>
-                  <VolumeControl soundManager={soundManager} compact />
-                </div>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', borderTop: '1px solid rgba(202,138,4,0.15)', paddingTop: '8px' }}>
+              {/* Reset Bank */}
               <button
-                style={actionBtnStyle}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(90,45,0,0.6)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(60,35,0,0.5)'}
+                style={actionBtn}
+                onMouseEnter={e => Object.assign(e.currentTarget.style, actionBtnHover)}
+                onMouseLeave={e => { e.currentTarget.style.background = actionBtn.background; e.currentTarget.style.border = actionBtn.border; e.currentTarget.style.boxShadow = ''; }}
                 onClick={() => { onResetBank(); setOpen(false); }}
               >
-                <span>💰</span> Reset Bank
+                <span style={{ fontSize: '16px' }}>💰</span> Reset Bank
               </button>
 
-              <div style={{ borderRadius: '8px', border: '1px solid rgba(202,138,4,0.4)', background: 'rgba(60,35,0,0.5)', overflow: 'hidden' }}>
+              {/* Game Rules */}
+              <div style={{
+                borderRadius: '8px',
+                border: `1px solid ${GOLD_DIM}`,
+                background: 'rgba(60,35,0,0.4)',
+                overflow: 'hidden',
+              }}>
                 <GameRulesModal asMenuItem />
               </div>
 
+              {/* How To Play */}
               <button
-                style={actionBtnStyle}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(90,45,0,0.6)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(60,35,0,0.5)'}
+                style={actionBtn}
+                onMouseEnter={e => Object.assign(e.currentTarget.style, actionBtnHover)}
+                onMouseLeave={e => { e.currentTarget.style.background = actionBtn.background; e.currentTarget.style.border = actionBtn.border; e.currentTarget.style.boxShadow = ''; }}
                 onClick={() => { onHowToPlay(); setOpen(false); }}
               >
-                <span>📋</span> How To Play
+                <span style={{ fontSize: '16px' }}>📋</span> How To Play
               </button>
 
+              {/* Player Stats */}
               <button
-                style={actionBtnStyle}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(90,45,0,0.6)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(60,35,0,0.5)'}
+                style={actionBtn}
+                onMouseEnter={e => Object.assign(e.currentTarget.style, actionBtnHover)}
+                onMouseLeave={e => { e.currentTarget.style.background = actionBtn.background; e.currentTarget.style.border = actionBtn.border; e.currentTarget.style.boxShadow = ''; }}
                 onClick={() => { onOpenStats(); setOpen(false); }}
               >
-                <span>📊</span> Player Stats
+                <span style={{ fontSize: '16px' }}>📊</span> Player Stats
               </button>
 
+              {/* Play Examples */}
               <button
-                style={{ ...actionBtnStyle, border: '1px solid rgba(202,138,4,0.7)', background: 'rgba(80,45,0,0.7)' }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(120,65,0,0.8)'}
-                onMouseLeave={e => e.currentTarget.style.background = 'rgba(80,45,0,0.7)'}
+                style={actionBtnAccent}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(120,65,0,0.8)'; e.currentTarget.style.boxShadow = '0 0 12px rgba(232,184,75,0.25)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = actionBtnAccent.background; e.currentTarget.style.boxShadow = ''; }}
                 onClick={() => { setShowPlayExamples(true); setOpen(false); }}
               >
-                <span>🎬</span> Play Examples
+                <span style={{ fontSize: '16px' }}>🎬</span> Play Examples
               </button>
             </div>
+
+            <div style={sectionDivider} />
+
+            {/* ═══ BOARD COLOR ═══ */}
+            <div style={{ padding: '12px 14px' }}>
+              <div style={sectionLabel}>Board Color</div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {COLORS.map(t => {
+                  const selected = boardTheme === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => setBoardTheme(t.id)}
+                      style={{
+                        flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+                        padding: '10px 6px', borderRadius: '10px', cursor: 'pointer',
+                        fontFamily: FONT, fontWeight: 700, fontSize: '13px',
+                        color: selected ? GOLD_BRIGHT : '#94a3b8',
+                        border: selected ? `2.5px solid ${GOLD}` : `1.5px solid ${GOLD_DIM}`,
+                        background: selected ? 'rgba(100,60,0,0.6)' : 'rgba(0,0,0,0.3)',
+                        transition: 'all 0.15s',
+                        boxShadow: selected ? `0 0 10px rgba(232,184,75,0.2)` : 'none',
+                      }}
+                    >
+                      <span style={{
+                        width: '24px', height: '24px', borderRadius: '50%',
+                        background: t.dot,
+                        border: selected ? `2px solid ${GOLD_BRIGHT}` : '2px solid rgba(255,255,255,0.25)',
+                        display: 'block',
+                        boxShadow: selected ? `0 0 8px ${t.dot}` : 'none',
+                      }} />
+                      {t.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div style={sectionDivider} />
+
+            {/* ═══ SOUND (Bottom section) ═══ */}
+            <div style={{ padding: '12px 14px 14px' }}>
+              <div style={sectionLabel}>Sound</div>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '10px',
+                padding: '10px 12px', borderRadius: '10px',
+                border: `1.5px solid ${GOLD_DIM}`,
+                background: 'rgba(0,0,0,0.35)',
+              }}>
+                {/* Mute button */}
+                <button
+                  onClick={() => setMuted(m => !m)}
+                  title={muted ? 'Unmute' : 'Mute'}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: '38px', height: '38px', borderRadius: '8px', cursor: 'pointer',
+                    border: `1.5px solid ${muted ? '#dc2626' : GOLD}`,
+                    background: muted ? 'rgba(220,38,38,0.15)' : 'rgba(232,184,75,0.1)',
+                    color: muted ? '#f87171' : GOLD_BRIGHT,
+                    fontSize: '16px', flexShrink: 0,
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  {muted ? '🔇' : '🔊'}
+                </button>
+
+                {/* Volume slider — inline, not popup */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{
+                      fontSize: '11px', fontWeight: 700, fontFamily: FONT, letterSpacing: '0.06em',
+                      color: muted ? '#6b7280' : 'rgba(253,224,71,0.7)',
+                    }}>
+                      VOL
+                    </span>
+                    <span style={{
+                      fontSize: '12px', fontWeight: 800, fontFamily: FONT,
+                      color: muted ? '#6b7280' : GOLD_BRIGHT,
+                    }}>
+                      {muted ? 'MUTED' : `${Math.round(volume * 100)}%`}
+                    </span>
+                  </div>
+                  <input
+                    type="range" min="0" max="1" step="0.05"
+                    value={muted ? 0 : volume}
+                    onChange={e => { setVolume(parseFloat(e.target.value)); setMuted(false); }}
+                    style={{
+                      width: '100%', height: '6px', cursor: 'pointer',
+                      accentColor: GOLD,
+                      flexShrink: 1,
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
           </div>
         )}
       </div>
