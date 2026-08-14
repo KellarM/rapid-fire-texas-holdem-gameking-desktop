@@ -1905,35 +1905,7 @@ export default function RapidFireGame() {
             <DealerAnnouncement message={dealerMessage} phase={gamePhase} />
           </div>
 
-          {/* Bonus Bets Unlocked — fixed overlay, zero layout impact */}
-          {showUnlockFlash && (
-            <div style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -60%)',
-              zIndex: 999,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: '14px',
-              background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
-              border: '2px solid #eab308',
-              boxShadow: '0 0 40px rgba(234,179,8,0.5), 0 8px 32px rgba(0,0,0,0.8)',
-              animation: 'rfUnlockFadeOut 4s ease forwards',
-              pointerEvents: 'none',
-              padding: '16px 28px',
-              gap: 0,
-              minWidth: '220px',
-            }}>
-              <span style={{ fontSize: 15, fontWeight: 900, color: '#eab308', letterSpacing: '0.12em', textTransform: 'uppercase', textAlign: 'center' }}>🔓 Bonus Bets Unlocked</span>
-              <div style={{ height: 8 }} />
-              <span style={{ fontSize: 12, color: '#f87171', fontWeight: 700, textAlign: 'center' }}>🔴 Color Board Open</span>
-              <div style={{ height: 4 }} />
-              <span style={{ fontSize: 12, color: '#60a5fa', fontWeight: 700, textAlign: 'center' }}>🌊 River Bet Available After The Turn</span>
-            </div>
-          )}
+
 
           {/* Community Cards — expanded canvas for labels, assets stay fixed size */}
           <div
@@ -2062,8 +2034,36 @@ export default function RapidFireGame() {
               rankLockThreshold={versions?.rankLockThreshold ?? 1} />
             
           </div>
-          {/* Side Bets panel */}
-          <div className="flex flex-col" style={{ flex: '5.5 1 0', overflow: 'visible' }}>
+          {/* Side Bets panel — position relative for unlock overlay anchor */}
+          <div className="flex flex-col" style={{ flex: '5.5 1 0', overflow: 'visible', position: 'relative' }}>
+            {/* Bonus Bets Unlocked — anchored over River board (bottom ~38% of this panel) */}
+            {showUnlockFlash && (
+              <div style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                width: '100%',
+                height: '38%',
+                zIndex: 50,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '10px',
+                background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
+                border: '2px solid #eab308',
+                boxShadow: '0 0 24px rgba(234,179,8,0.5), 0 4px 16px rgba(0,0,0,0.8)',
+                animation: 'rfUnlockFadeOut 4s ease forwards',
+                pointerEvents: 'none',
+                padding: '6px 8px',
+                gap: 2,
+              }}>
+                <span style={{ fontSize: 11, fontWeight: 900, color: '#eab308', letterSpacing: '0.08em', textTransform: 'uppercase', textAlign: 'center', lineHeight: 1.1 }}>🔓 Bonus Bets Unlocked</span>
+                <div style={{ height: 3 }} />
+                <span style={{ fontSize: 9, color: '#f87171', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🔴 Color Board Open</span>
+                <span style={{ fontSize: 9, color: '#60a5fa', fontWeight: 700, textAlign: 'center', lineHeight: 1.1 }}>🌊 River Available After Turn</span>
+              </div>
+            )}
             <SideBets
               communityCards={communityCards}
               allRedBlackBets={redBlackBets}
