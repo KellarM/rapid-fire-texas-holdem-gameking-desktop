@@ -35,7 +35,7 @@ function renderColoredMessage(text) {
   return nodes;
 }
 
-export default function DealerAnnouncement({ message, fontSize = '1.2rem', height = '40px', lineHeight = '40px' }) {
+export default function DealerAnnouncement({ message, fontSize = '1.2rem', height = '40px', lineHeight = '40px', uniformColor = false, fontFamily = 'Oswald, sans-serif' }) {
   const text = message || '';
 
   return (
@@ -52,7 +52,7 @@ export default function DealerAnnouncement({ message, fontSize = '1.2rem', heigh
       {text && (
         <span
           style={{
-            fontFamily: 'Oswald, sans-serif',
+            fontFamily: fontFamily,
             fontSize: fontSize,
             fontWeight: 700,
             fontStyle: 'italic',
@@ -67,7 +67,7 @@ export default function DealerAnnouncement({ message, fontSize = '1.2rem', heigh
             textOverflow: 'ellipsis',
           }}
         >
-          {renderColoredMessage(text)}
+          {uniformColor ? text : renderColoredMessage(text)}
         </span>
       )}
     </div>
