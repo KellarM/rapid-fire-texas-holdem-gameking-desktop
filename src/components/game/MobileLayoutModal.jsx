@@ -16,6 +16,11 @@ const LAYOUTS = [
     label: 'Layout C',
     description: 'Hand Grid → Community Cards → Rank/Color',
   },
+  {
+    id: 'D',
+    label: 'Layout D',
+    description: 'Full-width strips: River → Color → Rank → Hands → Cards',
+  },
 ];
 
 export default function MobileLayoutModal({ current = 'A', onSelect, onClose }) {

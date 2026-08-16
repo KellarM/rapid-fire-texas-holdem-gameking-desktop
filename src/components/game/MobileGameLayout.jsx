@@ -1,9 +1,10 @@
 import React from 'react';
 import { getCardImageUrl } from '@/lib/cardImages';
 import HistoryRail from './HistoryRail';
-import { evaluateBestHand, FIXED_HANDS, getTotalHandBets, getTotalRankBets, getTotalColorBets } from '@/lib/gameEngine';
+import { evaluateBestHand, FIXED_HANDS, getTotalHandBets, getTotalRankBets, getTotalColorBets, cardColor } from '@/lib/gameEngine';
+import { HAND_RANK_PAYOUTS, COLOR_BOARD_PAYOUTS, LOW_HIGH_PAYOUT, RIVER_STATE_PAYOUTS } from '@/lib/payoutConstants';
 import CommunityCards from './CommunityCards';
-import RankBets from './RankBets';
+import RankBets, { RANK_BET_OPTIONS } from './RankBets';
 import SideBets from './SideBets';
 import DealerAnnouncement from './DealerAnnouncement';
 import Chip from './Chip';
@@ -134,6 +135,432 @@ function MobileHandCard({
           <span style={{ color: '#ff4444', fontSize: '0.42rem', fontWeight: 900, letterSpacing: '0.08em', textTransform: 'uppercase', marginTop: 3, textShadow: '0 1px 4px #000' }}>LOCKED</span>
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Layout D strip components ────────────────────────────────────────────
+// Compact horizontal strips for Layout D — each side-bet board becomes one
+// full-width row with odds displayed above each position (like card hand boxes).
+
+const RANK_SHORT_LABELS = {
+  'Four of a Kind':  '4K',
+  'Full House':      'FH',
+  'Flush':           'FL',
+  'Straight':        'STR',
+  'Three of a Kind': '3K',
+  'Two Pair':        '2P',
+  'One Pair':        '1P',
+};
+
+const STRIP_BORDER = '3px solid #e8b84b';
+const STRIP_SHADOW = '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)';
+
+const goldGrad = 'linear-gradient(135deg, #f6d860 0%, #e8c22a 30%, #fef08a 55%, #c9960a 80%, #e8c22a 100%)';
+const goldDimGrad = 'linear-gradient(135deg, #c9a820 0%, #b08a14 30%, #d4b830 55%, #8a6504 80%, #b08a14 100%)';
+
+// ── Rank Strip D ──────────────────────────────────────────────────────────
+function RankStripD({
+  rankBets, allRankBets, playerCount, onRankBet, onRemoveRankBet,
+  gamePhase, winningRank, leadingRank, disabled, killSwitchActive,
+  handBetCount, maxRankSlots, rankBetCount, activePlayerId,
+  matchCapRemaining, rankLockThreshold = 1, chipScale = 0.42,
+}) {
+  const canBet = gamePhase === 'betting' && !disabled && !killSwitchActive;
+  const noHandBets = !handBetCount || handBetCount === 0;
+  const currentRankSlots = Object.keys(rankBets).length;
+
+  const goldBase = {
+    background: goldGrad,
+    boxShadow: 'inset 0 1px 2px rgba(255,255,200,0.6), inset 0 -1px 2px rgba(100,60,0,0.5), 0 1px 4px rgba(0,0,0,0.5)',
+  };
+  const goldDim = {
+    background: goldDimGrad,
+    boxShadow: 'inset 0 1px 2px rgba(200,170,80,0.3)',
+    opacity: 0.72,
+  };
+  const redVelvet = {
+    background: 'linear-gradient(135deg, rgba(80,10,10,0.85) 0%, rgba(40,5,5,0.95) 100%)',
+    boxShadow: 'inset 0 0 14px rgba(197,100,50,0.25)',
+  };
+
+  return (
+    <div className="relative flex flex-col rounded-xl overflow-hidden flex-shrink-0"
+      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW }}>
+      {/* Header */}
+      <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
+        <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.08em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)', textTransform: 'uppercase' }}>
+          Ranking
+        </span>
+        {!noHandBets && !killSwitchActive && (
+          <span style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24', fontSize: '0.5rem', fontWeight: 900, padding: '1px 6px', borderRadius: 999, whiteSpace: 'nowrap' }}>
+            Match Cap: ${matchCapRemaining.toLocaleString()}
+          </span>
+        )}
+      </div>
+
+      {/* Blackout — no hand bets */}
+      {noHandBets && !killSwitchActive && gamePhase === 'betting' && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl"
+          style={{ backdropFilter: 'blur(6px)', background: 'linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(10,8,4,0.88) 100%)' }}>
+          <span style={{ fontSize: '0.6rem', fontWeight: 900, color: '#facc15', letterSpacing: '0.06em' }}>RANK BOARD LOCKED</span>
+          <span style={{ fontSize: '0.5rem', color: 'rgba(253,224,71,0.5)', marginTop: 2 }}>Place a Card bet to unlock</span>
+        </div>
+      )}
+
+      {/* Blackout — kill switch */}
+      {killSwitchActive && gamePhase === 'betting' && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl"
+          style={{ backdropFilter: 'blur(6px)', background: 'linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(10,8,4,0.88) 100%)' }}>
+          <span style={{ fontSize: '0.6rem', fontWeight: 900, color: '#facc15', letterSpacing: '0.06em' }}>RANK BOARD LOCKED</span>
+          <span style={{ fontSize: '0.5rem', color: 'rgba(253,224,71,0.5)', marginTop: 2 }}>{rankLockThreshold}+ Hands — select fewer</span>
+        </div>
+      )}
+
+      {/* Slot row — 7 positions horizontal */}
+      <div style={{ display: 'flex', gap: 3, height: 32 }}>
+        {RANK_BET_OPTIONS.map(opt => {
+          const bet = rankBets[opt.key] || 0;
+          const isWinner = winningRank === opt.key;
+          const isLeading = leadingRank === opt.key && !isWinner;
+          const isActive = isWinner || isLeading;
+          const slotLimitReached = maxRankSlots > 0 && !rankBets[opt.key] && currentRankSlots >= maxRankSlots;
+          const fullyLocked = noHandBets || killSwitchActive || slotLimitReached;
+          const showOdds = isActive || bet > 0 || (!fullyLocked && canBet);
+          const payout = HAND_RANK_PAYOUTS[opt.key];
+          const oddsText = payout ? `${payout}:1` : '';
+
+          let style, textColor, oddsColor;
+          if (isActive) {
+            style = { ...goldBase, border: '1px solid #000', boxShadow: '0 0 12px rgba(255,200,50,0.7)' };
+            textColor = '#000'; oddsColor = '#000';
+          } else if (bet > 0) {
+            style = { ...redVelvet, border: '1px solid #facc15' };
+            textColor = '#fef08a'; oddsColor = '#facc15';
+          } else if (!fullyLocked && canBet) {
+            style = { ...goldBase, border: '1px solid #000', cursor: 'pointer' };
+            textColor = '#000'; oddsColor = '#000';
+          } else {
+            style = { ...goldDim, border: '1px solid #000' };
+            textColor = 'rgba(0,0,0,0.5)'; oddsColor = 'rgba(0,0,0,0.5)';
+          }
+
+          const chipsHere = [];
+          for (let i = 0; i < (playerCount || 1); i++) {
+            const amt = (allRankBets?.[i] || {})[opt.key] || 0;
+            if (amt > 0) chipsHere.push({ pid: i, amt });
+          }
+
+          return (
+            <button
+              key={opt.key}
+              onMouseDown={(e) => { if (e.button !== 0) return; if (e.target.closest('[data-chip]')) return; if (gamePhase === 'betting' && !fullyLocked) onRankBet(opt.key); }}
+              onTouchEnd={(e) => { e.preventDefault(); if (gamePhase !== 'betting' || noHandBets || killSwitchActive) return; if (bet > 0 && e.target.closest('[data-chip]')) { onRemoveRankBet(opt.key); } else if (!fullyLocked) { onRankBet(opt.key); } }}
+              onContextMenu={(e) => { e.preventDefault(); if (gamePhase === 'betting' && bet > 0) onRemoveRankBet(opt.key); }}
+              onDragOver={(e) => { if (gamePhase === 'betting' && !killSwitchActive) { e.preventDefault(); e.stopPropagation(); } }}
+              onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (gamePhase !== 'betting' || killSwitchActive) return; const data = e.dataTransfer.getData('text/plain'); if (!data) return; try { const { from, type, pid: dragPid } = JSON.parse(data); if (type === 'rank' && from !== opt.key) { onRemoveRankBet(from); onRankBet(opt.key); } } catch (_) {} }}
+              style={{ ...style, flex: 1, borderRadius: 6, position: 'relative', overflow: 'visible', pointerEvents: noHandBets || killSwitchActive ? 'none' : 'auto' }}
+            >
+              {/* Odds above */}
+              {showOdds && oddsText && (
+                <div style={{ fontSize: '0.42rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: oddsColor, marginBottom: 1, whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                  {oddsText}
+                </div>
+              )}
+              {/* Label below */}
+              <div style={{ fontSize: '0.5rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: textColor, letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>
+                {RANK_SHORT_LABELS[opt.key]}
+              </div>
+              {/* Chip overlay */}
+              {chipsHere.length > 0 && (
+                <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center" style={{ overflow: 'visible' }}>
+                  {chipsHere.length === 1 ? (
+                    <Chip key={chipsHere[0].pid} playerId={chipsHere[0].pid} amount={chipsHere[0].amt} scale={chipScale}
+                      draggable={gamePhase === 'betting' && chipsHere[0].pid === activePlayerId}
+                      onDragStart={(e) => { e.stopPropagation(); e.dataTransfer.setData('text/plain', JSON.stringify({ from: opt.key, type: 'rank', pid: chipsHere[0].pid, amount: bet })); e.dataTransfer.effectAllowed = 'move'; }}
+                      data-chip="true" style={{ pointerEvents: 'auto', flexShrink: 0 }} />
+                  ) : (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, maxWidth: '100%' }}>
+                      {chipsHere.map(c => <Chip key={c.pid} playerId={c.pid} amount={c.amt} scale={chipScale * 0.7} data-chip="true" style={{ pointerEvents: 'auto', flexShrink: 0 }} />)}
+                    </div>
+                  )}
+                </div>
+              )}
+              {/* WIN badge */}
+              {isWinner && (
+                <div style={{ position: 'absolute', top: -6, right: -4, fontSize: '0.38rem', fontWeight: 900, padding: '1px 3px', borderRadius: 999, background: '#000', color: '#ffd700', zIndex: 20, boxShadow: '0 0 4px 2px rgba(251,191,36,0.7)', whiteSpace: 'nowrap' }}>WIN!</div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── Color Strip D ──────────────────────────────────────────────────────────
+function ColorStripD({
+  communityCards, allRedBlackBets, redBlackBets, onRedBlackBet, onRemoveRedBlackBet,
+  gamePhase, winningRedBlack, disabled, killSwitchActive, rankBetActive,
+  playerCount, colorCap, activeColorSide, onColorSideConflict, chipScale = 0.42,
+}) {
+  const colorLocked = killSwitchActive || !rankBetActive;
+  const redSideLocked = colorLocked || activeColorSide === 'black';
+  const blackSideLocked = colorLocked || activeColorSide === 'red';
+  const canBetRed = gamePhase === 'betting' && !disabled && !redSideLocked;
+  const canBetBlack = gamePhase === 'betting' && !disabled && !blackSideLocked;
+
+  const reds = communityCards.filter(c => cardColor(c) === 'red').length;
+  const blacks = communityCards.filter(c => cardColor(c) === 'black').length;
+  const liveRedBlack = [];
+  if (reds === 3) liveRedBlack.push('3R');
+  if (reds === 4) liveRedBlack.push('4R');
+  if (reds === 5) liveRedBlack.push('5R');
+  if (blacks === 3) liveRedBlack.push('3B');
+  if (blacks === 4) liveRedBlack.push('4B');
+  if (blacks === 5) liveRedBlack.push('5B');
+
+  const OPTIONS = [
+    { key: '3R', number: '3', payout: COLOR_BOARD_PAYOUTS['3R'], isRed: true },
+    { key: '4R', number: '4', payout: COLOR_BOARD_PAYOUTS['4R'], isRed: true },
+    { key: '5R', number: '5', payout: COLOR_BOARD_PAYOUTS['5R'], isRed: true },
+    { key: '3B', number: '3', payout: COLOR_BOARD_PAYOUTS['3B'], isRed: false },
+    { key: '4B', number: '4', payout: COLOR_BOARD_PAYOUTS['4B'], isRed: false },
+    { key: '5B', number: '5', payout: COLOR_BOARD_PAYOUTS['5B'], isRed: false },
+  ];
+
+  return (
+    <div className="relative flex flex-col rounded-xl overflow-hidden flex-shrink-0"
+      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW }}>
+      {/* Header */}
+      <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
+        <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.08em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)', textTransform: 'uppercase' }}>
+          Color
+        </span>
+        {!colorLocked && (
+          <span style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24', fontSize: '0.5rem', fontWeight: 900, padding: '1px 6px', borderRadius: 999, whiteSpace: 'nowrap' }}>
+            Match Cap: ${colorCap.toLocaleString()}
+          </span>
+        )}
+      </div>
+
+      {/* Kill switch overlay */}
+      {killSwitchActive && gamePhase === 'betting' && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl" style={{ backdropFilter: 'blur(6px)', background: 'rgba(0,0,0,0.82)' }}>
+          <span style={{ fontSize: '0.6rem', fontWeight: 900, color: '#facc15' }}>LOCKED</span>
+        </div>
+      )}
+
+      {/* Rank gate overlay */}
+      {!killSwitchActive && !rankBetActive && (gamePhase === 'betting' || gamePhase === 'flop' || gamePhase === 'lowHighBetting') && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl"
+          style={{ backdropFilter: 'blur(6px)', background: 'linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(15,10,5,0.82) 100%)' }}>
+          <span style={{ fontSize: '0.55rem', fontWeight: 900, color: '#facc15', letterSpacing: '0.04em' }}>UPGRADE YOUR WIN</span>
+          <span style={{ fontSize: '0.42rem', color: 'rgba(253,224,71,0.5)', marginTop: 2 }}>Match Rank to Hand total</span>
+        </div>
+      )}
+
+      {/* Slot row — 6 positions horizontal */}
+      <div style={{ display: 'flex', gap: 3, height: 32 }}>
+        {OPTIONS.map(opt => {
+          const isWinner = winningRedBlack && winningRedBlack.includes(opt.key);
+          const isLive = liveRedBlack.includes(opt.key) && !isWinner && communityCards.length > 0 && communityCards.length < 5;
+          const hasBet = (redBlackBets[opt.key] || 0) > 0;
+          const isActive = isWinner || isLive;
+          const canBetThisCell = opt.isRed ? canBetRed : canBetBlack;
+          const isSideLocked = opt.isRed ? redSideLocked : blackSideLocked;
+
+          let style, textColor, oddsColor;
+          if (isActive) {
+            style = { background: goldGrad, border: '2px solid #000', boxShadow: '0 0 12px rgba(255,200,50,0.7)' };
+            textColor = '#000'; oddsColor = '#000';
+          } else if (hasBet) {
+            style = opt.isRed
+              ? { background: 'linear-gradient(160deg, #c01c1c 0%, #7a0909 100%)', border: '1px solid #facc15' }
+              : { background: 'linear-gradient(160deg, #141414 0%, #000 100%)', border: '1px solid #facc15' };
+            textColor = '#fef08a'; oddsColor = '#facc15';
+          } else if (canBetThisCell) {
+            style = opt.isRed
+              ? { background: 'linear-gradient(160deg, #e02020 0%, #8c0e0e 100%)', border: '1px solid #111', cursor: 'pointer' }
+              : { background: 'linear-gradient(160deg, #222 0%, #000 100%)', border: '1px solid #2a2a2a', cursor: 'pointer' };
+            textColor = '#e8c22a'; oddsColor = '#e8c22a';
+          } else {
+            style = opt.isRed
+              ? { background: 'linear-gradient(160deg, #8a1414 0%, #4a0505 100%)', border: '1px solid #111', opacity: 0.45 }
+              : { background: 'linear-gradient(160deg, #111 0%, #000 100%)', border: '1px solid #1a1a1a', opacity: 0.45 };
+            textColor = '#666'; oddsColor = '#666';
+          }
+
+          const chipsHere = [];
+          for (let i = 0; i < (playerCount || 1); i++) {
+            const amt = (allRedBlackBets[i] || {})[opt.key] || 0;
+            if (amt > 0) chipsHere.push({ pid: i, amt });
+          }
+
+          return (
+            <button
+              key={opt.key}
+              onMouseDown={(e) => { if (e.button !== 0) return; if (gamePhase !== 'betting') return; if (isSideLocked && !colorLocked && !hasBet) { onColorSideConflict(); return; } onRedBlackBet(opt.key); }}
+              onTouchEnd={(e) => { e.preventDefault(); if (gamePhase !== 'betting') return; if (e.target.closest('[data-chip="true"]')) { onRemoveRedBlackBet(opt.key); return; } if (isSideLocked && !colorLocked) { onColorSideConflict(); return; } onRedBlackBet(opt.key); }}
+              onContextMenu={(e) => { e.preventDefault(); if (gamePhase === 'betting') onRemoveRedBlackBet(opt.key); }}
+              onDragOver={(e) => { if (gamePhase === 'betting') { e.preventDefault(); e.stopPropagation(); } }}
+              onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (gamePhase !== 'betting') return; const data = e.dataTransfer.getData('text/plain'); if (!data) return; try { const { from, type } = JSON.parse(data); if (type === 'rb' && from !== opt.key) { onRemoveRedBlackBet(from); onRedBlackBet(opt.key); } } catch (_) {} }}
+              style={{ ...style, flex: 1, borderRadius: 6, position: 'relative', overflow: 'visible' }}
+            >
+              {/* Odds above */}
+              <div style={{ fontSize: '0.42rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: oddsColor, marginBottom: 1, whiteSpace: 'nowrap', overflow: 'hidden' }}>
+                {opt.payout}:1
+              </div>
+              {/* Number + color indicator below */}
+              <div style={{ fontSize: '0.5rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: textColor, whiteSpace: 'nowrap' }}>
+                {opt.number}{opt.isRed ? 'R' : 'B'}
+              </div>
+              {/* Chip overlay */}
+              {chipsHere.length > 0 && (
+                <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center" style={{ overflow: 'visible' }}>
+                  {chipsHere.length === 1 ? (
+                    <Chip key={chipsHere[0].pid} playerId={chipsHere[0].pid} amount={chipsHere[0].amt} scale={chipScale}
+                      draggable={gamePhase === 'betting'} data-chip="true"
+                      onDragStart={(e) => { e.stopPropagation(); e.dataTransfer.setData('text/plain', JSON.stringify({ from: opt.key, type: 'rb', pid: chipsHere[0].pid, amount: redBlackBets[opt.key] || 0 })); e.dataTransfer.effectAllowed = 'move'; }}
+                      style={{ pointerEvents: 'auto', flexShrink: 0 }} />
+                  ) : (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, maxWidth: '100%' }}>
+                      {chipsHere.map(c => <Chip key={c.pid} playerId={c.pid} amount={c.amt} scale={chipScale * 0.7} data-chip="true" style={{ pointerEvents: 'auto', flexShrink: 0 }} />)}
+                    </div>
+                  )}
+                </div>
+              )}
+              {/* WIN badge */}
+              {isWinner && (
+                <div style={{ position: 'absolute', top: -6, right: -4, fontSize: '0.38rem', fontWeight: 900, padding: '1px 3px', borderRadius: 999, background: '#000', color: '#ffd700', zIndex: 20, boxShadow: '0 0 4px 2px rgba(251,191,36,0.7)', whiteSpace: 'nowrap' }}>WIN!</div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── River Strip D ──────────────────────────────────────────────────────────
+function RiverStripD({
+  communityCards, allLowHighBets, lowHighBet, onLowHighBet, onRemoveLowHighBet,
+  gamePhase, winningLowHigh, disabled, killSwitchActive, rankBetActive,
+  playerCount, riverCap, chipScale = 0.42,
+}) {
+  const riverLocked = !rankBetActive;
+  const riverBoardOpen = !riverLocked && gamePhase !== 'betting' && gamePhase !== 'flop';
+  const canBetLH = gamePhase === 'lowHighBetting' && !disabled && !riverLocked;
+
+  const LOW_RANKS = new Set(['2','3','4','5','6','7']);
+  let turnBoardState = null;
+  if (communityCards && communityCards.length >= 4) {
+    const turnCards = communityCards.slice(0, 4);
+    const lowCount = turnCards.filter(c => LOW_RANKS.has(c.rank)).length;
+    turnBoardState = `${lowCount}L${4 - lowCount}H`;
+  }
+  const riverPayouts = {
+    LOW:  (turnBoardState && RIVER_STATE_PAYOUTS[turnBoardState]) ? RIVER_STATE_PAYOUTS[turnBoardState].LOW : LOW_HIGH_PAYOUT,
+    HIGH: (turnBoardState && RIVER_STATE_PAYOUTS[turnBoardState]) ? RIVER_STATE_PAYOUTS[turnBoardState].HIGH : LOW_HIGH_PAYOUT,
+  };
+
+  return (
+    <div className="relative flex flex-col rounded-xl overflow-hidden flex-shrink-0"
+      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW }}>
+      {/* Header */}
+      <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
+        <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.08em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)', textTransform: 'uppercase' }}>
+          River
+        </span>
+        {riverBoardOpen && (
+          <span style={{ background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24', fontSize: '0.5rem', fontWeight: 900, padding: '1px 6px', borderRadius: 999, whiteSpace: 'nowrap' }}>
+            Match Cap: ${riverCap.toLocaleString()}
+          </span>
+        )}
+      </div>
+
+      {/* Lock overlay — before turn or rank gate not met */}
+      {(gamePhase === 'betting' || gamePhase === 'flop' || (gamePhase === 'lowHighBetting' && !rankBetActive)) && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl"
+          style={{ backdropFilter: 'blur(6px)', background: 'linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(5,10,20,0.82) 100%)' }}>
+          {(gamePhase === 'betting' || gamePhase === 'flop') ? (
+            <>
+              <span style={{ fontSize: '0.55rem', fontWeight: 900, color: '#facc15' }}>OPENS AFTER TURN</span>
+              <span style={{ fontSize: '0.42rem', color: 'rgba(253,224,71,0.5)', marginTop: 2 }}>River bet available</span>
+            </>
+          ) : (
+            <>
+              <span style={{ fontSize: '0.55rem', fontWeight: 900, color: '#facc15' }}>UPGRADE YOUR WIN</span>
+              <span style={{ fontSize: '0.42rem', color: 'rgba(253,224,71,0.5)', marginTop: 2 }}>Match Rank to Hand total</span>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Slot row — 2 positions horizontal */}
+      <div style={{ display: 'flex', gap: 4, height: 32 }}>
+        {['LOW', 'HIGH'].map(type => {
+          const isWinner = winningLowHigh === type;
+          const hasBet = lowHighBet && lowHighBet.type === type && lowHighBet.amount > 0;
+          const payout = riverPayouts[type];
+
+          let style, textColor, oddsColor;
+          if (isWinner) {
+            style = { background: 'linear-gradient(135deg, #fff176 0%, #ffd600 40%, #ffe57a 70%, #ffab00 100%)', border: '1px solid #a07005', boxShadow: '0 0 16px rgba(255,200,50,0.7)' };
+            textColor = '#000'; oddsColor = '#000';
+          } else if (canBetLH || hasBet) {
+            style = { background: goldGrad, border: '1px solid #000', boxShadow: 'inset 0 1px 2px rgba(255,255,200,0.6), inset 0 -1px 2px rgba(100,60,0,0.5)' };
+            textColor = '#000'; oddsColor = '#000';
+          } else {
+            style = { background: goldDimGrad, border: '1px solid #000', opacity: 0.6 };
+            textColor = 'rgba(0,0,0,0.5)'; oddsColor = 'rgba(0,0,0,0.5)';
+          }
+
+          const chipsHere = [];
+          for (let i = 0; i < (playerCount || 1); i++) {
+            const plh = allLowHighBets[i];
+            if (plh && plh.type === type && plh.amount > 0) chipsHere.push({ pid: i, amt: plh.amount });
+          }
+
+          return (
+            <button
+              key={type}
+              onMouseDown={(e) => { if (e.button !== 0) return; if (gamePhase !== 'lowHighBetting') return; onLowHighBet(type); }}
+              onTouchEnd={(e) => { e.preventDefault(); if (gamePhase !== 'lowHighBetting') return; if (e.target.closest('[data-chip="true"]')) { onRemoveLowHighBet(); return; } onLowHighBet(type); }}
+              onContextMenu={(e) => { e.preventDefault(); if (gamePhase === 'lowHighBetting' && hasBet) onRemoveLowHighBet(); }}
+              style={{ ...style, flex: 1, borderRadius: 6, position: 'relative', overflow: 'visible', cursor: canBetLH ? 'pointer' : 'default' }}
+            >
+              {/* Odds above */}
+              <div style={{ fontSize: '0.45rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: oddsColor, marginBottom: 1, whiteSpace: 'nowrap' }}>
+                {payout}:1
+              </div>
+              {/* Label below */}
+              <div style={{ fontSize: '0.55rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: textColor, letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+                {type === 'LOW' ? 'LOW (2-7)' : 'HIGH (8-A)'}
+              </div>
+              {/* Chip overlay */}
+              {chipsHere.length > 0 && (
+                <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center" style={{ overflow: 'visible' }}>
+                  {chipsHere.length === 1 ? (
+                    <Chip key={chipsHere[0].pid} playerId={chipsHere[0].pid} amount={chipsHere[0].amt} scale={chipScale}
+                      draggable={gamePhase === 'lowHighBetting'} data-chip="true"
+                      onDragStart={(e) => { e.stopPropagation(); e.dataTransfer.setData('text/plain', JSON.stringify({ type: 'lh', pid: chipsHere[0].pid, amount: lowHighBet?.amount || 0 })); e.dataTransfer.effectAllowed = 'move'; }}
+                      style={{ pointerEvents: 'auto', flexShrink: 0 }} />
+                  ) : (
+                    <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1, maxWidth: '100%' }}>
+                      {chipsHere.map(c => <Chip key={c.pid} playerId={c.pid} amount={c.amt} scale={chipScale * 0.7} data-chip="true" style={{ pointerEvents: 'auto', flexShrink: 0 }} />)}
+                    </div>
+                  )}
+                </div>
+              )}
+              {/* WIN badge */}
+              {isWinner && (
+                <div style={{ position: 'absolute', top: -6, right: -4, fontSize: '0.38rem', fontWeight: 900, padding: '1px 3px', borderRadius: 999, background: '#000', color: '#ffd700', zIndex: 20, boxShadow: '0 0 4px 2px rgba(251,191,36,0.7)', whiteSpace: 'nowrap' }}>WIN!</div>
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -975,6 +1402,129 @@ export default function MobileGameLayout({
         <DetailedPayoutDisplay winInfo={lastWinInfo} playerCount={playerCount} onClose={onCloseWinDisplay} />
       </div>
 
+              </>
+      ) : mobileLayout === 'D' ? (
+        <>
+{/* ── Layout D: Full-width horizontal strips (River → Color → Rank → Hands → Community Cards) ── */}
+      {/* ── Win/No-Win Modal ── */}
+      <div className="flex-shrink-0 px-2">
+        <DetailedPayoutDisplay winInfo={lastWinInfo} playerCount={playerCount} onClose={onCloseWinDisplay} />
+      </div>
+
+      {/* ── Main game area ── */}
+      <div className="flex-1 min-h-0 px-1 pt-1 pb-0 flex flex-col gap-1.5" style={{ touchAction: 'none' }}>
+
+        {/* Clock — floats above strips */}
+        <div style={{ position: 'relative', height: 0 }}>
+          <div style={{ position: 'absolute', top: -22, left: '50%', transform: 'translateX(-50%)', zIndex: 30, pointerEvents: 'none' }}>
+            <CountdownClock timeRemaining={countdownTime} isActive={countdownActive} phase={gamePhase} />
+          </div>
+        </div>
+
+        {/* River strip — full width, 2 positions */}
+        <RiverStripD
+          communityCards={communityCards}
+          allLowHighBets={lowHighBets}
+          lowHighBet={pLowHighBet}
+          onLowHighBet={onLowHighBet}
+          onRemoveLowHighBet={onRemoveLowHighBet}
+          gamePhase={gamePhase}
+          winningLowHigh={winningLowHigh}
+          disabled={gamePhase === 'lowHighBetting' ? balance < selectedChip : true}
+          killSwitchActive={killSwitchActive}
+          rankBetActive={sideBetGateOpen}
+          playerCount={playerCount}
+          riverCap={riverCap}
+          chipScale={0.42}
+        />
+
+        {/* Color strip — full width, 6 positions */}
+        <ColorStripD
+          communityCards={communityCards}
+          allRedBlackBets={redBlackBets}
+          redBlackBets={pRedBlackBets}
+          onRedBlackBet={onRedBlackBet}
+          onRemoveRedBlackBet={onRemoveRedBlackBet}
+          gamePhase={gamePhase}
+          winningRedBlack={winningRedBlack}
+          disabled={gamePhase === 'betting' ? balance < selectedChip : true}
+          killSwitchActive={killSwitchActive}
+          rankBetActive={sideBetGateOpen}
+          playerCount={playerCount}
+          colorCap={colorCap}
+          activeColorSide={activeColorSide}
+          onColorSideConflict={onCloseColorSideAlert}
+          chipScale={0.42}
+        />
+
+        {/* Rank strip — full width, 7 positions */}
+        <RankStripD
+          rankBets={pRankBets}
+          allRankBets={rankBets}
+          playerCount={playerCount}
+          onRankBet={onRankBet}
+          onRemoveRankBet={onRemoveRankBet}
+          gamePhase={gamePhase}
+          winningRank={winningRank}
+          leadingRank={leadingRank}
+          disabled={balance < selectedChip}
+          killSwitchActive={killSwitchActive}
+          handBetCount={handBetCount}
+          maxRankSlots={maxRankSlots}
+          rankBetCount={rankBetCount}
+          activePlayerId={pid}
+          matchCapRemaining={matchCapRemaining}
+          rankLockThreshold={rankLockAt}
+          chipScale={0.42}
+        />
+
+        {/* 10-hand grid — crypto-shuffled each round */}
+        <div
+          className="flex-1 min-h-0 relative grid gap-1"
+          style={{
+            gridTemplateColumns: 'repeat(5, 1fr)',
+            gridTemplateRows: 'repeat(2, 1fr)',
+            border: '3px solid #e8b84b',
+            borderRadius: '0.75rem',
+            boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
+            background: 'rgba(0,0,0,0.35)',
+            boxSizing: 'border-box',
+            padding: '4px',
+          }}
+        >
+          {displayOrder.map(hid => {
+            const hand = FIXED_HANDS.find(h => h.id === hid);
+            if (!hand) return null;
+            return (
+              <MobileHandCard
+                key={hand.id}
+                hand={hand}
+                isLeading={leadingHandIds.includes(hand.id)}
+                isWinner={winnerHandIds.includes(hand.id)}
+                communityCards={communityCards}
+                betAmount={pHandBets[hand.id] || 0}
+                onBet={onHandBet}
+                onRemoveBet={onRemoveHandBet}
+                gamePhase={gamePhase}
+                disabled={balance < selectedChip && !pHandBets[hand.id]}
+                disabledByConstraint={!pHandBets[hand.id] && handBetCount >= maxHandBetsAllowed}
+                onAttemptLockedBet={() => {}}
+              />
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Community Cards ── */}
+      <div className="flex-shrink-0 pt-1">
+        <div className="rounded-xl bg-black/35 flex items-center justify-center" style={{ height: 96, padding: '4px 6px', margin: '2px', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', boxSizing: 'border-box' }}>
+          <div className="flex items-center justify-center gap-2 w-full h-full">
+            <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
+            <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} />
+            <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
+          </div>
+        </div>
+      </div>
               </>
       ) : (
         <>
