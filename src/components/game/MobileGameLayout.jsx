@@ -166,6 +166,7 @@ function RankStripD({
   gamePhase, winningRank, leadingRank, disabled, killSwitchActive,
   handBetCount, maxRankSlots, rankBetCount, activePlayerId,
   matchCapRemaining, rankLockThreshold = 1, chipScale = 0.42,
+  isActive = false,
 }) {
   const canBet = gamePhase === 'betting' && !disabled && !killSwitchActive;
   const noHandBets = !handBetCount || handBetCount === 0;
@@ -186,7 +187,7 @@ function RankStripD({
   };
 
   return (
-    <div className="relative flex flex-col rounded-xl overflow-hidden"
+    <div className={`relative flex flex-col rounded-xl overflow-hidden${isActive ? ' active-shimmer' : ''}`}
       style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, flex: 1, minHeight: 0 }}>
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
@@ -310,6 +311,7 @@ function ColorStripD({
   communityCards, allRedBlackBets, redBlackBets, onRedBlackBet, onRemoveRedBlackBet,
   gamePhase, winningRedBlack, disabled, killSwitchActive, rankBetActive,
   playerCount, colorCap, activeColorSide, onColorSideConflict, chipScale = 0.42,
+  isActive = false,
 }) {
   const colorLocked = killSwitchActive || !rankBetActive;
   const redSideLocked = colorLocked || activeColorSide === 'black';
@@ -337,7 +339,7 @@ function ColorStripD({
   ];
 
   return (
-    <div className="relative flex flex-col rounded-xl overflow-hidden"
+    <div className={`relative flex flex-col rounded-xl overflow-hidden${isActive ? ' active-shimmer' : ''}`}
       style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, flex: 1, minHeight: 0 }}>
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
@@ -454,6 +456,7 @@ function RiverStripD({
   communityCards, allLowHighBets, lowHighBet, onLowHighBet, onRemoveLowHighBet,
   gamePhase, winningLowHigh, disabled, killSwitchActive, rankBetActive,
   playerCount, riverCap, chipScale = 0.42,
+  isActive = false,
 }) {
   const riverLocked = !rankBetActive;
   const riverBoardOpen = !riverLocked && gamePhase !== 'betting' && gamePhase !== 'flop';
@@ -472,7 +475,7 @@ function RiverStripD({
   };
 
   return (
-    <div className="relative flex flex-col rounded-xl overflow-hidden"
+    <div className={`relative flex flex-col rounded-xl overflow-hidden${isActive ? ' active-shimmer' : ''}`}
       style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, flex: 1, minHeight: 0 }}>
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
@@ -1500,6 +1503,7 @@ export default function MobileGameLayout({
           playerCount={playerCount}
           riverCap={riverCap}
           chipScale={0.42}
+          isActive={gamePhase === 'lowHighBetting' && !killSwitchActive && sideBetGateOpen}
         />
 
         {/* Color strip — full width, 6 positions */}
@@ -1519,6 +1523,7 @@ export default function MobileGameLayout({
           activeColorSide={activeColorSide}
           onColorSideConflict={onCloseColorSideAlert}
           chipScale={0.42}
+          isActive={gamePhase === 'betting' && !killSwitchActive && sideBetGateOpen}
         />
 
         {/* Rank strip — full width, 7 positions */}
@@ -1540,11 +1545,12 @@ export default function MobileGameLayout({
           matchCapRemaining={matchCapRemaining}
           rankLockThreshold={rankLockAt}
           chipScale={0.42}
+          isActive={gamePhase === 'betting' && !killSwitchActive && handBetCount > 0}
         />
 
         {/* 10-hand grid — fixed height, minimal padding */}
         <div
-          className="flex-shrink-0 relative grid gap-1"
+          className={`flex-shrink-0 relative grid gap-1${gamePhase === 'betting' ? ' active-shimmer' : ''}`}
           style={{
             gridTemplateColumns: 'repeat(5, 1fr)',
             gridTemplateRows: 'repeat(2, 1fr)',

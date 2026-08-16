@@ -337,3 +337,43 @@ body.theme-green .velvet-board {
   width: 0;
   height: 0;
 }
+
+/* ── Active Board Shimmer — gold light traveling along the border ── */
+@property --shimmer-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes shimmer-spin {
+  to { --shimmer-angle: 360deg; }
+}
+
+.active-shimmer {
+  position: relative;
+}
+
+.active-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 3px;
+  background: conic-gradient(
+    from var(--shimmer-angle, 0deg),
+    transparent 0%,
+    transparent 60%,
+    rgba(246, 216, 96, 0.5) 72%,
+    rgba(255, 255, 255, 0.85) 82%,
+    rgba(246, 216, 96, 0.5) 92%,
+    transparent 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: shimmer-spin 3s linear infinite;
+  pointer-events: none;
+  z-index: 5;
+}
