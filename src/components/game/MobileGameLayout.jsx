@@ -392,17 +392,29 @@ function ColorStripD({
           const canBetThisCell = opt.isRed ? canBetRed : canBetBlack;
           const isSideLocked = opt.isRed ? redSideLocked : blackSideLocked;
 
-          // Every position — winner, losing bet, locked, or open — uses the
-          // same raised gold-bar base. Only the winner gets the brighter
-          // variant + outer glow + WIN badge; nothing darkens or dims, and
-          // Red/Black is still identified by the R/B letter in the label.
+          // Color board: Red positions are red, Black positions are black.
+          // Winner gets gold winner styling + glow. No darkening of non-
+          // winners — every position stays full color. Raised bar shape
+          // via bottom-edge shadow for the 3D ingot look.
+          const RED_BAR = {
+            background: 'linear-gradient(180deg, #ff4444 0%, #dc1414 40%, #a00808 80%, #700404 100%)',
+            border: '2px solid #4a0202',
+            boxShadow: '0 3px 0 #5a0303, 0 4px 6px rgba(0,0,0,0.45), inset 0 2px 3px rgba(255,180,180,0.4), inset 0 -3px 4px rgba(60,0,0,0.5)',
+          };
+          const BLACK_BAR = {
+            background: 'linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 40%, #111 80%, #000 100%)',
+            border: '2px solid #1a1a1a',
+            boxShadow: '0 3px 0 #0a0a0a, 0 4px 6px rgba(0,0,0,0.5), inset 0 2px 3px rgba(200,200,200,0.3), inset 0 -3px 4px rgba(0,0,0,0.6)',
+          };
           let style, textColor, oddsColor;
           if (isActive) {
             style = { ...GOLD_BAR_WINNER };
+            textColor = '#000'; oddsColor = '#000';
           } else {
-            style = { ...GOLD_BAR, cursor: canBetThisCell ? 'pointer' : 'default' };
+            style = opt.isRed ? { ...RED_BAR, cursor: canBetThisCell ? 'pointer' : 'default' }
+                              : { ...BLACK_BAR, cursor: canBetThisCell ? 'pointer' : 'default' };
+            textColor = '#fef08a'; oddsColor = '#facc15';
           }
-          textColor = '#000'; oddsColor = '#000';
 
           const chipsHere = [];
           for (let i = 0; i < (playerCount || 1); i++) {
