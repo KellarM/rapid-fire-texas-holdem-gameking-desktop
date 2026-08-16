@@ -1904,7 +1904,50 @@ export default function MobileGameLayout({
                 </button>
               </div>
 
-              <div style={{ height: 0, borderTop: '1px solid rgba(232,184,75,0.4)' }} />
+              {/* ═══ RANK ABBREVIATIONS (Layout D only) ═══ */}
+              {mobileLayout === 'D' && (
+                <div style={{ padding: '10px 12px' }}>
+                  <div style={{
+                    fontSize: 10, fontWeight: 800, color: 'rgba(253,224,71,0.65)',
+                    letterSpacing: '0.14em', textTransform: 'uppercase',
+                    fontFamily: "'Oswald', sans-serif", marginBottom: 7,
+                  }}>
+                    Rank Abbreviations
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 5 }}>
+                    {[
+                      { abbr: '4K',  full: 'Four of a Kind' },
+                      { abbr: 'FH',  full: 'Full House' },
+                      { abbr: 'FL',  full: 'Flush' },
+                      { abbr: 'STR', full: 'Straight' },
+                      { abbr: '3K',  full: 'Three of a Kind' },
+                      { abbr: '2P',  full: 'Two Pair' },
+                      { abbr: '1P',  full: 'One Pair' },
+                    ].map(r => (
+                      <div key={r.abbr} style={{
+                        display: 'flex', alignItems: 'center', gap: 6,
+                        padding: '5px 8px', borderRadius: 6,
+                        background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(234,179,8,0.3)',
+                      }}>
+                        <span style={{
+                          fontSize: 11, fontWeight: 900, color: '#fde047',
+                          fontFamily: "'Oswald', sans-serif", letterSpacing: '0.04em',
+                          minWidth: 28, textAlign: 'center',
+                        }}>
+                          {r.abbr}
+                        </span>
+                        <span style={{
+                          fontSize: 10, fontWeight: 600, color: 'rgba(253,224,71,0.8)',
+                        }}>
+                          {r.full}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {mobileLayout === 'D' && <div style={{ height: 0, borderTop: '1px solid rgba(232,184,75,0.4)' }} />}
 
               {/* ═══ BOARD COLOR ═══ */}
               <div style={{ padding: '10px 12px' }}>
