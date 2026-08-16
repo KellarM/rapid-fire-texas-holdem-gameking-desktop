@@ -1559,21 +1559,23 @@ export default function MobileGameLayout({
           })}
         </div>
 
-        {/* Dealer Dialogue bar — full width, matches strip borders above */}
-        <div className="flex-shrink-0" style={{
-          height: '30px',
-          minHeight: '30px',
-          maxHeight: '30px',
-          display: 'flex',
-          alignItems: 'center',
-          borderRadius: '0.4rem',
-          border: '3px solid #e8b84b',
-          boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
-          background: 'linear-gradient(90deg, rgba(78,47,0,0.5) 0%, rgba(83,37,0,0.5) 100%)',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-        }}>
-          <DealerAnnouncement message={dealerMessage} phase={gamePhase} fontSize="0.85rem" height="28px" lineHeight="28px" uniformColor fontFamily="'Bebas Neue', Oswald, sans-serif" />
+        {/* Dealer Dialogue bar */}
+        <div className="flex-shrink-0 px-1">
+          <div style={{
+            height: '24px',
+            minHeight: '24px',
+            maxHeight: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            borderRadius: '0.4rem',
+            border: '3px solid #e8b84b',
+            boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
+            background: 'linear-gradient(90deg, rgba(78,47,0,0.5) 0%, rgba(83,37,0,0.5) 100%)',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+          }}>
+            <DealerAnnouncement message={dealerMessage} phase={gamePhase} fontSize="0.65rem" height="22px" lineHeight="22px" />
+          </div>
         </div>
       </div>
 
