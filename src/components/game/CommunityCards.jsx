@@ -1,5 +1,6 @@
 import PlayingCard from './PlayingCard';
 import { motion } from 'framer-motion';
+import { useState, useRef, useEffect } from 'react';
 
 const CARD_W = 70;
 const CARD_H = 100;
@@ -72,8 +73,20 @@ function CardGroup({ cards, indices, label, hasCards, cardW = CARD_W, cardH = CA
   );
 }
 
-export default function CommunityCards({ cards = [], cardW = CARD_W, cardH = CARD_H, gap = GAP, groupGap = GROUP_GAP, labelH = LABEL_H, labelTopGap = LABEL_TOP_GAP }) {
+export default function CommunityCards({ cards = [], phase, cardW = CARD_W, cardH = CARD_H, gap = GAP, groupGap = GROUP_GAP, labelH = LABEL_H, labelTopGap = LABEL_TOP_GAP, showRiverBanner = false }) {
   const cardSize = cardW < CARD_W ? 'community-sm' : 'community';
+  const prevPhaseRef = useRef(null);
+  const [showBanner, setShowBanner] = useState(false);
+
+  useEffect(() => {
+    if (showRiverBanner && prevPhaseRef.current !== 'lowHighBetting' && phase === 'lowHighBetting') {
+      setShowBanner(true);
+      const timer = setTimeout(() => setShowBanner(false), 2500);
+      return () => clearTimeout(timer);
+    }
+    prevPhaseRef.current = phase;
+  }, [phase, showRiverBanner]);
+
   return (
     <div
       style={{
@@ -81,8 +94,47 @@ export default function CommunityCards({ cards = [], cardW = CARD_W, cardH = CAR
         alignItems: 'flex-start',
         gap: groupGap,
         flexShrink: 0,
+        position: 'relative',
       }}
     >
+      {/* River Board Open banner */}
+      {showBanner && (
+        <div style={{
+          position: 'absolute',
+          top: -2,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 50,
+          padding: '4px 16px',
+          borderRadius: 8,
+          border: '3px solid #f6d860',
+          background: 'rgba(10, 5, 0, 0.88)',
+          boxShadow: '0 0 12px rgba(246,216,96,0.4), 0 2px 8px rgba(0,0,0,0.6)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          whiteSpace: 'nowrap',
+          pointerEvents: 'none',
+          animation: 'riverBannerPulse 0.6s ease-out',
+        }}>
+          <span style={{
+            fontSize: cardW < CARD_W ? '0.62rem' : '0.8rem',
+            fontWeight: 900,
+            color: '#f6d860',
+            fontFamily: "'Oswald', sans-serif",
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            textShadow: '0 0 4px rgba(246,216,96,0.5)',
+          }}>River Board Open</span>
+          <span style={{
+            fontSize: cardW < CARD_W ? '0.7rem' : '0.9rem',
+            color: '#f6d860',
+            fontWeight: 900,
+            lineHeight: 1,
+          }}>↑</span>
+        </div>
+      )}
+      <style>{`@keyframes riverBannerPulse { 0% { opacity: 0; transform: translateX(-50%) translateY(8px); } 100% { opacity: 1; transform: translateX(-50%) translateY(0); } }`}</style>
       <CardGroup
         cards={cards}
         indices={[0, 1, 2]}

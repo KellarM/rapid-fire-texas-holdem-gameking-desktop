@@ -803,7 +803,7 @@ export default function MobileGameLayout({
             <div style={{ transform:'scale(0.40)', transformOrigin:'center center',
               display:'flex', alignItems:'center', flexShrink:0,
               width:'78%', justifyContent:'center', pointerEvents:'none' }}>
-              <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} />
+              <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} showRiverBanner={mobileLayout !== 'A'} />
             </div>
             <img src={LOGO_URLS[boardTheme]||LOGO_URLS.red} alt=""
               style={{width:9,height:'auto',borderRadius:2,flexShrink:0,opacity:0.7}} />
@@ -1278,7 +1278,7 @@ export default function MobileGameLayout({
         <div className="rounded-xl bg-black/35 flex items-center justify-center" style={{ height: 96, padding: '4px 6px', margin: '2px', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', boxSizing: 'border-box' }}>
           <div className="flex items-center justify-center gap-2 w-full h-full">
             <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
-            <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} />
+            <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} showRiverBanner={mobileLayout !== 'A'} />
             <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
           </div>
         </div>
@@ -1591,7 +1591,7 @@ export default function MobileGameLayout({
         <div className="rounded-xl bg-black/35 flex items-center justify-center" style={{ height: 96, padding: '4px 6px', margin: '2px', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', boxSizing: 'border-box' }}>
           <div className="flex items-center justify-center gap-2 w-full h-full">
             <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
-            <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} />
+            <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} showRiverBanner={mobileLayout !== 'A'} />
             <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
           </div>
         </div>
@@ -1604,7 +1604,7 @@ export default function MobileGameLayout({
         <div className="rounded-xl bg-black/35 flex items-center justify-center" style={{ height: 96, padding: '4px 6px', margin: '2px', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', boxSizing: 'border-box' }}>
           <div className="flex items-center justify-center gap-2 w-full h-full">
             <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
-            <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} />
+            <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} showRiverBanner={mobileLayout !== 'A'} />
             <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
           </div>
         </div>
@@ -2111,7 +2111,7 @@ export default function MobileGameLayout({
           <div className="bg-black/35 flex items-center justify-center" style={{ height: 88, padding: '4px 6px', margin: '2px', border: '3px solid #e8b84b', borderRadius: '0.75rem', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', boxSizing: 'border-box' }}>
             <div className="flex items-center justify-center gap-2 w-full h-full">
               <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
-              <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} />
+              <CommunityCards cards={communityCards} phase={gamePhase} cardW={42} cardH={60} gap={4} groupGap={8} labelH={14} labelTopGap={3} showRiverBanner={mobileLayout !== 'A'} />
               <img src={LOGO_URLS[boardTheme] || LOGO_URLS.red} alt="logo" style={{ width: 34, height: 'auto', borderRadius: 5, flexShrink: 0 }} />
             </div>
           </div>
