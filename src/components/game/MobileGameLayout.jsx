@@ -1094,7 +1094,8 @@ export default function MobileGameLayout({
       <AutoTrimToast isVisible={showAutoTrimToast} onHide={onHideAutoTrimToast} />
       <ColorSideAlert isOpen={!!showColorSideAlert} onClose={onCloseColorSideAlert} />
 
-      {/* ── Dealer message bar — fixed height, never moves ── */}
+      {/* ── Dealer message bar — fixed height, never moves (Layout D has its own positioned lower) ── */}
+      {mobileLayout !== 'D' && (
       <div className="flex-shrink-0 px-2 pt-1.5">
         <div style={{
           height: '26px',
@@ -1112,6 +1113,7 @@ export default function MobileGameLayout({
           <DealerAnnouncement message={dealerMessage} phase={gamePhase} fontSize="0.75rem" height="24px" lineHeight="24px" />
         </div>
       </div>
+      )}
 
       {/* Bonus Bets Unlocked — moved into River board wrappers below */}
 
@@ -1554,6 +1556,25 @@ export default function MobileGameLayout({
               />
             );
           })}
+        </div>
+
+        {/* Dealer Dialogue bar */}
+        <div className="flex-shrink-0 px-1">
+          <div style={{
+            height: '24px',
+            minHeight: '24px',
+            maxHeight: '24px',
+            display: 'flex',
+            alignItems: 'center',
+            borderRadius: '0.4rem',
+            border: '3px solid #e8b84b',
+            boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
+            background: 'linear-gradient(90deg, rgba(78,47,0,0.5) 0%, rgba(83,37,0,0.5) 100%)',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+          }}>
+            <DealerAnnouncement message={dealerMessage} phase={gamePhase} fontSize="0.65rem" height="22px" lineHeight="22px" />
+          </div>
         </div>
       </div>
 
