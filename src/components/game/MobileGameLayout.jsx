@@ -432,13 +432,18 @@ function ColorStripD({
               onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (gamePhase !== 'betting') return; const data = e.dataTransfer.getData('text/plain'); if (!data) return; try { const { from, type } = JSON.parse(data); if (type === 'rb' && from !== opt.key) { onRemoveRedBlackBet(from); onRedBlackBet(opt.key); } } catch (_) {} }}
               style={{ ...style, flex: 1, borderRadius: 6, position: 'relative', overflow: 'visible', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', paddingTop: 3, paddingBottom: 3 }}
             >
-              {/* Odds above */}
-              <div style={{ fontSize: '0.42rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: oddsColor, flexShrink: 0, whiteSpace: 'nowrap', overflow: 'hidden' }}>
+              {/* Odds above — bigger, more legible */}
+              <div style={{ fontSize: '0.58rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: oddsColor, flexShrink: 0, whiteSpace: 'nowrap', overflow: 'hidden', textShadow: isActive ? 'none' : '0 1px 2px rgba(0,0,0,0.5)' }}>
                 {opt.payout}:1
               </div>
-              {/* Number + color indicator below */}
-              <div style={{ fontSize: '0.5rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: textColor, flexShrink: 0, whiteSpace: 'nowrap' }}>
-                {opt.number}{opt.isRed ? 'R' : 'B'}
+              {/* Count number (big) + RED/BLACK word (below) — spelled out per Michael's request */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 900, lineHeight: 1, color: textColor, whiteSpace: 'nowrap' }}>
+                  {opt.number}
+                </div>
+                <div style={{ fontSize: '0.44rem', fontWeight: 900, lineHeight: 1.1, color: textColor, letterSpacing: '0.06em', whiteSpace: 'nowrap', marginTop: 1 }}>
+                  {opt.isRed ? 'RED' : 'BLACK'}
+                </div>
               </div>
               {/* Chip overlay */}
               {chipsHere.length > 0 && (
@@ -556,12 +561,12 @@ function RiverStripD({
               onContextMenu={(e) => { e.preventDefault(); if (gamePhase === 'lowHighBetting' && hasBet) onRemoveLowHighBet(); }}
               style={{ ...style, flex: 1, borderRadius: 6, position: 'relative', overflow: 'visible', cursor: canBetLH ? 'pointer' : 'default', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', paddingTop: 3, paddingBottom: 3 }}
             >
-              {/* Odds above */}
-              <div style={{ fontSize: '0.45rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: oddsColor, flexShrink: 0, whiteSpace: 'nowrap' }}>
+              {/* Odds above — much bigger, boxes are wide with room to spare */}
+              <div style={{ fontSize: '0.85rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: oddsColor, flexShrink: 0, whiteSpace: 'nowrap' }}>
                 {payout}:1
               </div>
-              {/* Label below */}
-              <div style={{ fontSize: '0.55rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: textColor, letterSpacing: '0.04em', flexShrink: 0, whiteSpace: 'nowrap' }}>
+              {/* Label below — much bigger */}
+              <div style={{ fontSize: '0.95rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: textColor, letterSpacing: '0.03em', flexShrink: 0, whiteSpace: 'nowrap' }}>
                 {type === 'LOW' ? 'LOW (2-7)' : 'HIGH (8-A)'}
               </div>
               {/* Chip overlay */}
