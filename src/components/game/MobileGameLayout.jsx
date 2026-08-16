@@ -962,6 +962,19 @@ export default function MobileGameLayout({
                 onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a';}}
                 onMouseLeave={e=>{e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218';}}
               >Player Stats</button>
+
+              {/* Rank Abr — Layout D only */}
+              {mobileLayout === 'D' && (
+                <button
+                  onClick={() => { setShowRankAbr(true); setGearMenuOpen(false); }}
+                  style={{width:'100%',padding:'9px 12px',borderRadius:8,cursor:'pointer',
+                    border:'2px solid #8a6218',background:'linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)',
+                    color:'#1a1200',fontSize:12,fontWeight:800,fontFamily:"'Oswald', sans-serif",
+                    letterSpacing:'0.04em',textAlign:'left'}}
+                  onMouseEnter={e=>{e.currentTarget.style.background='linear-gradient(145deg, #fff29b 0%, #f0c860 45%, #d8a23e 100%)';e.currentTarget.style.border='2px solid #a8792a';}}
+                  onMouseLeave={e=>{e.currentTarget.style.background='linear-gradient(145deg, #ffe873 0%, #e8b84b 45%, #c8922e 100%)';e.currentTarget.style.border='2px solid #8a6218';}}
+                >Rank Abr</button>
+              )}
             </div>
 
             <div style={{height:0,borderTop:'1px solid rgba(232,184,75,0.4)'}} />
@@ -2158,6 +2171,48 @@ export default function MobileGameLayout({
               {/* Rail content */}
               <div style={{ flex: 1, minHeight: 0, padding: '12px 12px', overflowY: 'auto' }}>
                 <HistoryRail history={history} />
+              </div>
+            </div>
+          )}
+
+          {/* ── Rank Abbreviations Overlay (Layout D only) ── */}
+          {showRankAbr && (
+            <div style={{position:'fixed',inset:0,zIndex:600,background:'rgba(0,0,0,0.96)',display:'flex',flexDirection:'column'}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',
+                padding:'8px 12px',borderBottom:'1px solid rgba(234,179,8,0.3)',
+                background:'rgba(20,8,0,0.98)',flexShrink:0}}>
+                <span style={{color:'#fde047',fontWeight:800,fontSize:12,letterSpacing:'0.08em',textTransform:'uppercase',fontFamily:"'Oswald',sans-serif"}}>Rank Abbreviations</span>
+                <button onClick={()=>setShowRankAbr(false)}
+                  style={{width:28,height:28,borderRadius:6,border:'1px solid rgba(234,179,8,0.5)',
+                    background:'rgba(234,179,8,0.15)',color:'#fde047',fontSize:14,fontWeight:900,
+                    cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}>✕</button>
+              </div>
+              <div style={{flex:1,minHeight:0,padding:'16px',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',gap:10}}>
+                {[
+                  { abbr: '4K',  full: 'Four of a Kind' },
+                  { abbr: 'FH',  full: 'Full House' },
+                  { abbr: 'FL',  full: 'Flush' },
+                  { abbr: 'STR', full: 'Straight' },
+                  { abbr: '3K',  full: 'Three of a Kind' },
+                  { abbr: '2P',  full: 'Two Pair' },
+                  { abbr: '1P',  full: 'One Pair' },
+                ].map(r => (
+                  <div key={r.abbr} style={{
+                    display:'flex',alignItems:'center',gap:12,
+                    padding:'8px 20px',borderRadius:8,
+                    background:'rgba(0,0,0,0.5)',border:'1px solid rgba(234,179,8,0.3)',
+                    width:'260px',maxWidth:'90vw',
+                  }}>
+                    <span style={{
+                      fontSize:16,fontWeight:900,color:'#fde047',
+                      fontFamily:"'Oswald',sans-serif",letterSpacing:'0.04em',
+                      minWidth:40,textAlign:'center',
+                    }}>{r.abbr}</span>
+                    <span style={{
+                      fontSize:13,fontWeight:700,color:'rgba(253,224,71,0.85)',
+                    }}>{r.full}</span>
+                  </div>
+                ))}
               </div>
             </div>
           )}
