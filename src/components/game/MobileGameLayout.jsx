@@ -203,8 +203,8 @@ function RankStripD({
       {noHandBets && !killSwitchActive && gamePhase === 'betting' && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl"
           style={{ backdropFilter: 'blur(6px)', background: 'linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(10,8,4,0.88) 100%)' }}>
-          <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#facc15', letterSpacing: '0.06em' }}>RANK BOARD LOCKED</span>
-          <span style={{ fontSize: '0.5rem', color: 'rgba(253,224,71,0.5)', marginTop: 2 }}>Place a Card bet to unlock</span>
+          <span style={{ fontSize: '1.3rem', fontWeight: 900, color: '#facc15', letterSpacing: '0.06em' }}>RANK BOARD LOCKED</span>
+          <span style={{ fontSize: '0.85rem', color: 'rgba(253,224,71,0.5)', marginTop: 4 }}>Place a Card bet to unlock</span>
         </div>
       )}
 
@@ -212,8 +212,8 @@ function RankStripD({
       {killSwitchActive && gamePhase === 'betting' && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl"
           style={{ backdropFilter: 'blur(6px)', background: 'linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(10,8,4,0.88) 100%)' }}>
-          <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#facc15', letterSpacing: '0.06em' }}>RANK BOARD LOCKED</span>
-          <span style={{ fontSize: '0.5rem', color: 'rgba(253,224,71,0.5)', marginTop: 2 }}>{rankLockThreshold}+ Hands — select fewer</span>
+          <span style={{ fontSize: '1.3rem', fontWeight: 900, color: '#facc15', letterSpacing: '0.06em' }}>RANK BOARD LOCKED</span>
+          <span style={{ fontSize: '0.85rem', color: 'rgba(253,224,71,0.5)', marginTop: 4 }}>{rankLockThreshold}+ Hands — select fewer</span>
         </div>
       )}
 
@@ -347,7 +347,7 @@ function ColorStripD({
       {/* Kill switch overlay */}
       {killSwitchActive && gamePhase === 'betting' && (
         <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl" style={{ backdropFilter: 'blur(6px)', background: 'rgba(0,0,0,0.82)' }}>
-          <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#facc15' }}>LOCKED</span>
+          <span style={{ fontSize: '1.3rem', fontWeight: 900, color: '#facc15' }}>LOCKED</span>
         </div>
       )}
 
@@ -355,8 +355,8 @@ function ColorStripD({
       {!killSwitchActive && !rankBetActive && (gamePhase === 'betting' || gamePhase === 'flop' || gamePhase === 'lowHighBetting') && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl"
           style={{ backdropFilter: 'blur(6px)', background: 'linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(15,10,5,0.82) 100%)' }}>
-          <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#facc15', letterSpacing: '0.04em' }}>UPGRADE YOUR WIN</span>
-          <span style={{ fontSize: '0.5rem', color: 'rgba(253,224,71,0.5)', marginTop: 2 }}>Match Rank to Hand total</span>
+          <span style={{ fontSize: '1.3rem', fontWeight: 900, color: '#facc15', letterSpacing: '0.04em' }}>UPGRADE YOUR WIN</span>
+          <span style={{ fontSize: '0.85rem', color: 'rgba(253,224,71,0.5)', marginTop: 4 }}>Match Rank to Hand total</span>
         </div>
       )}
 
@@ -485,13 +485,13 @@ function RiverStripD({
           style={{ backdropFilter: 'blur(6px)', background: 'linear-gradient(135deg, rgba(0,0,0,0.75) 0%, rgba(5,10,20,0.82) 100%)' }}>
           {(gamePhase === 'betting' || gamePhase === 'flop') ? (
             <>
-              <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#facc15' }}>OPENS AFTER TURN</span>
-              <span style={{ fontSize: '0.5rem', color: 'rgba(253,224,71,0.5)', marginTop: 2 }}>River bet available</span>
+              <span style={{ fontSize: '1.3rem', fontWeight: 900, color: '#facc15' }}>OPENS AFTER TURN</span>
+              <span style={{ fontSize: '0.85rem', color: 'rgba(253,224,71,0.5)', marginTop: 4 }}>River bet available</span>
             </>
           ) : (
             <>
-              <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#facc15' }}>UPGRADE YOUR WIN</span>
-              <span style={{ fontSize: '0.5rem', color: 'rgba(253,224,71,0.5)', marginTop: 2 }}>Match Rank to Hand total</span>
+              <span style={{ fontSize: '1.3rem', fontWeight: 900, color: '#facc15' }}>UPGRADE YOUR WIN</span>
+              <span style={{ fontSize: '0.85rem', color: 'rgba(253,224,71,0.5)', marginTop: 4 }}>Match Rank to Hand total</span>
             </>
           )}
         </div>
