@@ -157,6 +157,19 @@ const RANK_SHORT_LABELS = {
 const STRIP_BORDER = '3px solid #e8b84b';
 const STRIP_SHADOW = '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)';
 
+// Gold shimmer that traces a board's real border while it's active/bettable.
+// Real markup (not a ::after) so it aligns exactly with the parent's visible
+// border via negative inset — see .board-shimmer-ring / .board-shimmer-spin
+// in index.css for the masking + rotation technique.
+function BoardShimmer({ isActive }) {
+  if (!isActive) return null;
+  return (
+    <div className="board-shimmer-ring" aria-hidden="true">
+      <div className="board-shimmer-spin" />
+    </div>
+  );
+}
+
 const goldGrad = 'linear-gradient(135deg, #f6d860 0%, #e8c22a 30%, #fef08a 55%, #c9960a 80%, #e8c22a 100%)';
 const goldDimGrad = 'linear-gradient(135deg, #c9a820 0%, #b08a14 30%, #d4b830 55%, #8a6504 80%, #b08a14 100%)';
 
@@ -187,8 +200,9 @@ function RankStripD({
   };
 
   return (
-    <div className={`relative flex flex-col rounded-xl overflow-hidden${isActive ? ' active-shimmer' : ''}`}
+    <div className="relative flex flex-col rounded-xl overflow-hidden"
       style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, flex: 1, minHeight: 0 }}>
+      <BoardShimmer isActive={isActive} />
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
         <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.08em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)', textTransform: 'uppercase' }}>
@@ -339,8 +353,9 @@ function ColorStripD({
   ];
 
   return (
-    <div className={`relative flex flex-col rounded-xl overflow-hidden${isActive ? ' active-shimmer' : ''}`}
+    <div className="relative flex flex-col rounded-xl overflow-hidden"
       style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, flex: 1, minHeight: 0 }}>
+      <BoardShimmer isActive={isActive} />
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
         <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.08em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)', textTransform: 'uppercase' }}>
@@ -475,8 +490,9 @@ function RiverStripD({
   };
 
   return (
-    <div className={`relative flex flex-col rounded-xl overflow-hidden${isActive ? ' active-shimmer' : ''}`}
+    <div className="relative flex flex-col rounded-xl overflow-hidden"
       style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, flex: 1, minHeight: 0 }}>
+      <BoardShimmer isActive={isActive} />
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
         <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.08em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)', textTransform: 'uppercase' }}>
@@ -1550,7 +1566,7 @@ export default function MobileGameLayout({
 
         {/* 10-hand grid — fixed height, minimal padding */}
         <div
-          className={`flex-shrink-0 relative grid gap-1${gamePhase === 'betting' ? ' active-shimmer' : ''}`}
+          className="flex-shrink-0 relative grid gap-1"
           style={{
             gridTemplateColumns: 'repeat(5, 1fr)',
             gridTemplateRows: 'repeat(2, 1fr)',
@@ -1563,6 +1579,7 @@ export default function MobileGameLayout({
             padding: '2px',
           }}
         >
+          <BoardShimmer isActive={gamePhase === 'betting'} />
           {displayOrder.map(hid => {
             const hand = FIXED_HANDS.find(h => h.id === hid);
             if (!hand) return null;
