@@ -1560,7 +1560,7 @@ export default function MobileGameLayout({
         </div>
 
         {/* Dealer Dialogue bar */}
-        <div className="flex-shrink-0 px-1">
+        <div className="flex-shrink-0">
           <div style={{
             height: '24px',
             minHeight: '24px',
