@@ -1776,11 +1776,15 @@ export default function RapidFireGame() {
           onSetTheme={(t) => setBoardTheme(t)}
           mobileLayout={mobileLayout}
           onOpenHelp={() => setShowHowToPlay(true)}
+          onOpenMobileLayout={() => setShowMobileLayout(true)}
           onDealerButton={handleDealButtonPress}
           suppressHowToPlay={recoveryChecking || showRecoveryModal}
           versions={versions}
           versionsReady={versionsReady}
         />
+        {showMobileLayout && (
+          <MobileLayoutModal current={mobileLayout} onSelect={(v) => { setMobileLayout(v); setShowMobileLayout(false); }} onClose={() => setShowMobileLayout(false)} />
+        )}
       </>
     );
   }
