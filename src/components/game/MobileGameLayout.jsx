@@ -105,7 +105,7 @@ function MobileHandCard({
           }
         </div>
         {betAmount > 0 && (
-          <div data-chip-overlay="true" style={{ position: 'absolute', bottom: -6, right: -2, zIndex: 10, pointerEvents: 'auto', cursor: 'pointer' }}>
+          <div data-chip-overlay="true" style={{ position: 'absolute', bottom: -6, left: -2, zIndex: 10, pointerEvents: 'auto', cursor: 'pointer' }}>
             <Chip amount={betAmount} scale={0.42} />
           </div>
         )}
@@ -291,9 +291,9 @@ function RankStripD({
               <div style={{ fontSize: '0.5rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: textColor, letterSpacing: '0.01em', whiteSpace: 'nowrap', marginTop: 'auto' }}>
                 {RANK_SHORT_LABELS[opt.key]}
               </div>
-              {/* Chip overlay */}
+              {/* Chip overlay — left-aligned */}
               {chipsHere.length > 0 && (
-                <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center" style={{ overflow: 'visible' }}>
+                <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-start" style={{ overflow: 'visible', paddingLeft: 2 }}>
                   {chipsHere.length === 1 ? (
                     <Chip key={chipsHere[0].pid} playerId={chipsHere[0].pid} amount={chipsHere[0].amt} scale={chipScale}
                       draggable={gamePhase === 'betting' && chipsHere[0].pid === activePlayerId}
@@ -445,9 +445,9 @@ function ColorStripD({
                   {opt.isRed ? 'RED' : 'BLACK'}
                 </div>
               </div>
-              {/* Chip overlay */}
+              {/* Chip overlay — left-aligned */}
               {chipsHere.length > 0 && (
-                <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center" style={{ overflow: 'visible' }}>
+                <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-start" style={{ overflow: 'visible', paddingLeft: 2 }}>
                   {chipsHere.length === 1 ? (
                     <Chip key={chipsHere[0].pid} playerId={chipsHere[0].pid} amount={chipsHere[0].amt} scale={chipScale}
                       draggable={gamePhase === 'betting'} data-chip="true"
@@ -569,9 +569,9 @@ function RiverStripD({
               <div style={{ fontSize: '0.95rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: textColor, letterSpacing: '0.03em', flexShrink: 0, whiteSpace: 'nowrap' }}>
                 {type === 'LOW' ? 'LOW (2-7)' : 'HIGH (8-A)'}
               </div>
-              {/* Chip overlay */}
+              {/* Chip overlay — left-aligned */}
               {chipsHere.length > 0 && (
-                <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center" style={{ overflow: 'visible' }}>
+                <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-start" style={{ overflow: 'visible', paddingLeft: 2 }}>
                   {chipsHere.length === 1 ? (
                     <Chip key={chipsHere[0].pid} playerId={chipsHere[0].pid} amount={chipsHere[0].amt} scale={chipScale}
                       draggable={gamePhase === 'lowHighBetting'} data-chip="true"
