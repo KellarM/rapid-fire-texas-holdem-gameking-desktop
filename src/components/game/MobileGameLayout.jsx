@@ -189,15 +189,6 @@ function RankStripD({
     background: goldGrad,
     boxShadow: 'inset 0 1px 2px rgba(255,255,200,0.6), inset 0 -1px 2px rgba(100,60,0,0.5), 0 1px 4px rgba(0,0,0,0.5)',
   };
-  const goldDim = {
-    background: goldDimGrad,
-    boxShadow: 'inset 0 1px 2px rgba(200,170,80,0.3)',
-    opacity: 0.72,
-  };
-  const redVelvet = {
-    background: 'linear-gradient(135deg, rgba(80,10,10,0.85) 0%, rgba(40,5,5,0.95) 100%)',
-    boxShadow: 'inset 0 0 14px rgba(197,100,50,0.25)',
-  };
 
   return (
     <div className="relative flex flex-col rounded-xl overflow-hidden"
@@ -247,20 +238,16 @@ function RankStripD({
           const oddsMin = oddsRange ? `${oddsRange.min}-` : '';
           const oddsMax = oddsRange ? `${oddsRange.max}:1` : '';
 
+          // Every position — winner, losing bet, locked, or open — uses the
+          // same gold-bar base. Only the winner gets extra glow + WIN badge;
+          // nothing darkens or dims. (Michael's directive, 2026-08-16)
           let style, textColor, oddsColor;
           if (isActive) {
             style = { ...goldBase, border: '1px solid #000', boxShadow: '0 0 12px rgba(255,200,50,0.7)' };
-            textColor = '#000'; oddsColor = '#000';
-          } else if (bet > 0) {
-            style = { ...redVelvet, border: '1px solid #facc15' };
-            textColor = '#fef08a'; oddsColor = '#facc15';
-          } else if (!fullyLocked && canBet) {
-            style = { ...goldBase, border: '1px solid #000', cursor: 'pointer' };
-            textColor = '#000'; oddsColor = '#000';
           } else {
-            style = { ...goldDim, border: '1px solid #000' };
-            textColor = 'rgba(0,0,0,0.5)'; oddsColor = 'rgba(0,0,0,0.5)';
+            style = { ...goldBase, border: '1px solid #000', cursor: (!fullyLocked && canBet) ? 'pointer' : 'default' };
           }
+          textColor = '#000'; oddsColor = '#000';
 
           const chipsHere = [];
           for (let i = 0; i < (playerCount || 1); i++) {
@@ -394,26 +381,17 @@ function ColorStripD({
           const canBetThisCell = opt.isRed ? canBetRed : canBetBlack;
           const isSideLocked = opt.isRed ? redSideLocked : blackSideLocked;
 
+          // Every position — winner, losing bet, locked, or open — uses the
+          // same gold-bar base. Only the winner gets extra glow + WIN badge;
+          // nothing darkens or dims, and Red/Black is still identified by
+          // the R/B letter in the label. (Michael's directive, 2026-08-16)
           let style, textColor, oddsColor;
           if (isActive) {
             style = { background: goldGrad, border: '2px solid #000', boxShadow: '0 0 12px rgba(255,200,50,0.7)' };
-            textColor = '#000'; oddsColor = '#000';
-          } else if (hasBet) {
-            style = opt.isRed
-              ? { background: 'linear-gradient(160deg, #c01c1c 0%, #7a0909 100%)', border: '1px solid #facc15' }
-              : { background: 'linear-gradient(160deg, #141414 0%, #000 100%)', border: '1px solid #facc15' };
-            textColor = '#fef08a'; oddsColor = '#facc15';
-          } else if (canBetThisCell) {
-            style = opt.isRed
-              ? { background: 'linear-gradient(160deg, #e02020 0%, #8c0e0e 100%)', border: '1px solid #111', cursor: 'pointer' }
-              : { background: 'linear-gradient(160deg, #222 0%, #000 100%)', border: '1px solid #2a2a2a', cursor: 'pointer' };
-            textColor = '#e8c22a'; oddsColor = '#e8c22a';
           } else {
-            style = opt.isRed
-              ? { background: 'linear-gradient(160deg, #8a1414 0%, #4a0505 100%)', border: '1px solid #111', opacity: 0.45 }
-              : { background: 'linear-gradient(160deg, #111 0%, #000 100%)', border: '1px solid #1a1a1a', opacity: 0.45 };
-            textColor = '#666'; oddsColor = '#666';
+            style = { background: goldGrad, border: '1px solid #000', cursor: canBetThisCell ? 'pointer' : 'default' };
           }
+          textColor = '#000'; oddsColor = '#000';
 
           const chipsHere = [];
           for (let i = 0; i < (playerCount || 1); i++) {
@@ -530,17 +508,16 @@ function RiverStripD({
           const hasBet = lowHighBet && lowHighBet.type === type && lowHighBet.amount > 0;
           const payout = riverPayouts[type];
 
+          // Every position — winner, losing bet, locked, or open — uses the
+          // same gold-bar base. Only the winner gets extra glow; nothing
+          // darkens or dims. (Michael's directive, 2026-08-16)
           let style, textColor, oddsColor;
           if (isWinner) {
             style = { background: 'linear-gradient(135deg, #fff176 0%, #ffd600 40%, #ffe57a 70%, #ffab00 100%)', border: '1px solid #a07005', boxShadow: '0 0 16px rgba(255,200,50,0.7)' };
-            textColor = '#000'; oddsColor = '#000';
-          } else if (canBetLH || hasBet) {
-            style = { background: goldGrad, border: '1px solid #000', boxShadow: 'inset 0 1px 2px rgba(255,255,200,0.6), inset 0 -1px 2px rgba(100,60,0,0.5)' };
-            textColor = '#000'; oddsColor = '#000';
           } else {
-            style = { background: goldDimGrad, border: '1px solid #000', opacity: 0.6 };
-            textColor = 'rgba(0,0,0,0.5)'; oddsColor = 'rgba(0,0,0,0.5)';
+            style = { background: goldGrad, border: '1px solid #000', boxShadow: 'inset 0 1px 2px rgba(255,255,200,0.6), inset 0 -1px 2px rgba(100,60,0,0.5)', cursor: canBetLH ? 'pointer' : 'default' };
           }
+          textColor = '#000'; oddsColor = '#000';
 
           const chipsHere = [];
           for (let i = 0; i < (playerCount || 1); i++) {
