@@ -328,7 +328,9 @@ export default function MobileGameLayout({
           <div style={{ flexShrink:0, height:18, display:'flex', alignItems:'center',
             padding:'0 8px', overflow:'hidden',
             background:'linear-gradient(90deg,rgba(55,22,0,0.95),rgba(70,28,0,0.95))',
-            borderBottom:'1px solid rgba(202,138,4,0.4)', whiteSpace:'nowrap' }}>
+            border:'3px solid #e8b84b',
+            boxShadow:'0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
+            whiteSpace:'nowrap' }}>
             <DealerAnnouncement message={dealerMessage} phase={gamePhase} fontSize="0.6rem" height="16px" lineHeight="16px" />
           </div>
 
@@ -632,7 +634,8 @@ export default function MobileGameLayout({
           display: 'flex',
           alignItems: 'center',
           borderRadius: '0.4rem',
-          border: '1px solid rgba(202,138,4,0.4)',
+          border: '3px solid #e8b84b',
+          boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
           background: 'linear-gradient(90deg, rgba(78,47,0,0.5) 0%, rgba(83,37,0,0.5) 100%)',
           overflow: 'hidden',
           whiteSpace: 'nowrap',
