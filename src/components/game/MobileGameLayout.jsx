@@ -3,6 +3,7 @@ import { getCardImageUrl } from '@/lib/cardImages';
 import HistoryRail from './HistoryRail';
 import { evaluateBestHand, FIXED_HANDS, getTotalHandBets, getTotalRankBets, getTotalColorBets, cardColor } from '@/lib/gameEngine';
 import { HAND_RANK_PAYOUTS, COLOR_BOARD_PAYOUTS, LOW_HIGH_PAYOUT, RIVER_STATE_PAYOUTS } from '@/lib/payoutConstants';
+import { getRankOddsRange } from '@/lib/perHandRankPayouts';
 import CommunityCards from './CommunityCards';
 import RankBets, { RANK_BET_OPTIONS } from './RankBets';
 import SideBets from './SideBets';
@@ -227,8 +228,9 @@ function RankStripD({
           const slotLimitReached = maxRankSlots > 0 && !rankBets[opt.key] && currentRankSlots >= maxRankSlots;
           const fullyLocked = noHandBets || killSwitchActive || slotLimitReached;
           const showOdds = isActive || bet > 0 || (!fullyLocked && canBet);
-          const payout = HAND_RANK_PAYOUTS[opt.key];
-          const oddsText = payout ? `${payout}:1` : '';
+          const oddsRange = getRankOddsRange(opt.key);
+          const oddsMin = oddsRange ? `${oddsRange.min}:1` : '';
+          const oddsMax = oddsRange ? `${oddsRange.max}:1` : '';
 
           let style, textColor, oddsColor;
           if (isActive) {
@@ -261,10 +263,15 @@ function RankStripD({
               onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (gamePhase !== 'betting' || killSwitchActive) return; const data = e.dataTransfer.getData('text/plain'); if (!data) return; try { const { from, type, pid: dragPid } = JSON.parse(data); if (type === 'rank' && from !== opt.key) { onRemoveRankBet(from); onRankBet(opt.key); } } catch (_) {} }}
               style={{ ...style, flex: 1, borderRadius: 6, position: 'relative', overflow: 'visible', pointerEvents: noHandBets || killSwitchActive ? 'none' : 'auto' }}
             >
-              {/* Odds above */}
-              {showOdds && oddsText && (
-                <div style={{ fontSize: '0.42rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: oddsColor, marginBottom: 1, whiteSpace: 'nowrap', overflow: 'hidden' }}>
-                  {oddsText}
+              {/* Odds above — min/max range, 2 lines */}
+              {showOdds && oddsMin && oddsMax && (
+                <div style={{ textAlign: 'center', marginBottom: 2, flexShrink: 0 }}>
+                  <div style={{ fontSize: '0.55rem', fontWeight: 900, lineHeight: 1.1, color: oddsColor, whiteSpace: 'nowrap', overflow: 'hidden', textShadow: isActive ? 'none' : '0 1px 2px rgba(0,0,0,0.5)' }}>
+                    {oddsMin}
+                  </div>
+                  <div style={{ fontSize: '0.55rem', fontWeight: 900, lineHeight: 1.1, color: oddsColor, whiteSpace: 'nowrap', overflow: 'hidden', textShadow: isActive ? 'none' : '0 1px 2px rgba(0,0,0,0.5)' }}>
+                    {oddsMax}
+                  </div>
                 </div>
               )}
               {/* Label below */}
