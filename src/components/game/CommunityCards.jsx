@@ -81,7 +81,7 @@ export default function CommunityCards({ cards = [], phase, cardW = CARD_W, card
   useEffect(() => {
     if (showRiverBanner && prevPhaseRef.current !== 'lowHighBetting' && phase === 'lowHighBetting') {
       setShowBanner(true);
-      const timer = setTimeout(() => setShowBanner(false), 2500);
+      const timer = setTimeout(() => setShowBanner(false), 3500);
       return () => clearTimeout(timer);
     }
     prevPhaseRef.current = phase;
