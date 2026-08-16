@@ -52,7 +52,7 @@ function MobileHandCard({
     <div
       className={`relative rounded-lg border-2 cursor-pointer select-none flex flex-col items-center justify-between overflow-visible ${borderCls}`}
       style={{
-        padding: '3px 2px 3px',
+        padding: '1px 2px 1px',
         height: '100%',
         ...(isActive ? { background: 'linear-gradient(135deg,#b8860b 0%,#d4a017 30%,#c9900e 60%,#8B6914 100%)' } : {}),
       }}
@@ -1456,7 +1456,7 @@ export default function MobileGameLayout({
       </div>
 
       {/* ── Main game area ── */}
-      <div className="flex-1 min-h-0 px-1 pt-1 pb-0 flex flex-col gap-1.5" style={{ touchAction: 'none' }}>
+      <div className="flex-1 min-h-0 px-1 pt-1 pb-0 flex flex-col gap-0.5" style={{ touchAction: 'none' }}>
 
         {/* Clock — floats above strips */}
         <div style={{ position: 'relative', height: 0 }}>
@@ -1522,18 +1522,19 @@ export default function MobileGameLayout({
           chipScale={0.42}
         />
 
-        {/* 10-hand grid — crypto-shuffled each round */}
+        {/* 10-hand grid — fixed height, minimal padding */}
         <div
-          className="flex-1 min-h-0 relative grid gap-1"
+          className="flex-shrink-0 relative grid gap-1"
           style={{
             gridTemplateColumns: 'repeat(5, 1fr)',
             gridTemplateRows: 'repeat(2, 1fr)',
+            height: '120px',
             border: '3px solid #e8b84b',
             borderRadius: '0.75rem',
             boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
             background: 'rgba(0,0,0,0.35)',
             boxSizing: 'border-box',
-            padding: '4px',
+            padding: '2px',
           }}
         >
           {displayOrder.map(hid => {
