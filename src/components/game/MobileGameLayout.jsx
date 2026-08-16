@@ -158,9 +158,8 @@ const STRIP_BORDER = '3px solid #e8b84b';
 const STRIP_SHADOW = '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)';
 
 // Gold shimmer that traces a board's real border while it's active/bettable.
-// Real markup (not a ::after) so it aligns exactly with the parent's visible
-// border via negative inset — see .board-shimmer-ring / .board-shimmer-spin
-// in index.css for the masking + rotation technique.
+// Real markup (not a ::after) so it aligns with the parent's border via the
+// masking technique in index.css (.board-shimmer-ring / .board-shimmer-spin).
 function BoardShimmer({ isActive }) {
   if (!isActive) return null;
   return (
@@ -173,6 +172,23 @@ function BoardShimmer({ isActive }) {
 const goldGrad = 'linear-gradient(135deg, #f6d860 0%, #e8c22a 30%, #fef08a 55%, #c9960a 80%, #e8c22a 100%)';
 const goldDimGrad = 'linear-gradient(135deg, #c9a820 0%, #b08a14 30%, #d4b830 55%, #8a6504 80%, #b08a14 100%)';
 
+// ── Gold Bar — a raised, embossed bullion-bar look for every betting
+// position (2026-08-16): vertical sheen top-to-bottom + a hard bottom
+// edge that gives the bar physical thickness/lift off the felt, framed
+// in a bronze/dark-gold edge instead of a flat black border. Used as the
+// uniform base for every position on Rank/Color/River; GOLD_BAR_WINNER
+// is the same shape, brighter, with an outer glow, for the winning spot.
+const GOLD_BAR = {
+  background: 'linear-gradient(180deg, #fff8d6 0%, #ffe98a 14%, #f6d860 32%, #e8c22a 56%, #c9960a 80%, #8a6504 100%)',
+  border: '2px solid #5c4200',
+  boxShadow: '0 3px 0 #6b4d02, 0 4px 6px rgba(0,0,0,0.45), inset 0 2px 3px rgba(255,255,255,0.75), inset 0 -3px 4px rgba(90,55,0,0.55)',
+};
+const GOLD_BAR_WINNER = {
+  background: 'linear-gradient(180deg, #fffce0 0%, #fff176 14%, #ffd600 34%, #ffab00 60%, #c9960a 85%, #8a6504 100%)',
+  border: '2px solid #5c4200',
+  boxShadow: '0 3px 0 #6b4d02, 0 0 16px rgba(255,200,50,0.85), 0 4px 8px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.9), inset 0 -3px 4px rgba(90,55,0,0.5)',
+};
+
 // ── Rank Strip D ──────────────────────────────────────────────────────────
 function RankStripD({
   rankBets, allRankBets, playerCount, onRankBet, onRemoveRankBet,
@@ -184,11 +200,6 @@ function RankStripD({
   const canBet = gamePhase === 'betting' && !disabled && !killSwitchActive;
   const noHandBets = !handBetCount || handBetCount === 0;
   const currentRankSlots = Object.keys(rankBets).length;
-
-  const goldBase = {
-    background: goldGrad,
-    boxShadow: 'inset 0 1px 2px rgba(255,255,200,0.6), inset 0 -1px 2px rgba(100,60,0,0.5), 0 1px 4px rgba(0,0,0,0.5)',
-  };
 
   return (
     <div className="relative flex flex-col rounded-xl overflow-hidden"
@@ -239,13 +250,13 @@ function RankStripD({
           const oddsMax = oddsRange ? `${oddsRange.max}:1` : '';
 
           // Every position — winner, losing bet, locked, or open — uses the
-          // same gold-bar base. Only the winner gets extra glow + WIN badge;
-          // nothing darkens or dims. (Michael's directive, 2026-08-16)
+          // same raised gold-bar base. Only the winner gets the brighter
+          // variant + outer glow + WIN badge; nothing darkens or dims.
           let style, textColor, oddsColor;
           if (isActive) {
-            style = { ...goldBase, border: '1px solid #000', boxShadow: '0 0 12px rgba(255,200,50,0.7)' };
+            style = { ...GOLD_BAR_WINNER };
           } else {
-            style = { ...goldBase, border: '1px solid #000', cursor: (!fullyLocked && canBet) ? 'pointer' : 'default' };
+            style = { ...GOLD_BAR, cursor: (!fullyLocked && canBet) ? 'pointer' : 'default' };
           }
           textColor = '#000'; oddsColor = '#000';
 
@@ -382,14 +393,14 @@ function ColorStripD({
           const isSideLocked = opt.isRed ? redSideLocked : blackSideLocked;
 
           // Every position — winner, losing bet, locked, or open — uses the
-          // same gold-bar base. Only the winner gets extra glow + WIN badge;
-          // nothing darkens or dims, and Red/Black is still identified by
-          // the R/B letter in the label. (Michael's directive, 2026-08-16)
+          // same raised gold-bar base. Only the winner gets the brighter
+          // variant + outer glow + WIN badge; nothing darkens or dims, and
+          // Red/Black is still identified by the R/B letter in the label.
           let style, textColor, oddsColor;
           if (isActive) {
-            style = { background: goldGrad, border: '2px solid #000', boxShadow: '0 0 12px rgba(255,200,50,0.7)' };
+            style = { ...GOLD_BAR_WINNER };
           } else {
-            style = { background: goldGrad, border: '1px solid #000', cursor: canBetThisCell ? 'pointer' : 'default' };
+            style = { ...GOLD_BAR, cursor: canBetThisCell ? 'pointer' : 'default' };
           }
           textColor = '#000'; oddsColor = '#000';
 
@@ -509,13 +520,13 @@ function RiverStripD({
           const payout = riverPayouts[type];
 
           // Every position — winner, losing bet, locked, or open — uses the
-          // same gold-bar base. Only the winner gets extra glow; nothing
-          // darkens or dims. (Michael's directive, 2026-08-16)
+          // same raised gold-bar base. Only the winner gets the brighter
+          // variant + outer glow; nothing darkens or dims.
           let style, textColor, oddsColor;
           if (isWinner) {
-            style = { background: 'linear-gradient(135deg, #fff176 0%, #ffd600 40%, #ffe57a 70%, #ffab00 100%)', border: '1px solid #a07005', boxShadow: '0 0 16px rgba(255,200,50,0.7)' };
+            style = { ...GOLD_BAR_WINNER };
           } else {
-            style = { background: goldGrad, border: '1px solid #000', boxShadow: 'inset 0 1px 2px rgba(255,255,200,0.6), inset 0 -1px 2px rgba(100,60,0,0.5)', cursor: canBetLH ? 'pointer' : 'default' };
+            style = { ...GOLD_BAR, cursor: canBetLH ? 'pointer' : 'default' };
           }
           textColor = '#000'; oddsColor = '#000';
 

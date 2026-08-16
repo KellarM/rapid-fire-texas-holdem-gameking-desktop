@@ -339,20 +339,20 @@ body.theme-green .velvet-board {
 }
 
 /* ── Active Board Shimmer — gold light traveling along the border ──
-   Rebuilt 2026-08-16: previous version used inset:0 on a ::after, which
-   CSS positions relative to the parent's PADDING box (inside the real
-   border), not the border itself — the ring rendered tucked inside the
-   box, invisible behind content. It also relied on @property custom-
-   property animation, which has inconsistent mobile browser support.
+   Rebuilt again 2026-08-16 (2nd pass): the negative inset (-3px) used to
+   align the ring with the parent's actual border edge was being clipped
+   by the parent's own `overflow-hidden` — CSS overflow clips at the
+   PADDING box edge, so anything pushed past it (into the border's own
+   thickness) never paints. That's why the shimmer only ever showed on
+   the Card Hand grid (the one container WITHOUT overflow-hidden) and
+   never on Rank/Color/River (which all have it).
 
-   New approach: real markup (not a pseudo-element), aligned via negative
-   inset to the parent's actual border edge, with a static outer "track"
-   div (masked to a ring matching the border shape — never rotates, so
-   corners stay aligned) containing an inner oversized conic-gradient
-   layer that rotates via plain transform — universally supported. ── */
+   Fix: inset:0 keeps the ring fully inside the clip region, sitting
+   flush against the INNER face of the real border — still reads as
+   "tracing the border" visually, and is never clipped. ── */
 .board-shimmer-ring {
   position: absolute;
-  top: -3px; left: -3px; right: -3px; bottom: -3px;
+  inset: 0;
   border-radius: inherit;
   overflow: hidden;
   pointer-events: none;
