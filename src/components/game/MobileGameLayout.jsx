@@ -185,8 +185,8 @@ function RankStripD({
   };
 
   return (
-    <div className="relative flex flex-col rounded-xl overflow-hidden flex-shrink-0"
-      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, height: 55, minHeight: 55, maxHeight: 55 }}>
+    <div className="relative flex flex-col rounded-xl overflow-hidden"
+      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, flex: 1, minHeight: 0 }}>
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
         <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.08em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)', textTransform: 'uppercase' }}>
@@ -218,7 +218,7 @@ function RankStripD({
       )}
 
       {/* Slot row — 7 positions horizontal */}
-      <div style={{ display: 'flex', gap: 3, height: 32 }}>
+      <div style={{ display: 'flex', gap: 3, flex: 1, minHeight: 0 }}>
         {RANK_BET_OPTIONS.map(opt => {
           const bet = rankBets[opt.key] || 0;
           const isWinner = winningRank === opt.key;
@@ -330,8 +330,8 @@ function ColorStripD({
   ];
 
   return (
-    <div className="relative flex flex-col rounded-xl overflow-hidden flex-shrink-0"
-      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, height: 55, minHeight: 55, maxHeight: 55 }}>
+    <div className="relative flex flex-col rounded-xl overflow-hidden"
+      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, flex: 1, minHeight: 0 }}>
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
         <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.08em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)', textTransform: 'uppercase' }}>
@@ -361,7 +361,7 @@ function ColorStripD({
       )}
 
       {/* Slot row — 6 positions horizontal */}
-      <div style={{ display: 'flex', gap: 3, height: 32 }}>
+      <div style={{ display: 'flex', gap: 3, flex: 1, minHeight: 0 }}>
         {OPTIONS.map(opt => {
           const isWinner = winningRedBlack && winningRedBlack.includes(opt.key);
           const isLive = liveRedBlack.includes(opt.key) && !isWinner && communityCards.length > 0 && communityCards.length < 5;
@@ -465,8 +465,8 @@ function RiverStripD({
   };
 
   return (
-    <div className="relative flex flex-col rounded-xl overflow-hidden flex-shrink-0"
-      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, height: 55, minHeight: 55, maxHeight: 55 }}>
+    <div className="relative flex flex-col rounded-xl overflow-hidden"
+      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, flex: 1, minHeight: 0 }}>
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
         <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.08em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)', textTransform: 'uppercase' }}>
@@ -498,7 +498,7 @@ function RiverStripD({
       )}
 
       {/* Slot row — 2 positions horizontal */}
-      <div style={{ display: 'flex', gap: 4, height: 32 }}>
+      <div style={{ display: 'flex', gap: 4, flex: 1, minHeight: 0 }}>
         {['LOW', 'HIGH'].map(type => {
           const isWinner = winningLowHigh === type;
           const hasBet = lowHighBet && lowHighBet.type === type && lowHighBet.amount > 0;
