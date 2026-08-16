@@ -26,6 +26,7 @@ import Chip from '@/components/game/Chip';
 import PlayerSeat from '@/components/game/PlayerSeat';
 import PlayerStatsPanel from '@/components/game/PlayerStatsPanel';
 import ToolsMenu from '@/components/game/ToolsMenu';
+import ControlPanel, { getControlSettings } from '@/components/game/ControlPanel';
 import GameRulesModal from '@/components/game/GameRulesModal';
 import DetailedPayoutDisplay from '@/components/game/DetailedPayoutDisplay';
 import HandBetLimitAlert from '@/components/game/HandBetLimitAlert';
@@ -163,6 +164,7 @@ export default function RapidFireGame() {
   const [showMobileLayout, setShowMobileLayout] = useState(false);
   const [showVersions, setShowVersions] = useState(false);
   const [showBellCurve, setShowBellCurve] = useState(false);
+  const [showControl, setShowControl] = useState(false);
   const { config: bellCurveConfig, saveConfig: saveBellCurveConfig } = useBellCurveConfig();
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [toolbarVisible, setToolbarVisible] = useState(false);
@@ -1578,6 +1580,8 @@ export default function RapidFireGame() {
     abandonRound(); // Phase 2 GLI-19: mark any open AuditRound as abandoned
     resetAllBalances(); // server-authoritative reset via usePlayerSession
     setActiveDeckSet(0); // reset to baseline deck set to match round 1
+    // Reset Bank also resets hand display order to original positions
+    setHandDisplayOrder([1,2,3,4,5,6,7,8,9,10]);
     setRoundId(1);
     setCasinoProfit(0);
     setRoundsPlayed(0);
@@ -1594,33 +1598,40 @@ export default function RapidFireGame() {
     setDisplayWindowVisible(false);
     setRoundId((r) => {
       const next = r + 1;
-      // Switch deck set now — synchronously, before this state update re-renders the hand grid
-      setActiveDeckSet(next % 2 === 0 ? 1 : 0);
+      // Switch deck set — only if suit variation is enabled in Control settings
+      const ctrlSettings = getControlSettings();
+      if (ctrlSettings.suitVariation) {
+        setActiveDeckSet(next % 2 === 0 ? 1 : 0);
+      } else {
+        setActiveDeckSet(0); // locked to Original deck
+      }
       return next;
     });
     setDeck(getSecureRandomBoard()); setDeckIndex(0);
     setDealerMessage("Bets open — Place Hand, Rank & Color bets now.");
     setGamePhase('betting');
     setActivePlayer(0);
-    // Shuffle hand display order — guaranteed new arrangement every round.
-    // Always starts from a fresh [1..10] so no hand can carry over its old slot.
-    // Uses rejection-sampling (no modulo bias) so every permutation is equally likely.
-    setHandDisplayOrder(() => {
-      const ids = [1,2,3,4,5,6,7,8,9,10];
-      const buf = new Uint32Array(1);
-      const randBelow = (n) => {
-        // Largest multiple of n that fits in Uint32 — rejection above it removes bias
-        const limit = Math.floor(4294967296 / n) * n;
-        let v;
-        do { crypto.getRandomValues(buf); v = buf[0]; } while (v >= limit);
-        return v % n;
-      };
-      for (let i = ids.length - 1; i > 0; i--) {
-        const j = randBelow(i + 1);
-        [ids[i], ids[j]] = [ids[j], ids[i]];
-      }
-      return ids;
-    });
+    // Shuffle hand display order — only if position rotation is enabled in Control settings
+    const ctrlSettings2 = getControlSettings();
+    if (ctrlSettings2.positionRotation) {
+      setHandDisplayOrder(() => {
+        const ids = [1,2,3,4,5,6,7,8,9,10];
+        const buf = new Uint32Array(1);
+        const randBelow = (n) => {
+          const limit = Math.floor(4294967296 / n) * n;
+          let v;
+          do { crypto.getRandomValues(buf); v = buf[0]; } while (v >= limit);
+          return v % n;
+        };
+        for (let i = ids.length - 1; i > 0; i--) {
+          const j = randBelow(i + 1);
+          [ids[i], ids[j]] = [ids[j], ids[i]];
+        }
+        return ids;
+      });
+    } else {
+      setHandDisplayOrder([1,2,3,4,5,6,7,8,9,10]); // locked to original positions
+    }
     // NOTE: history is intentionally NOT cleared here — it accumulates across rounds
   }, [stopTimer]);
 
@@ -1748,6 +1759,7 @@ export default function RapidFireGame() {
           onOpenAnalytics={() => setShowAnalytics(true)}
           onOpenVersions={() => setShowVersions(true)}
           onOpenBellCurve={() => setShowBellCurve(true)}
+          onOpenControl={() => setShowControl(true)}
           onOpenArchetypeBattle={() => {}}
           onOpenObserver={() => {}}
           toolsVisible={toolbarVisible}
@@ -1866,6 +1878,7 @@ export default function RapidFireGame() {
         <MobileLayoutModal current={mobileLayout} onSelect={(v) => { setMobileLayout(v); setShowMobileLayout(false); }} onClose={() => setShowMobileLayout(false)} />
       )}
       <GameVersionsModal isOpen={showVersions} onClose={() => setShowVersions(false)} />
+      <ControlPanel isOpen={showControl} onClose={() => setShowControl(false)} />
       {showBellCurve && (
         <BellCurveModal
           onClose={() => setShowBellCurve(false)}
@@ -1976,7 +1989,8 @@ export default function RapidFireGame() {
             {/* Logo — left side, with ToolsMenu button below */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', userSelect: 'none', gap: '4px' }}>
               <img src={LOGO_URLS[boardTheme]} alt="Rapid Fire Texas Hold'em" style={{ width: '72px', height: 'auto', display: 'block', borderRadius: '8px' }} />
-              <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenMobileLayout={() => setShowMobileLayout(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
+              <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenMobileLayout={() => setShowMobileLayout(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)}
+          onOpenControl={() => setShowControl(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
             </div>
 
             <CommunityCards cards={communityCards} phase={gamePhase} />

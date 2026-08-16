@@ -17,7 +17,6 @@ import OppositeGameStats from './pages/OppositeGameStats';
 import DeckInspector from './pages/DeckInspector';
 import About from './pages/About';
 import Contact from './pages/Contact';
-import MaxBetSimulator from './pages/MaxBetSimulator';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -56,7 +55,6 @@ const AuthenticatedApp = () => {
       <Route path="/deck-inspector" element={<DeckInspector />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
-      <Route path="/max-bet-simulator" element={<MaxBetSimulator />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

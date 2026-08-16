@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Wrench, Award, PieChart, Layers, Timer, LineChart, SlidersHorizontal, Shuffle, Shield, Smartphone } from 'lucide-react';
+import { Wrench, Award, PieChart, Layers, Timer, LineChart, SlidersHorizontal, Shuffle, Settings, Smartphone } from 'lucide-react';
 
 const TOOLS = [
   { icon: LineChart,  label: 'Analytics',                   type: 'analytics',        badge: 'NEW', badgeColor: 'bg-green-700/60 text-green-300 border-green-600/40' },
@@ -13,7 +13,7 @@ const TOOLS = [
   { icon: Smartphone, label: 'Mobile Layout',              type: 'mobileLayout',     badge: 'NEW', badgeColor: 'bg-blue-700/60 text-blue-300 border-blue-600/40' },
   { icon: SlidersHorizontal, label: 'Versions',             type: 'versions',         badge: 'NEW', badgeColor: 'bg-purple-700/60 text-purple-300 border-purple-600/40' },
   { icon: SlidersHorizontal, label: 'Bell Curve',           type: 'bellCurve',        badge: 'NEW', badgeColor: 'bg-red-700/60 text-red-300 border-red-600/40' },
-  { icon: Shield,     label: 'Max Bet Simulator',          href: '/max-bet-simulator', badge: 'NEW', badgeColor: 'bg-amber-700/60 text-amber-300 border-amber-600/40' },
+  { icon: Settings,    label: 'Control',                   type: 'control',          badge: 'NEW', badgeColor: 'bg-emerald-700/60 text-emerald-300 border-emerald-600/40' },
 ];
 
 export default function ToolsMenu({
@@ -22,6 +22,7 @@ export default function ToolsMenu({
   onOpenMobileLayout,
   onOpenVersions,
   onOpenBellCurve,
+  onOpenControl,
   toolsVisible = true,
   onHideTools,
   password = 'Mi@Ke091134',
@@ -85,6 +86,7 @@ export default function ToolsMenu({
     mobileLayout:      onOpenMobileLayout,
     versions:          onOpenVersions,
     bellCurve:         onOpenBellCurve,
+    control:          onOpenControl,
   };
 
   return (
