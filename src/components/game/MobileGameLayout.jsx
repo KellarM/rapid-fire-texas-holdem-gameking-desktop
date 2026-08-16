@@ -186,7 +186,7 @@ function RankStripD({
 
   return (
     <div className="relative flex flex-col rounded-xl overflow-hidden flex-shrink-0"
-      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW }}>
+      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, height: 55, minHeight: 55, maxHeight: 55 }}>
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
         <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.08em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)', textTransform: 'uppercase' }}>
@@ -331,7 +331,7 @@ function ColorStripD({
 
   return (
     <div className="relative flex flex-col rounded-xl overflow-hidden flex-shrink-0"
-      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW }}>
+      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, height: 55, minHeight: 55, maxHeight: 55 }}>
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
         <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.08em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)', textTransform: 'uppercase' }}>
@@ -466,7 +466,7 @@ function RiverStripD({
 
   return (
     <div className="relative flex flex-col rounded-xl overflow-hidden flex-shrink-0"
-      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW }}>
+      style={{ background: 'rgba(0,0,0,0.45)', padding: '4px 6px', border: STRIP_BORDER, boxShadow: STRIP_SHADOW, height: 55, minHeight: 55, maxHeight: 55 }}>
       {/* Header */}
       <div className="flex items-center justify-between flex-shrink-0" style={{ marginBottom: 3 }}>
         <span style={{ fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.08em', color: '#e8c22a', textShadow: '0 1px 2px rgba(0,0,0,0.8)', textTransform: 'uppercase' }}>
@@ -1456,7 +1456,7 @@ export default function MobileGameLayout({
       </div>
 
       {/* ── Main game area ── */}
-      <div className="flex-1 min-h-0 px-1 pt-1 pb-0 flex flex-col gap-0.5" style={{ touchAction: 'none' }}>
+      <div className="flex-1 min-h-0 px-1 pt-1 pb-0 flex flex-col gap-0.5 justify-end" style={{ touchAction: 'none' }}>
 
         {/* Clock — floats above strips */}
         <div style={{ position: 'relative', height: 0 }}>
@@ -1528,7 +1528,7 @@ export default function MobileGameLayout({
           style={{
             gridTemplateColumns: 'repeat(5, 1fr)',
             gridTemplateRows: 'repeat(2, 1fr)',
-            height: '120px',
+            height: '148px',
             border: '3px solid #e8b84b',
             borderRadius: '0.75rem',
             boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)',
