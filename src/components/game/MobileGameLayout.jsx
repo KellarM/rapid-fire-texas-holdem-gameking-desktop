@@ -145,13 +145,13 @@ function MobileHandCard({
 // full-width row with odds displayed above each position (like card hand boxes).
 
 const RANK_SHORT_LABELS = {
-  'Four of a Kind':  '4K',
-  'Full House':      'FH',
-  'Flush':           'FL',
-  'Straight':        'STR',
-  'Three of a Kind': '3K',
-  'Two Pair':        '2P',
-  'One Pair':        '1P',
+  'Four of a Kind':  '4OAK',
+  'Full House':      'Full',
+  'Flush':           'Flush',
+  'Straight':        'Str8',
+  'Three of a Kind': '3OAK',
+  'Two Pair':        '2Pair',
+  'One Pair':        '1Pair',
 };
 
 const STRIP_BORDER = '3px solid #e8b84b';
@@ -265,7 +265,7 @@ function RankStripD({
             >
               {/* Odds above — min-max range, 2 lines (line 1 ends in a dash, line 2 closes with :1) */}
               {showOdds && oddsMin && oddsMax && (
-                <div style={{ textAlign: 'center', marginBottom: 5, flexShrink: 0 }}>
+                <div style={{ textAlign: 'center', marginBottom: 13, flexShrink: 0 }}>
                   <div style={{ fontSize: '0.55rem', fontWeight: 900, lineHeight: 1.1, color: oddsColor, whiteSpace: 'nowrap', overflow: 'hidden', textShadow: isActive ? 'none' : '0 1px 2px rgba(0,0,0,0.5)' }}>
                     {oddsMin}
                   </div>
