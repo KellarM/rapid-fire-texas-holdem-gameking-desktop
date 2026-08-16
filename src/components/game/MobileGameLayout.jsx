@@ -229,7 +229,7 @@ function RankStripD({
           const fullyLocked = noHandBets || killSwitchActive || slotLimitReached;
           const showOdds = isActive || bet > 0 || (!fullyLocked && canBet);
           const oddsRange = getRankOddsRange(opt.key);
-          const oddsMin = oddsRange ? `${oddsRange.min}:1` : '';
+          const oddsMin = oddsRange ? `${oddsRange.min}-` : '';
           const oddsMax = oddsRange ? `${oddsRange.max}:1` : '';
 
           let style, textColor, oddsColor;
@@ -261,11 +261,11 @@ function RankStripD({
               onContextMenu={(e) => { e.preventDefault(); if (gamePhase === 'betting' && bet > 0) onRemoveRankBet(opt.key); }}
               onDragOver={(e) => { if (gamePhase === 'betting' && !killSwitchActive) { e.preventDefault(); e.stopPropagation(); } }}
               onDrop={(e) => { e.preventDefault(); e.stopPropagation(); if (gamePhase !== 'betting' || killSwitchActive) return; const data = e.dataTransfer.getData('text/plain'); if (!data) return; try { const { from, type, pid: dragPid } = JSON.parse(data); if (type === 'rank' && from !== opt.key) { onRemoveRankBet(from); onRankBet(opt.key); } } catch (_) {} }}
-              style={{ ...style, flex: 1, borderRadius: 6, position: 'relative', overflow: 'visible', pointerEvents: noHandBets || killSwitchActive ? 'none' : 'auto' }}
+              style={{ ...style, flex: 1, borderRadius: 6, position: 'relative', overflow: 'visible', pointerEvents: noHandBets || killSwitchActive ? 'none' : 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 3 }}
             >
-              {/* Odds above — min/max range, 2 lines */}
+              {/* Odds above — min-max range, 2 lines (line 1 ends in a dash, line 2 closes with :1) */}
               {showOdds && oddsMin && oddsMax && (
-                <div style={{ textAlign: 'center', marginBottom: 2, flexShrink: 0 }}>
+                <div style={{ textAlign: 'center', marginBottom: 5, flexShrink: 0 }}>
                   <div style={{ fontSize: '0.55rem', fontWeight: 900, lineHeight: 1.1, color: oddsColor, whiteSpace: 'nowrap', overflow: 'hidden', textShadow: isActive ? 'none' : '0 1px 2px rgba(0,0,0,0.5)' }}>
                     {oddsMin}
                   </div>
@@ -274,7 +274,7 @@ function RankStripD({
                   </div>
                 </div>
               )}
-              {/* Label below */}
+              {/* Label below — spaced apart from odds above */}
               <div style={{ fontSize: '0.5rem', fontWeight: 900, lineHeight: 1, textAlign: 'center', color: textColor, letterSpacing: '0.01em', whiteSpace: 'nowrap' }}>
                 {RANK_SHORT_LABELS[opt.key]}
               </div>
