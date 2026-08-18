@@ -131,7 +131,7 @@ function FlatBetBox({ label, sub, group, onClick, active, locked, winner, betAmo
 
 // Whole-strip lock overlay — same "Smoked Glass Vault" treatment SideBets.jsx uses
 // when a board isn't available yet (backdrop-blur black gradient + lock icon).
-function LockedOverlay({ text }) {
+function LockedOverlay({ text, sub }) {
   return (
     <div
       className="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-xl"
@@ -142,6 +142,24 @@ function LockedOverlay({ text }) {
     >
       <span style={{ fontSize: '1.1rem', filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }}>🔒</span>
       <span style={{ color: '#fbbf24', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: '2px' }}>{text}</span>
+      {sub && <span style={{ color: 'rgba(253,224,71,0.6)', fontSize: '0.55rem', textAlign: 'center', padding: '0 6px', marginTop: '1px' }}>{sub}</span>}
+    </div>
+  );
+}
+
+// Match Cap pill — same badge SideBets.jsx/RankBets.jsx show in each board's header
+// row. Layout 2's strips are fixed-height with no header row, so it floats on top
+// of the strip's gold border (top-right corner) instead.
+function MatchCapBadge({ amount }) {
+  return (
+    <div
+      className="px-2 py-0.5 rounded-full text-[10px] font-black whitespace-nowrap pointer-events-none"
+      style={{
+        position: 'absolute', top: '-9px', right: '10px', zIndex: 25,
+        background: 'rgba(0,0,0,0.85)', border: '1px solid rgba(234,179,8,0.5)', color: '#fbbf24',
+      }}
+    >
+      Match Cap: ${amount.toLocaleString()}
     </div>
   );
 }
@@ -225,11 +243,17 @@ export default function DesktopLayout2({
   const riverAvailable = gamePhase === 'lowHighBetting';
   const canBetColor = gamePhase === 'betting' && balance >= selectedChip && !colorLocked;
   const canBetRiver = riverAvailable && balance >= selectedChip;
-  const canBetRank = gamePhase === 'betting' && balance >= selectedChip && !killSwitchActive;
+  const canBetRank = gamePhase === 'betting' && balance >= selectedChip && !killSwitchActive && !(!handBetCount || handBetCount === 0);
 
   const activeColorSide = versions?.colorBothSides ? null :
     (['3R','4R','5R'].some(k => (pRedBlackBets[k]||0) > 0) ? 'red' :
      ['3B','4B','5B'].some(k => (pRedBlackBets[k]||0) > 0) ? 'black' : null);
+
+  // Match Cap pills — same formulas RankBets.jsx / SideBets.jsx use in their header rows
+  const noHandBets = !handBetCount || handBetCount === 0;
+  const matchCapRank = Math.max(0, totalHandAmt - totalRankAmt);
+  const matchCapColor = Math.max(0, (totalHandAmt + totalRankAmt) - totalColorAmt);
+  const matchCapRiver = Math.max(0, (totalHandAmt + totalRankAmt + totalColorAmt) - (pLowHighBet?.amount || 0));
 
   const RANK_ROW = [
     { key: 'Four of a Kind',  label: '4 Of A Kind'  },
@@ -275,6 +299,7 @@ export default function DesktopLayout2({
           {/* STRIP 1: RIVER — Low / High, 2 flat boxes */}
           <GoldStrip style={{ height: '58px', minHeight: '58px', maxHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
             {!riverAvailable && <LockedOverlay text="Opens After Turn" />}
+            {riverAvailable && <MatchCapBadge amount={matchCapRiver} />}
             <FlatBetBox
               label="LOW (2-7)"
               sub={`${LOW_HIGH_PAYOUT}:1`}
@@ -298,6 +323,7 @@ export default function DesktopLayout2({
           {/* STRIP 2: COLOR — 3/4/5 Red, 3/4/5 Black, 6 flat boxes */}
           <GoldStrip style={{ height: '58px', minHeight: '58px', maxHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
             {colorLocked && <LockedOverlay text="Place Matching Rank Bet" />}
+            {!colorLocked && <MatchCapBadge amount={matchCapColor} />}
             {['3R','4R','5R'].map((key) => (
               <FlatBetBox
                 key={key}
@@ -335,6 +361,10 @@ export default function DesktopLayout2({
           {/* STRIP 3: RANK — 7 flat boxes */}
           <GoldStrip style={{ height: '58px', minHeight: '58px', maxHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
             {killSwitchActive && <LockedOverlay text="Side Bets Disabled" />}
+            {noHandBets && !killSwitchActive && gamePhase === 'betting' && (
+              <LockedOverlay text="Rank Board Locked" sub="Place a Card Hand bet to unlock" />
+            )}
+            {!noHandBets && !killSwitchActive && <MatchCapBadge amount={matchCapRank} />}
             {RANK_ROW.map(({ key: rankKey, label }) => (
               <FlatBetBox
                 key={rankKey}
