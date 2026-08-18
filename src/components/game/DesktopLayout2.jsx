@@ -203,7 +203,7 @@ export default function DesktopLayout2({
         </div>
 
         {/* RIGHT: Stacked strips — River → Color → Rank → Card Hands */}
-        <div className="flex-1 flex flex-col gap-1.5 min-w-0">
+        <div className="flex-1 flex flex-col gap-0 min-w-0">
 
           {/* Dealer bar */}
           <GoldStrip style={{ height: '32px', minHeight: '32px', maxHeight: '32px', width: '100%', display: 'flex', alignItems: 'center', padding: 0, whiteSpace: 'nowrap' }} dark>
@@ -307,7 +307,7 @@ export default function DesktopLayout2({
           </GoldStrip>
 
           {/* STRIP 4: CARD HANDS — 10 slots, 5x2 grid (card art is fixed-size; single row won't fit) */}
-          <GoldStrip style={{ flex: '1 1 0', minHeight: '150px', width: '100%', padding: '4px', overflow: 'visible' }}>
+          <GoldStrip style={{ flex: '1 1 0', minHeight: '190px', width: '100%', padding: '6px', overflow: 'visible' }}>
             {!dealerMode && (
               <div style={{
                 position: 'absolute',
@@ -319,7 +319,7 @@ export default function DesktopLayout2({
                 <CountdownClock timeRemaining={countdownTime} isActive={countdownActive} phase={gamePhase} />
               </div>
             )}
-            <div className="grid grid-cols-5 gap-1.5 h-full auto-rows-fr">
+            <div className="grid grid-cols-5 gap-x-1.5 gap-y-3 h-full auto-rows-fr">
               {handDisplayOrder.map((hid) => {
                 const hand = FIXED_HANDS.find(h => h.id === hid);
                 if (!hand) return null;
