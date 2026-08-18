@@ -76,7 +76,7 @@ function FlatBetBox({ label, sub, group, onClick, active, locked, winner, finalW
     textColor = '#fbbf24';
     border = '1px solid #2a2a2a';
     boxShadow = 'inset 0 1px 2px rgba(255,255,255,0.08), 0 1px 4px rgba(0,0,0,0.5)';
-  } else if (group === 'rank' && active) {
+  } else if ((group === 'rank' || group === 'river') && active) {
     // A bet has been placed on this Rank slot — Layout 1 switches it to a
     // distinct maroon color entirely (not a gold shade), the instant the bet
     // lands, regardless of whether the board is still open for betting.
@@ -351,6 +351,7 @@ export default function DesktopLayout2({
             {riverLocked && <LockedOverlay text="Opens After Turn" />}
             {!riverLocked && <MatchCapBadge amount={matchCapRiver} />}
             <FlatBetBox
+              group="river"
               label="LOW (2-7)"
               sub={`${LOW_HIGH_PAYOUT}:1`}
               onClick={() => canBetRiver && handleLowHighBet('LOW')}
@@ -361,6 +362,7 @@ export default function DesktopLayout2({
               betAmount={pLowHighBet?.type === 'LOW' ? pLowHighBet.amount : 0}
             />
             <FlatBetBox
+              group="river"
               label="HIGH (8-Ace)"
               sub={`${LOW_HIGH_PAYOUT}:1`}
               onClick={() => canBetRiver && handleLowHighBet('HIGH')}
