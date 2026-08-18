@@ -240,9 +240,14 @@ export default function DesktopLayout2({
   LOGO_URLS,
 }) {
   const colorLocked = killSwitchActive || !sideBetGateOpen;
-  const riverAvailable = gamePhase === 'lowHighBetting';
+  // Overlay/open-display gate — mirrors SideBets.jsx's "Smoked Glass Vault" condition
+  // exactly. Once the river is dealt (gamePhase moves to 'river'/'winner'), this must
+  // stay OPEN so the winning LOW/HIGH position stays visible — only re-locks if we're
+  // still in betting/flop, or briefly in lowHighBetting with no rank bet active.
+  const riverLocked = (gamePhase === 'betting' || gamePhase === 'flop' || (gamePhase === 'lowHighBetting' && !sideBetGateOpen));
+  const riverAvailable = !riverLocked;
   const canBetColor = gamePhase === 'betting' && balance >= selectedChip && !colorLocked;
-  const canBetRiver = riverAvailable && balance >= selectedChip;
+  const canBetRiver = gamePhase === 'lowHighBetting' && sideBetGateOpen && balance >= selectedChip;
   const canBetRank = gamePhase === 'betting' && balance >= selectedChip && !killSwitchActive && !(!handBetCount || handBetCount === 0);
 
   const activeColorSide = versions?.colorBothSides ? null :
@@ -298,8 +303,8 @@ export default function DesktopLayout2({
 
           {/* STRIP 1: RIVER — Low / High, 2 flat boxes */}
           <GoldStrip style={{ height: '58px', minHeight: '58px', maxHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
-            {!riverAvailable && <LockedOverlay text="Opens After Turn" />}
-            {riverAvailable && <MatchCapBadge amount={matchCapRiver} />}
+            {riverLocked && <LockedOverlay text="Opens After Turn" />}
+            {!riverLocked && <MatchCapBadge amount={matchCapRiver} />}
             <FlatBetBox
               label="LOW (2-7)"
               sub={`${LOW_HIGH_PAYOUT}:1`}
