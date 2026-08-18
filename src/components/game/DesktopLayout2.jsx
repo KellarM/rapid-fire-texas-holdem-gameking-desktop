@@ -140,9 +140,14 @@ function LockedOverlay({ text, sub }) {
         background: 'linear-gradient(135deg, rgba(0,0,0,0.78) 0%, rgba(15,10,5,0.85) 100%)',
       }}
     >
-      <span style={{ fontSize: '1.1rem', filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }}>🔒</span>
-      <span style={{ color: '#fbbf24', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: '2px' }}>{text}</span>
-      {sub && <span style={{ color: 'rgba(253,224,71,0.6)', fontSize: '0.55rem', textAlign: 'center', padding: '0 6px', marginTop: '1px' }}>{sub}</span>}
+      {/* Lock icon sits inline to the left of the text, both centered as one row —
+          keeps all 3 overlays (River/Color/Rank) matching in height/alignment
+          instead of stacking the icon on top and eating vertical space. */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+        <span style={{ fontSize: '0.85rem', lineHeight: 1, filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }}>🔒</span>
+        <span style={{ color: '#fbbf24', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{text}</span>
+      </div>
+      {sub && <span style={{ color: 'rgba(253,224,71,0.6)', fontSize: '0.55rem', textAlign: 'center', padding: '0 6px', marginTop: '2px' }}>{sub}</span>}
     </div>
   );
 }
