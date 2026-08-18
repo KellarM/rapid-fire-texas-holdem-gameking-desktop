@@ -42,6 +42,9 @@ function GoldStrip({ children, style, dark }) {
 // Layout 2 matches the SAME visual language as the rest of the game — no more
 // flat placeholder colors).
 const GOLD_AVAILABLE = 'linear-gradient(135deg, #f6d860 0%, #e8c22a 30%, #fef08a 55%, #c9960a 80%, #e8c22a 100%)';
+// Dimmed gold — Layout 1's RankSlot 'goldDim' treatment for non-leading slots
+// once betting closes on that board (matches RankBets.jsx exactly).
+const GOLD_DIM = 'linear-gradient(135deg, #c9a820 0%, #b08a14 30%, #d4b830 55%, #8a6504 80%, #b08a14 100%)';
 const GOLD_WINNER = 'linear-gradient(135deg, #fff176 0%, #ffd600 40%, #ffe57a 70%, #ffab00 100%)';
 const RED_AVAILABLE = 'linear-gradient(160deg, #e02020 0%, #8c0e0e 100%)';
 const RED_HASBET = 'linear-gradient(160deg, #c01c1c 0%, #7a0909 100%)';
@@ -53,8 +56,8 @@ const BLACK_HASBET = 'linear-gradient(160deg, #141414 0%, #000 100%)';
 // get the gold-winner gradient + black border + "WIN!" banner, same pattern as
 // FixedHandCard. Bet chips render as real Chip tokens pinned INSIDE the left edge
 // (contained on the position, not hanging off it).
-function FlatBetBox({ label, sub, group, onClick, active, locked, winner, betAmount }) {
-  let background, textColor, border, boxShadow;
+function FlatBetBox({ label, sub, group, onClick, active, locked, winner, finalWin, dim, betAmount }) {
+  let background, textColor, border, boxShadow, opacity = 1;
   if (winner) {
     background = GOLD_WINNER;
     textColor = '#000';
@@ -70,6 +73,14 @@ function FlatBetBox({ label, sub, group, onClick, active, locked, winner, betAmo
     textColor = '#fbbf24';
     border = '1px solid #2a2a2a';
     boxShadow = 'inset 0 1px 2px rgba(255,255,255,0.08), 0 1px 4px rgba(0,0,0,0.5)';
+  } else if (dim && !active) {
+    // Non-leading slot once betting has closed on this board — matches
+    // Layout 1's RankSlot goldDim treatment exactly (dimmed gold + faded text).
+    background = GOLD_DIM;
+    textColor = '#000';
+    opacity = 0.72;
+    border = '1px solid #000';
+    boxShadow = 'inset 0 1px 2px rgba(200,170,80,0.3), inset 0 -1px 2px rgba(80,40,0,0.5)';
   } else {
     // gold group (Rank + River)
     background = GOLD_AVAILABLE;
@@ -99,6 +110,7 @@ function FlatBetBox({ label, sub, group, onClick, active, locked, winner, betAmo
         fontWeight: 900,
         textAlign: 'center',
         boxShadow: active && !winner ? `0 0 8px 1px rgba(232,184,75,0.5), ${boxShadow}` : boxShadow,
+        opacity,
         transition: 'all 0.15s',
         padding: '2px 4px',
         minWidth: 0,
@@ -115,7 +127,7 @@ function FlatBetBox({ label, sub, group, onClick, active, locked, winner, betAmo
           <Chip amount={betAmount} scale={0.5} />
         </div>
       )}
-      {winner && (
+      {finalWin && (
         <div style={{
           position: 'absolute', top: '-10px', right: '-8px',
           background: '#000', color: '#fbbf24',
@@ -334,6 +346,7 @@ export default function DesktopLayout2({
               active={pLowHighBet?.type === 'LOW' && pLowHighBet?.amount > 0}
               locked={!canBetRiver}
               winner={winningLowHigh === 'LOW'}
+              finalWin={winningLowHigh === 'LOW'}
               betAmount={pLowHighBet?.type === 'LOW' ? pLowHighBet.amount : 0}
             />
             <FlatBetBox
@@ -343,6 +356,7 @@ export default function DesktopLayout2({
               active={pLowHighBet?.type === 'HIGH' && pLowHighBet?.amount > 0}
               locked={!canBetRiver}
               winner={winningLowHigh === 'HIGH'}
+              finalWin={winningLowHigh === 'HIGH'}
               betAmount={pLowHighBet?.type === 'HIGH' ? pLowHighBet.amount : 0}
             />
           </GoldStrip>
@@ -364,6 +378,7 @@ export default function DesktopLayout2({
                 active={(pRedBlackBets[key] || 0) > 0}
                 locked={!canBetColor || activeColorSide === 'black'}
                 winner={(winningRedBlack && winningRedBlack.includes(key)) || liveRedBlack.includes(key)}
+                finalWin={winningRedBlack && winningRedBlack.includes(key)}
                 betAmount={pRedBlackBets[key] || 0}
               />
             ))}
@@ -380,6 +395,7 @@ export default function DesktopLayout2({
                 active={(pRedBlackBets[key] || 0) > 0}
                 locked={!canBetColor || activeColorSide === 'red'}
                 winner={(winningRedBlack && winningRedBlack.includes(key)) || liveRedBlack.includes(key)}
+                finalWin={winningRedBlack && winningRedBlack.includes(key)}
                 betAmount={pRedBlackBets[key] || 0}
               />
             ))}
@@ -401,6 +417,8 @@ export default function DesktopLayout2({
                 active={(pRankBets[rankKey] || 0) > 0}
                 locked={!canBetRank}
                 winner={winningRank === rankKey || leadingRank === rankKey}
+                finalWin={winningRank === rankKey}
+                dim={!canBetRank && winningRank !== rankKey && leadingRank !== rankKey}
                 betAmount={pRankBets[rankKey] || 0}
               />
             ))}
