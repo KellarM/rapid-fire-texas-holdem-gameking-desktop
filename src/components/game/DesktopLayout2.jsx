@@ -37,11 +37,46 @@ function GoldStrip({ children, style, dark }) {
   );
 }
 
-// Flat betting box — matches Pic 1: solid color fill + black/25 overlay (same tint as
-// FixedHandCard's bg-black/25 dormant state), bold text, gold border, click-to-bet.
-// Bet chips render as real Chip tokens pinned to the left border, on top of the box —
-// same placement pattern as FixedHandCard's absolute left-4 chip column.
-function FlatBetBox({ label, sub, bg, color, onClick, active, locked, winner, betAmount }) {
+// Established app gradients (pulled directly from RankBets.jsx / SideBets.jsx so
+// Layout 2 matches the SAME visual language as the rest of the game — no more
+// flat placeholder colors).
+const GOLD_AVAILABLE = 'linear-gradient(135deg, #f6d860 0%, #e8c22a 30%, #fef08a 55%, #c9960a 80%, #e8c22a 100%)';
+const GOLD_WINNER = 'linear-gradient(135deg, #fff176 0%, #ffd600 40%, #ffe57a 70%, #ffab00 100%)';
+const RED_AVAILABLE = 'linear-gradient(160deg, #e02020 0%, #8c0e0e 100%)';
+const RED_HASBET = 'linear-gradient(160deg, #c01c1c 0%, #7a0909 100%)';
+const BLACK_AVAILABLE = 'linear-gradient(160deg, #222 0%, #000 100%)';
+const BLACK_HASBET = 'linear-gradient(160deg, #141414 0%, #000 100%)';
+
+// Flat betting box, styled to match the app's established gold/red/black gradient
+// language (same treatment as the Rank/Color boards elsewhere). Winning positions
+// get the gold-winner gradient + black border + "WIN!" banner, same pattern as
+// FixedHandCard. Bet chips render as real Chip tokens pinned INSIDE the left edge
+// (contained on the position, not hanging off it).
+function FlatBetBox({ label, sub, group, onClick, active, locked, winner, betAmount }) {
+  let background, textColor, border, boxShadow;
+  if (winner) {
+    background = GOLD_WINNER;
+    textColor = '#000';
+    border = '3px solid #000';
+    boxShadow = '0 0 16px rgba(255,200,50,0.7), inset 0 1px 2px rgba(255,255,200,0.6)';
+  } else if (group === 'red') {
+    background = active ? RED_HASBET : RED_AVAILABLE;
+    textColor = '#fff';
+    border = '1px solid #111';
+    boxShadow = 'inset 0 1px 2px rgba(255,150,150,0.25), 0 1px 4px rgba(0,0,0,0.5)';
+  } else if (group === 'black') {
+    background = active ? BLACK_HASBET : BLACK_AVAILABLE;
+    textColor = '#fbbf24';
+    border = '1px solid #2a2a2a';
+    boxShadow = 'inset 0 1px 2px rgba(255,255,255,0.08), 0 1px 4px rgba(0,0,0,0.5)';
+  } else {
+    // gold group (Rank + River)
+    background = GOLD_AVAILABLE;
+    textColor = '#000';
+    border = '1px solid #000';
+    boxShadow = 'inset 0 1px 2px rgba(255,255,200,0.6), inset 0 -1px 2px rgba(100,60,0,0.5), 0 1px 4px rgba(0,0,0,0.5)';
+  }
+
   return (
     <button
       onClick={onClick}
@@ -54,49 +89,62 @@ function FlatBetBox({ label, sub, bg, color, onClick, active, locked, winner, be
         alignItems: 'center',
         justifyContent: 'center',
         gap: '2px',
-        background: bg,
-        color: color,
-        border: winner ? '3px solid #fff' : '2px solid #e8b84b',
+        background,
+        color: textColor,
+        border,
         borderRadius: '6px',
         cursor: locked ? 'not-allowed' : 'pointer',
-        opacity: locked ? 0.45 : 1,
         position: 'relative',
         fontWeight: 900,
         textAlign: 'center',
-        boxShadow: winner
-          ? '0 0 14px 3px rgba(255,255,255,0.8), inset 0 0 0 1px rgba(0,0,0,0.3)'
-          : (active ? '0 0 10px 2px rgba(232,184,75,0.7), inset 0 0 0 1px rgba(0,0,0,0.3)' : 'inset 0 0 0 1px rgba(0,0,0,0.25)'),
+        boxShadow: active && !winner ? `0 0 8px 1px rgba(232,184,75,0.5), ${boxShadow}` : boxShadow,
         transition: 'all 0.15s',
         padding: '2px 4px',
         minWidth: 0,
         overflow: 'visible',
       }}
     >
-      {/* Black/25 overlay — same tint FixedHandCard uses on its dormant card boxes */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: 'rgba(0,0,0,0.25)',
-        borderRadius: '5px',
-        pointerEvents: 'none',
-        zIndex: 1,
-      }} />
       <span style={{ position: 'relative', zIndex: 2, fontSize: '0.72rem', lineHeight: 1.05, whiteSpace: 'pre-line' }}>{label}</span>
       {sub && <span style={{ position: 'relative', zIndex: 2, fontSize: '0.62rem', lineHeight: 1, opacity: 0.85 }}>{sub}</span>}
       {betAmount > 0 && (
         <div style={{
-          position: 'absolute', left: '-10px', top: '50%', transform: 'translateY(-50%)',
+          position: 'absolute', left: '4px', top: '50%', transform: 'translateY(-50%)',
           zIndex: 20, pointerEvents: 'none',
         }}>
-          <Chip amount={betAmount} scale={0.55} />
+          <Chip amount={betAmount} scale={0.5} />
+        </div>
+      )}
+      {winner && (
+        <div style={{
+          position: 'absolute', top: '-10px', right: '-8px',
+          background: '#000', color: '#fbbf24',
+          fontSize: '0.62rem', fontWeight: 900,
+          padding: '2px 6px', borderRadius: '999px',
+          whiteSpace: 'nowrap', zIndex: 21,
+        }}>
+          WIN!
         </div>
       )}
     </button>
   );
 }
 
-const YELLOW_BG = '#f5e050';
-const RED_BG = '#c81e1e';
-const BLACK_BG = '#141414';
+// Whole-strip lock overlay — same "Smoked Glass Vault" treatment SideBets.jsx uses
+// when a board isn't available yet (backdrop-blur black gradient + lock icon).
+function LockedOverlay({ text }) {
+  return (
+    <div
+      className="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-xl"
+      style={{
+        backdropFilter: 'blur(4px)',
+        background: 'linear-gradient(135deg, rgba(0,0,0,0.78) 0%, rgba(15,10,5,0.85) 100%)',
+      }}
+    >
+      <span style={{ fontSize: '1.1rem', filter: 'drop-shadow(0 0 6px rgba(251,191,36,0.5))' }}>🔒</span>
+      <span style={{ color: '#fbbf24', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.06em', textTransform: 'uppercase', marginTop: '2px' }}>{text}</span>
+    </div>
+  );
+}
 
 export default function DesktopLayout2({
   gamePhase,
@@ -226,11 +274,10 @@ export default function DesktopLayout2({
 
           {/* STRIP 1: RIVER — Low / High, 2 flat boxes */}
           <GoldStrip style={{ height: '58px', minHeight: '58px', maxHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
+            {!riverAvailable && <LockedOverlay text="Opens After Turn" />}
             <FlatBetBox
               label="LOW (2-7)"
               sub={`${LOW_HIGH_PAYOUT}:1`}
-              bg={YELLOW_BG}
-              color="#000"
               onClick={() => canBetRiver && handleLowHighBet('LOW')}
               active={pLowHighBet?.type === 'LOW' && pLowHighBet?.amount > 0}
               locked={!canBetRiver}
@@ -240,8 +287,6 @@ export default function DesktopLayout2({
             <FlatBetBox
               label="HIGH (8-Ace)"
               sub={`${LOW_HIGH_PAYOUT}:1`}
-              bg={YELLOW_BG}
-              color="#000"
               onClick={() => canBetRiver && handleLowHighBet('HIGH')}
               active={pLowHighBet?.type === 'HIGH' && pLowHighBet?.amount > 0}
               locked={!canBetRiver}
@@ -252,13 +297,13 @@ export default function DesktopLayout2({
 
           {/* STRIP 2: COLOR — 3/4/5 Red, 3/4/5 Black, 6 flat boxes */}
           <GoldStrip style={{ height: '58px', minHeight: '58px', maxHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
+            {colorLocked && <LockedOverlay text="Place Matching Rank Bet" />}
             {['3R','4R','5R'].map((key) => (
               <FlatBetBox
                 key={key}
                 label={`${key[0]} Red`}
                 sub={`${COLOR_BOARD_PAYOUTS[key]}:1`}
-                bg={RED_BG}
-                color="#000"
+                group="red"
                 onClick={() => {
                   if (activeColorSide === 'black') { setShowColorSideAlert(true); return; }
                   canBetColor && handleRedBlackBet(key);
@@ -274,8 +319,7 @@ export default function DesktopLayout2({
                 key={key}
                 label={`${key[0]} Black`}
                 sub={`${COLOR_BOARD_PAYOUTS[key]}:1`}
-                bg={BLACK_BG}
-                color="#fbbf24"
+                group="black"
                 onClick={() => {
                   if (activeColorSide === 'red') { setShowColorSideAlert(true); return; }
                   canBetColor && handleRedBlackBet(key);
@@ -290,13 +334,12 @@ export default function DesktopLayout2({
 
           {/* STRIP 3: RANK — 7 flat boxes */}
           <GoldStrip style={{ height: '58px', minHeight: '58px', maxHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
+            {killSwitchActive && <LockedOverlay text="Side Bets Disabled" />}
             {RANK_ROW.map(({ key: rankKey, label }) => (
               <FlatBetBox
                 key={rankKey}
                 label={label}
                 sub={`${HAND_RANK_PAYOUTS[rankKey]}:1`}
-                bg={YELLOW_BG}
-                color="#000"
                 onClick={() => canBetRank && handleRankBet(rankKey)}
                 active={(pRankBets[rankKey] || 0) > 0}
                 locked={!canBetRank}
