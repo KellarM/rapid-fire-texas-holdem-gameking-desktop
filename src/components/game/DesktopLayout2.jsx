@@ -430,12 +430,11 @@ export default function DesktopLayout2({
             </div>
           </GoldStrip>
 
-        </div>
-      </div>
-
-      {/* Full-width footer */}
-      <div className="flex items-center gap-2 rounded-xl pt-1.5 px-3 pb-1.5 flex-shrink-0 w-full"
-        style={{ border: GOLD_BORDER, boxShadow: GOLD_GLOW, background: PANEL_BG }}>
+        {/* Footer — now inside right column, matches board strip width.
+            Previous Hands rail stretches full height (top to bottom) since
+            the footer is no longer a separate full-width block below the row. */}
+        <div className="flex items-center gap-2 rounded-xl pt-1.5 px-3 pb-1.5 flex-shrink-0 w-full"
+          style={{ border: GOLD_BORDER, boxShadow: GOLD_GLOW, background: PANEL_BG, marginTop: '4px' }}>
         <div className="flex items-center" style={{ flex: 1, justifyContent: 'flex-start' }}>
           <div className="flex items-center gap-1.5 flex-shrink-0">
             {CHIP_VALUES.map((v) =>
@@ -494,6 +493,8 @@ export default function DesktopLayout2({
             />
           </OnboardingIndicator>
         </div>
+        </div>
+      </div>
       </div>
 
       {showUnlockFlash && (
