@@ -11,6 +11,7 @@ import OnboardingIndicator from './OnboardingIndicator';
 import GearMenu from './GearMenu';
 import DetailedPayoutDisplay from './DetailedPayoutDisplay';
 import { HAND_RANK_PAYOUTS, COLOR_BOARD_PAYOUTS, LOW_HIGH_PAYOUT } from '@/lib/payoutConstants';
+import { cardColor } from '@/lib/gameEngine';
 
 const GOLD_BORDER = '3px solid #e8b84b';
 const GOLD_GLOW = '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)';
@@ -197,6 +198,7 @@ export default function DesktopLayout2({
   rankBets,
   handleRankBet,
   winningRank,
+  leadingRank,
   killSwitchActive,
   versions,
   totalHandAmt,
@@ -275,6 +277,21 @@ export default function DesktopLayout2({
     { key: 'One Pair',        label: '1 Pair'        },
   ];
 
+  // Live exact-match Color board highlight while the board is still revealing —
+  // identical logic to SideBets.jsx (Layout 1) so both layouts light up the same
+  // cells at the same moments, not just at final resolution.
+  const liveRedBlack = [];
+  if (communityCards && communityCards.length > 0 && communityCards.length < 5) {
+    const _reds = communityCards.filter(c => cardColor(c) === 'red').length;
+    const _blacks = communityCards.filter(c => cardColor(c) === 'black').length;
+    if (_reds === 3) liveRedBlack.push('3R');
+    if (_reds === 4) liveRedBlack.push('4R');
+    if (_reds === 5) liveRedBlack.push('5R');
+    if (_blacks === 3) liveRedBlack.push('3B');
+    if (_blacks === 4) liveRedBlack.push('4B');
+    if (_blacks === 5) liveRedBlack.push('5B');
+  }
+
   return (
     <div className="flex flex-col gap-1 p-1 flex-1 min-h-0">
       <div className="flex gap-1 flex-1 min-h-0">
@@ -346,7 +363,7 @@ export default function DesktopLayout2({
                 }}
                 active={(pRedBlackBets[key] || 0) > 0}
                 locked={!canBetColor || activeColorSide === 'black'}
-                winner={winningRedBlack && winningRedBlack.includes(key)}
+                winner={(winningRedBlack && winningRedBlack.includes(key)) || liveRedBlack.includes(key)}
                 betAmount={pRedBlackBets[key] || 0}
               />
             ))}
@@ -362,7 +379,7 @@ export default function DesktopLayout2({
                 }}
                 active={(pRedBlackBets[key] || 0) > 0}
                 locked={!canBetColor || activeColorSide === 'red'}
-                winner={winningRedBlack && winningRedBlack.includes(key)}
+                winner={(winningRedBlack && winningRedBlack.includes(key)) || liveRedBlack.includes(key)}
                 betAmount={pRedBlackBets[key] || 0}
               />
             ))}
@@ -383,7 +400,7 @@ export default function DesktopLayout2({
                 onClick={() => canBetRank && handleRankBet(rankKey)}
                 active={(pRankBets[rankKey] || 0) > 0}
                 locked={!canBetRank}
-                winner={winningRank === rankKey}
+                winner={winningRank === rankKey || leadingRank === rankKey}
                 betAmount={pRankBets[rankKey] || 0}
               />
             ))}
