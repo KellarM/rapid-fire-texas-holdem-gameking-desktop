@@ -37,7 +37,10 @@ function GoldStrip({ children, style, dark }) {
   );
 }
 
-// Flat betting box — matches Pic 1: solid color fill, bold text, gold border, click-to-bet.
+// Flat betting box — matches Pic 1: solid color fill + black/25 overlay (same tint as
+// FixedHandCard's bg-black/25 dormant state), bold text, gold border, click-to-bet.
+// Bet chips render as real Chip tokens pinned to the left border, on top of the box —
+// same placement pattern as FixedHandCard's absolute left-4 chip column.
 function FlatBetBox({ label, sub, bg, color, onClick, active, locked, winner, betAmount }) {
   return (
     <button
@@ -66,19 +69,25 @@ function FlatBetBox({ label, sub, bg, color, onClick, active, locked, winner, be
         transition: 'all 0.15s',
         padding: '2px 4px',
         minWidth: 0,
-        overflow: 'hidden',
+        overflow: 'visible',
       }}
     >
-      <span style={{ fontSize: '0.72rem', lineHeight: 1.05, whiteSpace: 'pre-line' }}>{label}</span>
-      {sub && <span style={{ fontSize: '0.62rem', lineHeight: 1, opacity: 0.85 }}>{sub}</span>}
+      {/* Black/25 overlay — same tint FixedHandCard uses on its dormant card boxes */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'rgba(0,0,0,0.25)',
+        borderRadius: '5px',
+        pointerEvents: 'none',
+        zIndex: 1,
+      }} />
+      <span style={{ position: 'relative', zIndex: 2, fontSize: '0.72rem', lineHeight: 1.05, whiteSpace: 'pre-line' }}>{label}</span>
+      {sub && <span style={{ position: 'relative', zIndex: 2, fontSize: '0.62rem', lineHeight: 1, opacity: 0.85 }}>{sub}</span>}
       {betAmount > 0 && (
         <div style={{
-          position: 'absolute', top: 2, right: 2,
-          background: '#000', color: '#fbbf24',
-          borderRadius: '999px', fontSize: '0.6rem', fontWeight: 900,
-          padding: '1px 5px', border: '1px solid #fbbf24',
+          position: 'absolute', left: '-10px', top: '50%', transform: 'translateY(-50%)',
+          zIndex: 20, pointerEvents: 'none',
         }}>
-          ${betAmount.toFixed(2)}
+          <Chip amount={betAmount} scale={0.55} />
         </div>
       )}
     </button>
