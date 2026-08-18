@@ -62,6 +62,8 @@ import MobileGameLayout from '@/components/game/MobileGameLayout';
 import GearMenu from '@/components/game/GearMenu';
 import MobileLayoutModal from '@/components/game/MobileLayoutModal';
 import OnboardingIndicator from '@/components/game/OnboardingIndicator';
+import DesktopLayoutModal from '@/components/game/DesktopLayoutModal';
+import DesktopLayout2 from '@/components/game/DesktopLayout2';
 
 
 // STARTING_BALANCE = 100 (managed server-side via usePlayerSession)
@@ -162,6 +164,8 @@ export default function RapidFireGame() {
   
   const [showGameTiming, setShowGameTiming] = useState(false);
   const [showMobileLayout, setShowMobileLayout] = useState(false);
+  const [desktopLayout, setDesktopLayout] = useState(() => { try { return localStorage.getItem('rfth_desktop_layout') || '1'; } catch { return '1'; } });
+  const [showDesktopLayout, setShowDesktopLayout] = useState(false);
   const [showVersions, setShowVersions] = useState(false);
   const [showBellCurve, setShowBellCurve] = useState(false);
   const [showControl, setShowControl] = useState(false);
@@ -1881,6 +1885,9 @@ export default function RapidFireGame() {
       {showMobileLayout && (
         <MobileLayoutModal current={mobileLayout} onSelect={(v) => { setMobileLayout(v); setShowMobileLayout(false); }} onClose={() => setShowMobileLayout(false)} />
       )}
+      {showDesktopLayout && (
+        <DesktopLayoutModal current={desktopLayout} onSelect={(v) => { setDesktopLayout(v); try { localStorage.setItem('rfth_desktop_layout', v); } catch {} setShowDesktopLayout(false); }} onClose={() => setShowDesktopLayout(false)} />
+      )}
       <GameVersionsModal isOpen={showVersions} onClose={() => setShowVersions(false)} />
       <ControlPanel isOpen={showControl} onClose={() => setShowControl(false)} />
       {showBellCurve && (
@@ -1898,6 +1905,84 @@ export default function RapidFireGame() {
         suppress={recoveryChecking || showRecoveryModal}
       />
 
+      {/* === LAYOUT CONDITIONAL === */}
+      {desktopLayout === '2' ? (
+        <DesktopLayout2
+          gamePhase={gamePhase}
+          communityCards={communityCards}
+          dealerMessage={dealerMessage}
+          handDisplayOrder={handDisplayOrder}
+          leadingHandIds={leadingHandIds}
+          winnerHandIds={winnerHandIds}
+          winningRank={winningRank}
+          leadingRank={leadingRank}
+          winningRedBlack={winningRedBlack}
+          winningLowHigh={winningLowHigh}
+          lastWinInfo={lastWinInfo}
+          playerCount={playerCount}
+          activePlayer={activePlayer}
+          balances={balances}
+          selectedChip={selectedChip}
+          handBets={handBets}
+          redBlackBets={redBlackBets}
+          rankBets={rankBets}
+          lowHighBets={lowHighBets}
+          countdownTime={countdownTime}
+          countdownActive={countdownActive}
+          killSwitchActive={killSwitchActive}
+          showUnlockFlash={showUnlockFlash}
+          sideBetGateOpen={sideBetGateOpen}
+          handBetCount={handBetCount}
+          rankBetCount={rankBetCount}
+          maxRankSlots={maxRankSlots}
+          maxHandBetsAllowed={maxHandBetsAllowed}
+          rankLockThreshold={versions?.rankLockThreshold ?? 1}
+          hoveredRankRow={hoveredRankRow}
+          hoveredRiverType={hoveredRiverType}
+          riverWinFlash={riverWinFlash}
+          isRankBetPlaced={isRankBetPlaced}
+          totalBet={totalBet}
+          history={history}
+          boardTheme={boardTheme}
+          dealerMode={dealerMode}
+          versions={versions}
+          pHandBets={pHandBets}
+          pRankBets={pRankBets}
+          pRedBlackBets={pRedBlackBets}
+          pLowHighBet={pLowHighBet}
+          pid={pid}
+          balance={balance}
+          totalHandAmt={totalHandAmt}
+          totalRankAmt={totalRankAmt}
+          totalColorAmt={totalColorAmt}
+          totalInvestment={totalInvestment}
+          onHandBet={handleHandBet}
+          onRemoveHandBet={handleRemoveHandBet}
+          onDropChip={handleDropChip}
+          onRankBet={handleRankBet}
+          onRemoveRankBet={handleRemoveRankBet}
+          onMoveRankBet={handleMoveRankBet}
+          onRedBlackBet={handleRedBlackBet}
+          onRemoveRedBlackBet={handleRemoveRedBlackBet}
+          onLowHighBet={handleLowHighBet}
+          onRemoveLowHighBet={handleRemoveLowHighBet}
+          onSelectChip={setSelectedChip}
+          onClearBets={clearBets}
+          onResetBank={handleResetBank}
+          onCloseWinDisplay={() => setLastWinInfo(null)}
+          onDealerButton={handleDealButtonPress}
+          onSetHoveredRankRow={setHoveredRankRow}
+          onSetHoveredRiverType={setHoveredRiverType}
+          onHowToPlay={() => setShowHowToPlay(true)}
+          onOpenStats={() => setShowStatsPanel(true)}
+          onOpenDesktopLayout={() => setShowDesktopLayout(true)}
+          onColorSideConflict={() => setShowColorSideAlert(true)}
+          soundManager={soundManager}
+          onSetTheme={setBoardTheme}
+          preloadSounds={preloadSounds}
+        />
+      ) : (
+      <>
       {/* Main Layout: full-width footer, 3 columns above */}
       <div className="flex flex-col gap-1.5 p-1.5 flex-1 min-h-0">
         <div className="flex gap-1.5 flex-1 min-h-0">
@@ -2199,6 +2284,8 @@ export default function RapidFireGame() {
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   </>);
 

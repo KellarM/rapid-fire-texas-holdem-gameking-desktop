@@ -61,7 +61,7 @@ const actionBtnHover = {
   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.65), 0 3px 8px rgba(0,0,0,0.55)',
 };
 
-export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHowToPlay, onResetBank, onOpenStats }) {
+export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHowToPlay, onResetBank, onOpenStats, onOpenDesktopLayout }) {
   const [open, setOpen] = useState(false);
   const [showPlayExamples, setShowPlayExamples] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -160,6 +160,18 @@ export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHo
               >
                 Play Examples
               </button>
+
+              {/* Desktop Layout */}
+              {onOpenDesktopLayout && (
+                <button
+                  style={actionBtn}
+                  onMouseEnter={e => Object.assign(e.currentTarget.style, actionBtnHover)}
+                  onMouseLeave={e => Object.assign(e.currentTarget.style, actionBtn)}
+                  onClick={() => { onOpenDesktopLayout(); setOpen(false); }}
+                >
+                  Desktop Layout
+                </button>
+              )}
             </div>
 
             <div style={sectionDivider} />

@@ -21,7 +21,8 @@ export default function FixedHandCard({
   gamePhase,
   disabled,
   disabledByConstraint,
-  onAttemptLockedBet
+  onAttemptLockedBet,
+  overlap = false
 }) {
   const allBets = [];
   for (let i = 0; i < (playerCount || 1); i++) {
@@ -107,9 +108,21 @@ export default function FixedHandCard({
       </div>
 
       {/* Cards */}
-      <div className="flex gap-0.5 justify-center card-felt-shadow flex-1 items-center">
+      <div className={overlap ? "relative flex justify-center card-felt-shadow flex-1 items-center" : "flex gap-0.5 justify-center card-felt-shadow flex-1 items-center"}
+           style={overlap ? { height: '5.5rem' } : undefined}>
         {hand.cards.map((card, i) => {
           const imgUrl = getCardImageUrl(card);
+          if (overlap) {
+            // Cascading overlap — second card offset down-left, showing rank and suit
+            const offset = i === 0 ? { top: '0px', left: '0px', zIndex: 2 } : { top: '14px', left: '-28px', zIndex: 1 };
+            return imgUrl
+              ? <img key={i} src={imgUrl} alt={`${card.rank} of ${card.suit}`}
+                  className="rounded-lg shadow-lg object-cover"
+                  style={{ width: '3.2rem', height: '4.6rem', position: 'absolute', ...offset }} />
+              : <div key={i} style={{ position: 'absolute', ...offset }}>
+                  <PlayingCard card={card} size="sm" glow={isLeading || isWinner} />
+                </div>;
+          }
           return imgUrl
             ? <img key={i} src={imgUrl} alt={`${card.rank} of ${card.suit}`} className="w-[4.3rem] h-[6.1rem] rounded-lg shadow-lg object-cover" />
             : <PlayingCard key={i} card={card} size="sm" glow={isLeading || isWinner} />;
