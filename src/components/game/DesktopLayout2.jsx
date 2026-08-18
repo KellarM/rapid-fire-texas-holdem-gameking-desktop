@@ -45,6 +45,9 @@ const GOLD_AVAILABLE = 'linear-gradient(135deg, #f6d860 0%, #e8c22a 30%, #fef08a
 // Dimmed gold — Layout 1's RankSlot 'goldDim' treatment for non-leading slots
 // once betting closes on that board (matches RankBets.jsx exactly).
 const GOLD_DIM = 'linear-gradient(135deg, #c9a820 0%, #b08a14 30%, #d4b830 55%, #8a6504 80%, #b08a14 100%)';
+// 'redVelvet' — Layout 1's RankSlot color the instant a bet is placed on a
+// Rank slot (bet>0), regardless of locked/leading state below it in priority.
+const RANK_BET_MAROON = 'linear-gradient(135deg, rgba(80,10,10,0.85) 0%, rgba(40,5,5,0.95) 100%)';
 const GOLD_WINNER = 'linear-gradient(135deg, #fff176 0%, #ffd600 40%, #ffe57a 70%, #ffab00 100%)';
 const RED_AVAILABLE = 'linear-gradient(160deg, #e02020 0%, #8c0e0e 100%)';
 const RED_HASBET = 'linear-gradient(160deg, #c01c1c 0%, #7a0909 100%)';
@@ -73,6 +76,14 @@ function FlatBetBox({ label, sub, group, onClick, active, locked, winner, finalW
     textColor = '#fbbf24';
     border = '1px solid #2a2a2a';
     boxShadow = 'inset 0 1px 2px rgba(255,255,255,0.08), 0 1px 4px rgba(0,0,0,0.5)';
+  } else if (group === 'rank' && active) {
+    // A bet has been placed on this Rank slot — Layout 1 switches it to a
+    // distinct maroon color entirely (not a gold shade), the instant the bet
+    // lands, regardless of whether the board is still open for betting.
+    background = RANK_BET_MAROON;
+    textColor = '#fef9c3';
+    border = '1px solid #3a0a0a';
+    boxShadow = 'inset 0 0 14px rgba(197,100,50,0.25)';
   } else if (dim && !active) {
     // Non-leading slot once betting has closed on this board — matches
     // Layout 1's RankSlot goldDim treatment exactly (dimmed gold + faded text).
@@ -109,7 +120,7 @@ function FlatBetBox({ label, sub, group, onClick, active, locked, winner, finalW
         position: 'relative',
         fontWeight: 900,
         textAlign: 'center',
-        boxShadow: active && !winner ? `0 0 8px 1px rgba(232,184,75,0.5), ${boxShadow}` : boxShadow,
+        boxShadow: active && !winner && group !== 'rank' ? `0 0 8px 1px rgba(232,184,75,0.5), ${boxShadow}` : boxShadow,
         opacity,
         transition: 'all 0.15s',
         padding: '2px 4px',
@@ -413,6 +424,7 @@ export default function DesktopLayout2({
                 key={rankKey}
                 label={label}
                 sub={`${HAND_RANK_PAYOUTS[rankKey]}:1`}
+                group="rank"
                 onClick={() => canBetRank && handleRankBet(rankKey)}
                 active={(pRankBets[rankKey] || 0) > 0}
                 locked={!canBetRank}
