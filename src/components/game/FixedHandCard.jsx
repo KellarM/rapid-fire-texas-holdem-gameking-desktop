@@ -94,7 +94,7 @@ export default function FixedHandCard({
       {/* Gold bg replaces the old pulse overlay — no overlay needed */}
 
       {/* Payout — top center */}
-      <div className="mb-1 flex items-center justify-center">
+      <div className="mb-0.5 flex items-center justify-center">
         <span style={{
           color: isActive ? '#000000' : '#e8b84b',
           fontFamily: 'Oswald, sans-serif',
@@ -114,11 +114,6 @@ export default function FixedHandCard({
             ? <img key={i} src={imgUrl} alt={`${card.rank} of ${card.suit}`} className="w-[3.7rem] h-[5.2rem] rounded-lg shadow-lg object-cover" />
             : <PlayingCard key={i} card={card} size="sm" glow={isLeading || isWinner} />;
         })}
-      </div>
-
-      {/* Card names — always hidden, space reserved to prevent layout shift */}
-      <div className="text-center text-xs text-yellow-200/70 truncate leading-none text-halo">
-        {'\u00A0'}
       </div>
 
       {/* Current eval — always occupies the same space to prevent layout shift */}

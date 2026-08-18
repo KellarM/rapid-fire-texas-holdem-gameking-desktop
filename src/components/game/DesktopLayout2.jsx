@@ -293,12 +293,12 @@ export default function DesktopLayout2({
           </GoldStrip>
 
           {/* Community cards */}
-          <GoldStrip style={{ height: '98px', minHeight: '98px', maxHeight: '98px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', paddingLeft: '0.5rem', paddingRight: '0.5rem', paddingTop: '4px', paddingBottom: '4px' }}>
+          <GoldStrip style={{ height: '104px', minHeight: '104px', maxHeight: '104px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', paddingLeft: '0.5rem', paddingRight: '0.5rem', paddingTop: '3px', paddingBottom: '3px' }}>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
               <img src={LOGO_URLS[boardTheme]} alt="Rapid Fire Texas Hold'em" style={{ width: '44px', height: 'auto', display: 'block', borderRadius: '8px' }} />
               <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenMobileLayout={() => setShowMobileLayout(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} onOpenControl={() => setShowControl(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
             </div>
-            <CommunityCards cards={communityCards} phase={gamePhase} />
+            <CommunityCards cards={communityCards} phase={gamePhase} cardW={59} cardH={83} gap={6} groupGap={10} labelH={12} labelTopGap={2} />
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <img src={LOGO_URLS[boardTheme]} alt="Rapid Fire Texas Hold'em" style={{ width: '44px', height: 'auto', display: 'block', borderRadius: '8px' }} />
             </div>
@@ -307,7 +307,7 @@ export default function DesktopLayout2({
           <DetailedPayoutDisplay winInfo={lastWinInfo} playerCount={playerCount} onClose={() => setLastWinInfo(null)} />
 
           {/* STRIP 1: RIVER — Low / High, 2 flat boxes */}
-          <GoldStrip style={{ height: '66px', minHeight: '66px', maxHeight: '66px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
+          <GoldStrip style={{ flex: '1 1 0', minHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
             {riverLocked && <LockedOverlay text="Opens After Turn" />}
             {!riverLocked && <MatchCapBadge amount={matchCapRiver} />}
             <FlatBetBox
@@ -331,7 +331,7 @@ export default function DesktopLayout2({
           </GoldStrip>
 
           {/* STRIP 2: COLOR — 3/4/5 Red, 3/4/5 Black, 6 flat boxes */}
-          <GoldStrip style={{ height: '66px', minHeight: '66px', maxHeight: '66px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
+          <GoldStrip style={{ flex: '1 1 0', minHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
             {colorLocked && <LockedOverlay text="Place Matching Rank Bet" />}
             {!colorLocked && <MatchCapBadge amount={matchCapColor} />}
             {['3R','4R','5R'].map((key) => (
@@ -369,7 +369,7 @@ export default function DesktopLayout2({
           </GoldStrip>
 
           {/* STRIP 3: RANK — 7 flat boxes */}
-          <GoldStrip style={{ height: '66px', minHeight: '66px', maxHeight: '66px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
+          <GoldStrip style={{ flex: '1 1 0', minHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
             {killSwitchActive && <LockedOverlay text="Side Bets Disabled" />}
             {noHandBets && !killSwitchActive && gamePhase === 'betting' && (
               <LockedOverlay text="Rank Board Locked" sub="Place a Card Hand bet to unlock" />
@@ -390,7 +390,7 @@ export default function DesktopLayout2({
           </GoldStrip>
 
           {/* STRIP 4: CARD HANDS — 10 slots, 5x2 grid (card art is fixed-size; single row won't fit) */}
-          <GoldStrip style={{ flex: '1 1 0', minHeight: '155px', width: '100%', padding: '4px', overflow: 'visible' }}>
+          <GoldStrip style={{ flex: '0 0 auto', height: '276px', minHeight: '276px', maxHeight: '276px', width: '100%', padding: '4px', overflow: 'visible' }}>
             {!dealerMode && (
               <div style={{
                 position: 'absolute',
