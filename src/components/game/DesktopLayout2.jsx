@@ -433,9 +433,13 @@ export default function DesktopLayout2({
         </div>
       </div>
 
-      {/* Full-width footer */}
-      <div className="flex items-center gap-2 rounded-xl pt-1.5 px-3 pb-1.5 flex-shrink-0 w-full"
-        style={{ border: GOLD_BORDER, boxShadow: GOLD_GLOW, background: PANEL_BG }}>
+      {/* Footer — aligned to start at the Previous Hands border (same x as the board
+          strips above), not full page width. Left spacer mirrors the flex-1/flex-1 split
+          used in the row above so the two edges line up exactly regardless of screen size. */}
+      <div className="flex gap-1 flex-shrink-0">
+        <div className="flex-1" aria-hidden="true" />
+        <div className="flex-1 flex items-center gap-2 rounded-xl pt-1.5 px-3 pb-1.5 min-w-0"
+          style={{ border: GOLD_BORDER, boxShadow: GOLD_GLOW, background: PANEL_BG }}>
         <div className="flex items-center" style={{ flex: 1, justifyContent: 'flex-start' }}>
           <div className="flex items-center gap-1.5 flex-shrink-0">
             {CHIP_VALUES.map((v) =>
@@ -493,6 +497,7 @@ export default function DesktopLayout2({
               onOpenDesktopLayout={() => setShowDesktopLayout(true)}
             />
           </OnboardingIndicator>
+        </div>
         </div>
       </div>
 
