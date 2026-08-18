@@ -280,7 +280,7 @@ export default function DesktopLayout2({
       <div className="flex gap-1 flex-1 min-h-0">
 
         {/* LEFT: History rail */}
-        <div className="w-56 flex-shrink-0 flex flex-col gap-1 overflow-hidden">
+        <div className="flex-1 flex flex-col gap-1 overflow-hidden min-w-0">
           <HistoryRail history={history} />
         </div>
 
