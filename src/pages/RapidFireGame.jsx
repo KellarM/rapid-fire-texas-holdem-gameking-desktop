@@ -2279,6 +2279,7 @@ export default function RapidFireGame() {
                 onHowToPlay={() => setShowHowToPlay(true)}
                 onOpenStats={() => setShowStatsPanel(true)}
                 onResetBank={handleResetBank}
+                onOpenDesktopLayout={() => setShowDesktopLayout(true)}
               />
             </OnboardingIndicator>
           </div>
