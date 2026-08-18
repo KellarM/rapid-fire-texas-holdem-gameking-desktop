@@ -276,11 +276,11 @@ export default function DesktopLayout2({
   ];
 
   return (
-    <div className="flex flex-col gap-1.5 p-1.5 flex-1 min-h-0">
-      <div className="flex gap-1.5 flex-1 min-h-0">
+    <div className="flex flex-col gap-1 p-1 flex-1 min-h-0">
+      <div className="flex gap-1 flex-1 min-h-0">
 
         {/* LEFT: History rail */}
-        <div className="w-56 flex-shrink-0 flex flex-col gap-1.5 overflow-hidden">
+        <div className="w-56 flex-shrink-0 flex flex-col gap-1 overflow-hidden">
           <HistoryRail history={history} />
         </div>
 
@@ -293,21 +293,21 @@ export default function DesktopLayout2({
           </GoldStrip>
 
           {/* Community cards */}
-          <GoldStrip style={{ height: '120px', minHeight: '120px', maxHeight: '120px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem', paddingLeft: '1rem', paddingRight: '1rem', paddingTop: '6px', paddingBottom: '6px' }}>
+          <GoldStrip style={{ height: '98px', minHeight: '98px', maxHeight: '98px', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', paddingLeft: '0.5rem', paddingRight: '0.5rem', paddingTop: '4px', paddingBottom: '4px' }}>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-              <img src={LOGO_URLS[boardTheme]} alt="Rapid Fire Texas Hold'em" style={{ width: '56px', height: 'auto', display: 'block', borderRadius: '8px' }} />
+              <img src={LOGO_URLS[boardTheme]} alt="Rapid Fire Texas Hold'em" style={{ width: '44px', height: 'auto', display: 'block', borderRadius: '8px' }} />
               <ToolsMenu onOpenStats={() => setShowStatsPanel(true)} onOpenMollySimulator={() => setShowMollySimulator(true)} onOpenExploitHunter={() => setShowExploitHunter(true)} onOpenComplianceReport={() => setShowComplianceReport(true)} onOpenKsStrategyTest={() => setShowKsStrategyTest(true)} onOpenAnalytics={() => setShowAnalytics(true)} onOpenGameTiming={() => setShowGameTiming(true)} onOpenMobileLayout={() => setShowMobileLayout(true)} onOpenVersions={() => setShowVersions(true)} onOpenBellCurve={() => setShowBellCurve(true)} onOpenControl={() => setShowControl(true)} toolsVisible={toolbarVisible} onHideTools={() => setToolbarVisible(false)} />
             </div>
             <CommunityCards cards={communityCards} phase={gamePhase} />
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img src={LOGO_URLS[boardTheme]} alt="Rapid Fire Texas Hold'em" style={{ width: '56px', height: 'auto', display: 'block', borderRadius: '8px' }} />
+              <img src={LOGO_URLS[boardTheme]} alt="Rapid Fire Texas Hold'em" style={{ width: '44px', height: 'auto', display: 'block', borderRadius: '8px' }} />
             </div>
           </GoldStrip>
 
           <DetailedPayoutDisplay winInfo={lastWinInfo} playerCount={playerCount} onClose={() => setLastWinInfo(null)} />
 
           {/* STRIP 1: RIVER — Low / High, 2 flat boxes */}
-          <GoldStrip style={{ height: '58px', minHeight: '58px', maxHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
+          <GoldStrip style={{ height: '66px', minHeight: '66px', maxHeight: '66px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
             {riverLocked && <LockedOverlay text="Opens After Turn" />}
             {!riverLocked && <MatchCapBadge amount={matchCapRiver} />}
             <FlatBetBox
@@ -331,7 +331,7 @@ export default function DesktopLayout2({
           </GoldStrip>
 
           {/* STRIP 2: COLOR — 3/4/5 Red, 3/4/5 Black, 6 flat boxes */}
-          <GoldStrip style={{ height: '58px', minHeight: '58px', maxHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
+          <GoldStrip style={{ height: '66px', minHeight: '66px', maxHeight: '66px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
             {colorLocked && <LockedOverlay text="Place Matching Rank Bet" />}
             {!colorLocked && <MatchCapBadge amount={matchCapColor} />}
             {['3R','4R','5R'].map((key) => (
@@ -369,7 +369,7 @@ export default function DesktopLayout2({
           </GoldStrip>
 
           {/* STRIP 3: RANK — 7 flat boxes */}
-          <GoldStrip style={{ height: '58px', minHeight: '58px', maxHeight: '58px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
+          <GoldStrip style={{ height: '66px', minHeight: '66px', maxHeight: '66px', width: '100%', padding: '5px', display: 'flex', gap: '5px' }}>
             {killSwitchActive && <LockedOverlay text="Side Bets Disabled" />}
             {noHandBets && !killSwitchActive && gamePhase === 'betting' && (
               <LockedOverlay text="Rank Board Locked" sub="Place a Card Hand bet to unlock" />
@@ -390,7 +390,7 @@ export default function DesktopLayout2({
           </GoldStrip>
 
           {/* STRIP 4: CARD HANDS — 10 slots, 5x2 grid (card art is fixed-size; single row won't fit) */}
-          <GoldStrip style={{ flex: '1 1 0', minHeight: '190px', width: '100%', padding: '6px', overflow: 'visible' }}>
+          <GoldStrip style={{ flex: '1 1 0', minHeight: '155px', width: '100%', padding: '4px', overflow: 'visible' }}>
             {!dealerMode && (
               <div style={{
                 position: 'absolute',
@@ -402,7 +402,7 @@ export default function DesktopLayout2({
                 <CountdownClock timeRemaining={countdownTime} isActive={countdownActive} phase={gamePhase} />
               </div>
             )}
-            <div className="grid grid-cols-5 gap-x-1.5 gap-y-3 h-full auto-rows-fr">
+            <div className="grid grid-cols-5 gap-x-1.5 gap-y-1.5 h-full auto-rows-fr">
               {handDisplayOrder.map((hid) => {
                 const hand = FIXED_HANDS.find(h => h.id === hid);
                 if (!hand) return null;
