@@ -74,7 +74,10 @@ function CardGroup({ cards, indices, label, hasCards, cardW = CARD_W, cardH = CA
 }
 
 export default function CommunityCards({ cards = [], phase, cardW = CARD_W, cardH = CARD_H, gap = GAP, groupGap = GROUP_GAP, labelH = LABEL_H, labelTopGap = LABEL_TOP_GAP, showRiverBanner = false }) {
-  const cardSize = cardW < CARD_W ? 'community-sm' : 'community';
+  // Three fixed-art tiers keyed to the exact card widths callers actually use:
+  // 70px = Desktop Layout 1 ('community'), 59px = Desktop Layout 2 ('community-md'),
+  // 42px = Mobile ('community-sm'). Threshold split at the midpoint of each gap.
+  const cardSize = cardW >= CARD_W ? 'community' : (cardW >= 50 ? 'community-md' : 'community-sm');
   const prevPhaseRef = useRef(null);
   const [showBanner, setShowBanner] = useState(false);
 

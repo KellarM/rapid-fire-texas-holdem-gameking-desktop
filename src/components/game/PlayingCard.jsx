@@ -8,6 +8,7 @@ export default function PlayingCard({ card, size = 'md', faceDown = false, glow 
     lg: 'w-16 h-24',
     xl: 'w-20 h-28',
     community: 'w-[70px] h-[100px]',
+    'community-md': 'w-[59px] h-[83px]',
     'community-sm': 'w-[42px] h-[60px]'
   };
 
@@ -63,6 +64,27 @@ export default function PlayingCard({ card, size = 'md', faceDown = false, glow 
         <div className={`flex flex-col items-end leading-none p-1 pb-0.5 ${textColor}`} style={{ fontWeight: 'bold' }}>
           <div style={{ fontSize: '20px' }}>{card.rank}</div>
           <div style={{ fontSize: '10px' }}>{suitSymbol}</div>
+        </div>
+      </div>);
+  }
+
+  if (size === 'community-md') {
+    return (
+      <div className="w-[59px] h-[83px] rounded-lg border-2 bg-white flex flex-col shadow-lg select-none overflow-hidden relative border-red-500/60 ">
+        <div className={`flex flex-col items-start leading-none p-0.5 ${textColor}`} style={{ fontWeight: 'bold' }}>
+          <div style={{ fontSize: '17px' }}>{card.rank}</div>
+          <div style={{ fontSize: '8px' }}>{suitSymbol}</div>
+        </div>
+
+        <div className="flex-1 flex items-center justify-center px-1 -my-1">
+          <div style={{ fontSize: '38px', color: isRed ? '#dc2626' : '#000', opacity: 0.7, lineHeight: 1 }}>
+            {suitSymbol}
+          </div>
+        </div>
+
+        <div className={`flex flex-col items-end leading-none p-0.5 pb-0.5 ${textColor}`} style={{ fontWeight: 'bold' }}>
+          <div style={{ fontSize: '17px' }}>{card.rank}</div>
+          <div style={{ fontSize: '8px' }}>{suitSymbol}</div>
         </div>
       </div>);
   }
