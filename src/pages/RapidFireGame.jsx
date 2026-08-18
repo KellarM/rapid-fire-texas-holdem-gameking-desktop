@@ -60,6 +60,8 @@ import { useDropChip } from '@/hooks/useDropChip';
 import { useIsMobile } from '@/hooks/use-mobile';
 import MobileGameLayout from '@/components/game/MobileGameLayout';
 import GearMenu from '@/components/game/GearMenu';
+import DesktopLayout2 from '@/components/game/DesktopLayout2';
+import DesktopLayoutModal from '@/components/game/DesktopLayoutModal';
 import MobileLayoutModal from '@/components/game/MobileLayoutModal';
 import OnboardingIndicator from '@/components/game/OnboardingIndicator';
 
@@ -162,6 +164,8 @@ export default function RapidFireGame() {
   
   const [showGameTiming, setShowGameTiming] = useState(false);
   const [showMobileLayout, setShowMobileLayout] = useState(false);
+  const [showDesktopLayout, setShowDesktopLayout] = useState(false);
+  const [desktopLayout, setDesktopLayout] = useState(() => { try { return localStorage.getItem('rfth_desktop_layout') || '1'; } catch { return '1'; } });
   const [showVersions, setShowVersions] = useState(false);
   const [showBellCurve, setShowBellCurve] = useState(false);
   const [showControl, setShowControl] = useState(false);
@@ -1881,6 +1885,9 @@ export default function RapidFireGame() {
       {showMobileLayout && (
         <MobileLayoutModal current={mobileLayout} onSelect={(v) => { setMobileLayout(v); setShowMobileLayout(false); }} onClose={() => setShowMobileLayout(false)} />
       )}
+      {showDesktopLayout && (
+        <DesktopLayoutModal current={desktopLayout} onSelect={(v) => { setDesktopLayout(v); try { localStorage.setItem('rfth_desktop_layout', v); } catch {} setShowDesktopLayout(false); }} onClose={() => setShowDesktopLayout(false)} />
+      )}
       <GameVersionsModal isOpen={showVersions} onClose={() => setShowVersions(false)} />
       <ControlPanel isOpen={showControl} onClose={() => setShowControl(false)} />
       {showBellCurve && (
@@ -1898,6 +1905,98 @@ export default function RapidFireGame() {
         suppress={recoveryChecking || showRecoveryModal}
       />
 
+      {desktopLayout === '2' ? (
+        <DesktopLayout2
+          gamePhase={gamePhase}
+          communityCards={communityCards}
+          dealerMessage={dealerMessage}
+          history={history}
+          boardTheme={boardTheme}
+          setBoardTheme={setBoardTheme}
+          soundManager={soundManager}
+          FIXED_HANDS={FIXED_HANDS}
+          handDisplayOrder={handDisplayOrder}
+          leadingHandIds={leadingHandIds}
+          winnerHandIds={winnerHandIds}
+          pHandBets={pHandBets}
+          handBets={handBets}
+          playerCount={playerCount}
+          pid={pid}
+          handleHandBet={handleHandBet}
+          handleRemoveHandBet={handleRemoveHandBet}
+          handleDropChip={handleDropChip}
+          selectedChip={selectedChip}
+          balance={balance}
+          handBetCount={handBetCount}
+          maxHandBetsAllowed={maxHandBetsAllowed}
+          setShowHandLimitAlert={setShowHandLimitAlert}
+          pRankBets={pRankBets}
+          rankBets={rankBets}
+          handleRankBet={handleRankBet}
+          handleRemoveRankBet={handleRemoveRankBet}
+          handleMoveRankBet={handleMoveRankBet}
+          winningRank={winningRank}
+          leadingRank={leadingRank}
+          killSwitchActive={killSwitchActive}
+          maxRankSlots={maxRankSlots}
+          rankBetCount={rankBetCount}
+          versions={versions}
+          totalHandAmt={totalHandAmt}
+          totalRankAmt={totalRankAmt}
+          setShowRankLimitAlert={setShowRankLimitAlert}
+          setHoveredRankRow={setHoveredRankRow}
+          pRedBlackBets={pRedBlackBets}
+          pLowHighBet={pLowHighBet}
+          redBlackBets={redBlackBets}
+          lowHighBets={lowHighBets}
+          handleRedBlackBet={handleRedBlackBet}
+          handleRemoveRedBlackBet={handleRemoveRedBlackBet}
+          handleLowHighBet={handleLowHighBet}
+          handleRemoveLowHighBet={handleRemoveLowHighBet}
+          winningRedBlack={winningRedBlack}
+          winningLowHigh={winningLowHigh}
+          sideBetGateOpen={sideBetGateOpen}
+          setShowColorSideAlert={setShowColorSideAlert}
+          totalInvestment={totalInvestment}
+          hoveredRiverType={hoveredRiverType}
+          setHoveredRiverType={setHoveredRiverType}
+          riverWinFlash={riverWinFlash}
+          hoveredRankRow={hoveredRankRow}
+          isRankBetPlaced={isRankBetPlaced}
+          totalColorAmt={totalColorAmt}
+          lastWinInfo={lastWinInfo}
+          setLastWinInfo={setLastWinInfo}
+          CHIP_VALUES={CHIP_VALUES}
+          setSelectedChip={setSelectedChip}
+          balances={balances}
+          activePlayer={activePlayer}
+          totalBet={totalBet}
+          dealerMode={dealerMode}
+          handleDealButtonPress={handleDealButtonPress}
+          clearBets={clearBets}
+          setShowHowToPlay={setShowHowToPlay}
+          setShowStatsPanel={setShowStatsPanel}
+          handleResetBank={handleResetBank}
+          setShowMobileLayout={setShowMobileLayout}
+          setShowDesktopLayout={setShowDesktopLayout}
+          countdownTime={countdownTime}
+          countdownActive={countdownActive}
+          showUnlockFlash={showUnlockFlash}
+          toolbarVisible={toolbarVisible}
+          setToolbarVisible={setToolbarVisible}
+          setShowMollySimulator={setShowMollySimulator}
+          setShowExploitHunter={setShowExploitHunter}
+          setShowComplianceReport={setShowComplianceReport}
+          setShowKsStrategyTest={setShowKsStrategyTest}
+          setShowAnalytics={setShowAnalytics}
+          setShowGameTiming={setShowGameTiming}
+          setShowVersions={setShowVersions}
+          setShowBellCurve={setShowBellCurve}
+          setShowControl={setShowControl}
+          LOGO_URLS={LOGO_URLS}
+        />
+      ) : (
+      <>
       {/* Main Layout: full-width footer, 3 columns above */}
       <div className="flex flex-col gap-1.5 p-1.5 flex-1 min-h-0">
         <div className="flex gap-1.5 flex-1 min-h-0">
@@ -2194,11 +2293,14 @@ export default function RapidFireGame() {
                 onHowToPlay={() => setShowHowToPlay(true)}
                 onOpenStats={() => setShowStatsPanel(true)}
                 onResetBank={handleResetBank}
+                onOpenDesktopLayout={() => setShowDesktopLayout(true)}
               />
             </OnboardingIndicator>
           </div>
         </div>
       </div>
+      </>
+      )}
     </div>
   </>);
 

@@ -61,7 +61,7 @@ const actionBtnHover = {
   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.65), 0 3px 8px rgba(0,0,0,0.55)',
 };
 
-export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHowToPlay, onResetBank, onOpenStats }) {
+export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHowToPlay, onResetBank, onOpenStats, onOpenDesktopLayout }) {
   const [open, setOpen] = useState(false);
   const [showPlayExamples, setShowPlayExamples] = useState(false);
   const [muted, setMuted] = useState(false);
@@ -198,6 +198,36 @@ export default function GearMenu({ soundManager, boardTheme, setBoardTheme, onHo
                 })}
               </div>
             </div>
+
+            <div style={sectionDivider} />
+
+            {/* ═══ DESKTOP LAYOUT ═══ */}
+            {onOpenDesktopLayout && (
+              <div style={{ padding: '10px 14px' }}>
+                <div style={sectionLabel}>Layout</div>
+                <button
+                  onClick={() => { onOpenDesktopLayout(); setOpen(false); }}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    border: `1.5px solid ${GOLD_DIM}`,
+                    background: 'rgba(232,184,75,0.08)',
+                    color: GOLD_BRIGHT,
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s',
+                  }}
+                >
+                  <span style={{ fontSize: '16px' }}>⊞</span>
+                  <span>Desktop Layout</span>
+                </button>
+              </div>
+            )}
 
             <div style={sectionDivider} />
 
