@@ -1697,6 +1697,7 @@ export default function MobileGameLayout({
                 chipScale={0.42}
                 compactHeader={true}
                 matchCapRemaining={matchCapRemaining}
+                reverseOrder={true}
               />
             </div>
           </div>
