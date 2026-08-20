@@ -10,8 +10,20 @@ import DealerButton from './DealerButton';
 import OnboardingIndicator from './OnboardingIndicator';
 import GearMenu from './GearMenu';
 import DetailedPayoutDisplay from './DetailedPayoutDisplay';
-import { HAND_RANK_PAYOUTS, COLOR_BOARD_PAYOUTS, LOW_HIGH_PAYOUT } from '@/lib/payoutConstants';
+import { HAND_RANK_PAYOUTS, COLOR_BOARD_PAYOUTS, LOW_HIGH_PAYOUT, RIVER_STATE_PAYOUTS } from '@/lib/payoutConstants';
 import { cardColor } from '@/lib/gameEngine';
+
+// Low ranks: 2,3,4,5,6,7  High ranks: 8,9,10,J,Q,K,A
+const RIVER_LOW_RANKS = new Set(['2','3','4','5','6','7']);
+
+// Derive the river board-state key from the 4 community cards visible after
+// the turn. Returns e.g. '3L1H', '2L2H', or null if < 4 cards are showing.
+// Mirrors SideBets.jsx and MobileGameLayout RiverStripD exactly.
+function getRiverBoardState(cards) {
+  if (!cards || cards.length < 4) return null;
+  const lowCount = cards.slice(0, 4).filter(c => RIVER_LOW_RANKS.has(c.rank)).length;
+  return `${lowCount}L${4 - lowCount}H`;
+}
 
 const GOLD_BORDER = '3px solid #e8b84b';
 const GOLD_GLOW = '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)';
@@ -278,6 +290,14 @@ export default function DesktopLayout2({
   const riverAvailable = !riverLocked;
   const canBetColor = gamePhase === 'betting' && balance >= selectedChip && !colorLocked;
   const canBetRiver = gamePhase === 'lowHighBetting' && sideBetGateOpen && balance >= selectedChip;
+
+  // Dynamic river odds — after the turn, 4 community cards are visible and
+  // the River board opens. Compute the board state (e.g. '1L3H') and look up
+  // RIVER_STATE_PAYOUTS for the correct LOW/HIGH payout ratio. Falls back to
+  // the flat LOW_HIGH_PAYOUT (0.904) when fewer than 4 cards are showing.
+  const _riverState = getRiverBoardState(communityCards);
+  const riverPayoutLow  = (_riverState && RIVER_STATE_PAYOUTS[_riverState]) ? RIVER_STATE_PAYOUTS[_riverState].LOW  : LOW_HIGH_PAYOUT;
+  const riverPayoutHigh = (_riverState && RIVER_STATE_PAYOUTS[_riverState]) ? RIVER_STATE_PAYOUTS[_riverState].HIGH : LOW_HIGH_PAYOUT;
   const canBetRank = gamePhase === 'betting' && balance >= selectedChip && !killSwitchActive && !(!handBetCount || handBetCount === 0);
 
   const activeColorSide = versions?.colorBothSides ? null :
@@ -353,7 +373,7 @@ export default function DesktopLayout2({
             <FlatBetBox
               group="river"
               label="LOW (2-7)"
-              sub={`${LOW_HIGH_PAYOUT}:1`}
+              sub={`${riverPayoutLow}:1`}
               onClick={() => canBetRiver && handleLowHighBet('LOW')}
               active={pLowHighBet?.type === 'LOW' && pLowHighBet?.amount > 0}
               locked={!canBetRiver}
@@ -364,7 +384,7 @@ export default function DesktopLayout2({
             <FlatBetBox
               group="river"
               label="HIGH (8-Ace)"
-              sub={`${LOW_HIGH_PAYOUT}:1`}
+              sub={`${riverPayoutHigh}:1`}
               onClick={() => canBetRiver && handleLowHighBet('HIGH')}
               active={pLowHighBet?.type === 'HIGH' && pLowHighBet?.amount > 0}
               locked={!canBetRiver}
