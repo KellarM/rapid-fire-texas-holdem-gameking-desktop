@@ -485,7 +485,7 @@ export default function RapidFireGame() {
     if (sideBetGateOpen && !prevGateRef.current) {
       setShowUnlockFlash(true);
       if (unlockFlashTimerRef.current) clearTimeout(unlockFlashTimerRef.current);
-      unlockFlashTimerRef.current = setTimeout(() => setShowUnlockFlash(false), 8000);
+      unlockFlashTimerRef.current = setTimeout(() => setShowUnlockFlash(false), 4000);
       prevGateRef.current = true;
       return () => { if (unlockFlashTimerRef.current) clearTimeout(unlockFlashTimerRef.current); };
     }
@@ -503,6 +503,12 @@ export default function RapidFireGame() {
       setShowUnlockFlash(false);
     }
   }, [gamePhase, showUnlockFlash]);
+
+  // Click-to-dismiss: any tap on the board instantly clears the unlock flash.
+  const dismissUnlockFlash = () => {
+    if (unlockFlashTimerRef.current) clearTimeout(unlockFlashTimerRef.current);
+    setShowUnlockFlash(false);
+  };
 
   // Greed Engine: live total investment for active player
   const totalInvestment =
@@ -1714,6 +1720,7 @@ export default function RapidFireGame() {
           onCloseWinDisplay={() => setLastWinInfo(null)}
           killSwitchActive={killSwitchActive}
           showUnlockFlash={showUnlockFlash}
+          onDismissUnlockFlash={dismissUnlockFlash}
           sideBetGateOpen={sideBetGateOpen}
           handBetCount={handBetCount}
           rankBetCount={rankBetCount}
@@ -1982,6 +1989,7 @@ export default function RapidFireGame() {
           countdownTime={countdownTime}
           countdownActive={countdownActive}
           showUnlockFlash={showUnlockFlash}
+          onDismissUnlockFlash={dismissUnlockFlash}
           toolbarVisible={toolbarVisible}
           setToolbarVisible={setToolbarVisible}
           setShowMollySimulator={setShowMollySimulator}

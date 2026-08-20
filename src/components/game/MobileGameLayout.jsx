@@ -623,6 +623,7 @@ export default function MobileGameLayout({
   onCloseWinDisplay,
   killSwitchActive,
   showUnlockFlash = false,
+  onDismissUnlockFlash = null,
   sideBetGateOpen,
   handBetCount,
   rankBetCount,
@@ -1123,7 +1124,7 @@ export default function MobileGameLayout({
       {mobileLayout === 'B' ? (
         <>
 {/* ── Main game area ── */}
-      <div className="flex-1 min-h-0 px-0.5 pt-2 pb-0 flex flex-col gap-2" style={{ touchAction: 'none' }}>
+      <div className="flex-1 min-h-0 px-0.5 pt-2 pb-0 flex flex-col gap-2" style={{ touchAction: 'none' }} onClick={showUnlockFlash ? onDismissUnlockFlash : undefined}>
 
         {/* Rank + Color/River — clock floats at the top boundary overlapping both */}
         <div className="flex-1 min-h-0 flex gap-1.5" style={{ position: 'relative' }}>
@@ -1189,7 +1190,7 @@ export default function MobileGameLayout({
                 background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
                 border: '2px solid #eab308',
                 boxShadow: '0 0 20px rgba(234,179,8,0.5)',
-                animation: 'rfUnlockFadeOut 8s ease forwards',
+                opacity: 1,
                 pointerEvents: 'none',
                 padding: '4px 6px',
                 gap: 1,
@@ -1293,7 +1294,7 @@ export default function MobileGameLayout({
       ) : mobileLayout === 'C' ? (
         <>
 {/* ── Layout C: Rank/Color on top, Hands below, Community Cards at bottom ── */}
-      <div className="flex-1 min-h-0 px-0.5 pt-1 pb-0 flex flex-col gap-1" style={{ touchAction: 'none' }}>
+      <div className="flex-1 min-h-0 px-0.5 pt-1 pb-0 flex flex-col gap-1" style={{ touchAction: 'none' }} onClick={showUnlockFlash ? onDismissUnlockFlash : undefined}>
 
         {/* Rank + Color/River — at the top */}
         <div className="flex-1 min-h-0 flex gap-1.5" style={{ position: 'relative' }}>
@@ -1359,7 +1360,7 @@ export default function MobileGameLayout({
                 background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
                 border: '2px solid #eab308',
                 boxShadow: '0 0 20px rgba(234,179,8,0.5)',
-                animation: 'rfUnlockFadeOut 8s ease forwards',
+                opacity: 1,
                 pointerEvents: 'none',
                 padding: '4px 6px',
                 gap: 1,
@@ -1459,7 +1460,7 @@ export default function MobileGameLayout({
       </div>
 
       {/* ── Main game area ── */}
-      <div className="flex-1 min-h-0 px-1 pt-1 pb-0 flex flex-col gap-0.5 justify-end" style={{ touchAction: 'none' }}>
+      <div className="flex-1 min-h-0 px-1 pt-1 pb-0 flex flex-col gap-0.5 justify-end" style={{ touchAction: 'none' }} onClick={showUnlockFlash ? onDismissUnlockFlash : undefined}>
 
         {/* Clock — floats above strips */}
         <div style={{ position: 'relative', height: 0 }}>
@@ -1720,7 +1721,7 @@ export default function MobileGameLayout({
                 background: 'linear-gradient(160deg, rgba(0,0,0,0.97) 0%, rgba(25,12,0,0.98) 100%)',
                 border: '2px solid #eab308',
                 boxShadow: '0 0 20px rgba(234,179,8,0.5)',
-                animation: 'rfUnlockFadeOut 8s ease forwards',
+                opacity: 1,
                 pointerEvents: 'none',
                 padding: '4px 6px',
                 gap: 1,
