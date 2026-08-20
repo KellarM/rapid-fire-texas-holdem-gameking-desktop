@@ -44,7 +44,6 @@ function RankSlot({
   onRankBet, onRemoveRankBet, onMoveRankBet, gamePhase, unlockedRanks, killSwitchActive, rankLockThreshold = 1,
   noHandBets, activePlayerId, activeHandIds, oddsLabel,
   fontScale = 1, chipScale = 0.65,
-  reverseOrder = false,
 }) {
   const bet = rankBets[opt.key] || 0;
   const unlockPulse = useUnlockPulse(opt.key, unlockedRanks);
@@ -299,6 +298,7 @@ export default function RankBets({
   fontScale = 1,
   chipScale = 0.65,
   compactHeader = false,
+  reverseOrder = false,
 }) {
   const canBet = gamePhase === 'betting' && !disabled && !killSwitchActive;
   // hasMathFilter removed: all ranks available when kill-switch is off
