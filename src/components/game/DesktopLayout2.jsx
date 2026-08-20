@@ -71,7 +71,7 @@ const BLACK_HASBET = 'linear-gradient(160deg, #141414 0%, #000 100%)';
 // get the gold-winner gradient + black border + "WIN!" banner, same pattern as
 // FixedHandCard. Bet chips render as real Chip tokens pinned INSIDE the left edge
 // (contained on the position, not hanging off it).
-function FlatBetBox({ label, sub, group, onClick, active, locked, winner, finalWin, dim, betAmount }) {
+function FlatBetBox({ label, sub, group, onClick, onContextMenu, active, locked, winner, finalWin, dim, betAmount }) {
   let background, textColor, border, boxShadow, opacity = 1;
   if (winner) {
     background = GOLD_WINNER;
@@ -115,6 +115,7 @@ function FlatBetBox({ label, sub, group, onClick, active, locked, winner, finalW
   return (
     <button
       onClick={onClick}
+      onContextMenu={onContextMenu}
       disabled={locked}
       style={{
         flex: 1,
@@ -223,6 +224,9 @@ export default function DesktopLayout2({
   pid,
   handleHandBet,
   handleRemoveHandBet,
+  handleRemoveRankBet,
+  handleRemoveRedBlackBet,
+  handleRemoveLowHighBet,
   handleDropChip,
   selectedChip,
   balance,
@@ -375,6 +379,7 @@ export default function DesktopLayout2({
               label="LOW (2-7)"
               sub={`${riverPayoutLow}:1`}
               onClick={() => canBetRiver && handleLowHighBet('LOW')}
+              onContextMenu={(e) => { e.preventDefault(); if (gamePhase === 'lowHighBetting' && pLowHighBet && pLowHighBet.type === 'LOW' && pLowHighBet.amount > 0) handleRemoveLowHighBet(); }}
               active={pLowHighBet?.type === 'LOW' && pLowHighBet?.amount > 0}
               locked={!canBetRiver}
               winner={winningLowHigh === 'LOW'}
@@ -386,6 +391,7 @@ export default function DesktopLayout2({
               label="HIGH (8-Ace)"
               sub={`${riverPayoutHigh}:1`}
               onClick={() => canBetRiver && handleLowHighBet('HIGH')}
+              onContextMenu={(e) => { e.preventDefault(); if (gamePhase === 'lowHighBetting' && pLowHighBet && pLowHighBet.type === 'HIGH' && pLowHighBet.amount > 0) handleRemoveLowHighBet(); }}
               active={pLowHighBet?.type === 'HIGH' && pLowHighBet?.amount > 0}
               locked={!canBetRiver}
               winner={winningLowHigh === 'HIGH'}
@@ -408,6 +414,7 @@ export default function DesktopLayout2({
                   if (activeColorSide === 'black') { setShowColorSideAlert(true); return; }
                   canBetColor && handleRedBlackBet(key);
                 }}
+                onContextMenu={(e) => { e.preventDefault(); if (gamePhase === 'betting' && (pRedBlackBets[key] || 0) > 0) handleRemoveRedBlackBet(key); }}
                 active={(pRedBlackBets[key] || 0) > 0}
                 locked={!canBetColor || activeColorSide === 'black'}
                 winner={(winningRedBlack && winningRedBlack.includes(key)) || liveRedBlack.includes(key)}
@@ -425,6 +432,7 @@ export default function DesktopLayout2({
                   if (activeColorSide === 'red') { setShowColorSideAlert(true); return; }
                   canBetColor && handleRedBlackBet(key);
                 }}
+                onContextMenu={(e) => { e.preventDefault(); if (gamePhase === 'betting' && (pRedBlackBets[key] || 0) > 0) handleRemoveRedBlackBet(key); }}
                 active={(pRedBlackBets[key] || 0) > 0}
                 locked={!canBetColor || activeColorSide === 'red'}
                 winner={(winningRedBlack && winningRedBlack.includes(key)) || liveRedBlack.includes(key)}
@@ -448,6 +456,7 @@ export default function DesktopLayout2({
                 sub={`${HAND_RANK_PAYOUTS[rankKey]}:1`}
                 group="rank"
                 onClick={() => canBetRank && handleRankBet(rankKey)}
+                onContextMenu={(e) => { e.preventDefault(); if (gamePhase === 'betting' && (pRankBets[rankKey] || 0) > 0) handleRemoveRankBet(rankKey); }}
                 active={(pRankBets[rankKey] || 0) > 0}
                 locked={!canBetRank}
                 winner={winningRank === rankKey || leadingRank === rankKey}
