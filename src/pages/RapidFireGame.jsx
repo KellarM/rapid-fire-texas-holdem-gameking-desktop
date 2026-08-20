@@ -2168,6 +2168,7 @@ export default function RapidFireGame() {
               allRankBets={rankBets}
               playerCount={playerCount}
               onRankBet={handleRankBet}
+              reverseOrder={true}
               onRemoveRankBet={handleRemoveRankBet}
               onMoveRankBet={handleMoveRankBet}
               gamePhase={gamePhase}

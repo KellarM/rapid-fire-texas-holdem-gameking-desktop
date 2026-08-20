@@ -13,10 +13,6 @@ export const RANK_BET_OPTIONS = [
   { key: 'One Pair',        label: '1 Pair'        },
 ];
 
-// Reversed copy — Layout A renders One Pair at top, 4-of-a-Kind at bottom.
-// Mobile Layout D imports RANK_BET_OPTIONS directly and keeps the original order.
-const RANK_BET_OPTIONS_REVERSED = [...RANK_BET_OPTIONS].reverse();
-
 // Odds range (lowest–highest across all 10 card hands) shown once the rank board unlocks
 const RANK_ODDS_LABELS = Object.fromEntries(RANK_BET_OPTIONS.map(opt => {
   const range = getRankOddsRange(opt.key);
@@ -48,6 +44,7 @@ function RankSlot({
   onRankBet, onRemoveRankBet, onMoveRankBet, gamePhase, unlockedRanks, killSwitchActive, rankLockThreshold = 1,
   noHandBets, activePlayerId, activeHandIds, oddsLabel,
   fontScale = 1, chipScale = 0.65,
+  reverseOrder = false,
 }) {
   const bet = rankBets[opt.key] || 0;
   const unlockPulse = useUnlockPulse(opt.key, unlockedRanks);
@@ -379,7 +376,7 @@ export default function RankBets({
 
       {/* Rank slot rows */}
       <div className="flex flex-col flex-1 min-h-0 gap-1">
-        {RANK_BET_OPTIONS_REVERSED.map(opt => {
+        {(reverseOrder ? [...RANK_BET_OPTIONS].reverse() : RANK_BET_OPTIONS).map(opt => {
           const bet = rankBets[opt.key] || 0;
           const isWinner = winningRank === opt.key;
           const isLeading = leadingRank === opt.key && !isWinner;
