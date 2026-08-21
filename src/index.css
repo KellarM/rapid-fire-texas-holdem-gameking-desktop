@@ -244,6 +244,7 @@
   background: radial-gradient(circle at center, #b30000 0%, #7a0000 60%, #3d0000 100%);
   box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
   position: relative;
+  isolation: isolate; /* contains child z-index (incl. negative) to this element's own stacking context */
 }
 
 .velvet-board::before {
@@ -327,33 +328,36 @@ body.theme-blue .velvet-board {
 body.theme-green .velvet-board {
   background: radial-gradient(circle at center, #0d6e2e 0%, #074a1c 60%, #022610 100%);
 }
-/* AMERICAN — full flag as the board felt */
+/* AMERICAN — full flag as the board felt.
+   13 red/white stripes, no extra dark overlay: the real UI panels already
+   sit at rgba(0,0,0,0.35-0.45), same as every other theme, so that alone
+   provides legibility contrast without muddying the flag colors. */
 body.theme-american .velvet-board {
-  background:
-    /* Darkening overlay for legibility */
-    linear-gradient(rgba(8,12,28,0.55), rgba(8,12,28,0.55)),
-    /* 13 horizontal stripes (red/white) */
-    repeating-linear-gradient(180deg,
-      #b22234 0%, #b22234 7.692%,
-      #f2f2f2 7.692%, #f2f2f2 15.385%
-    );
+  background: repeating-linear-gradient(180deg,
+    #b22234 0%, #b22234 7.692%,
+    #f2f2f2 7.692%, #f2f2f2 15.385%
+  );
 }
 
-/* Navy canton with white stars — upper-left, covers ~46% × 44% (7 stripes) */
-body.theme-american .velvet-board::after {
-  content: '';
-  position: absolute;
+/* Navy canton with white stars — upper-left, ~46% x 44% of the board.
+   Reuses the ::before slot (already position:absolute from the base
+   .velvet-board rule) instead of introducing a second pseudo-element.
+   z-index:-1 keeps it BEHIND the real board content (cards/panels/text) --
+   .velvet-board's `isolation: isolate` (added above) contains that negative
+   z-index to this element's own stacking context so it can't escape behind
+   an unrelated ancestor. Opacity/blend-mode are reset here because the base
+   rule sets opacity:0.045 + mix-blend-mode:overlay for the felt noise texture
+   -- without overriding both, the canton would inherit that near-invisible
+   styling. */
+body.theme-american .velvet-board::before {
   top: 0; left: 0;
   width: 46%; height: 44%;
-  z-index: 0;
-  pointer-events: none;
+  z-index: -1;
+  opacity: 1;
+  mix-blend-mode: normal;
   border-radius: inherit;
   background:
-    /* Slight darkening on canton for text legibility */
-    linear-gradient(rgba(6,10,22,0.35), rgba(6,10,22,0.35)),
-    /* White stars (tiled within canton only) */
-    radial-gradient(circle, rgba(255,255,255,0.8) 1.5px, transparent 2px) 4px 4px / 16px 14px,
-    /* Navy blue */
+    radial-gradient(circle, rgba(255,255,255,0.85) 1.6px, transparent 2px) 4px 4px / 18px 16px,
     #0a2456;
 }
 /* ── No-scrollbar utility (used by mobile gear/settings dropdown) ── */
