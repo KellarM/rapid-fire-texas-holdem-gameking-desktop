@@ -1142,6 +1142,7 @@ export default function MobileGameLayout({
 
           {/* Rank board */}
           <div className="flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden" style={{ background: 'rgba(0,0,0,0.45)', padding: '6px', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)' }}>
+            <BoardShimmer isActive={gamePhase === 'betting' && !killSwitchActive && handBetCount > 0} />
             <div className="flex-1 min-h-0 overflow-hidden">
               <RankBets
                 rankBets={pRankBets}
@@ -1251,6 +1252,7 @@ export default function MobileGameLayout({
             padding: '4px',
           }}
         >
+          <BoardShimmer isActive={gamePhase === 'betting'} />
           {displayOrder.map(hid => {
             const hand = FIXED_HANDS.find(h => h.id === hid);
             if (!hand) return null;
@@ -1312,6 +1314,7 @@ export default function MobileGameLayout({
 
           {/* Rank board */}
           <div className="flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden" style={{ background: 'rgba(0,0,0,0.45)', padding: '6px', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)' }}>
+            <BoardShimmer isActive={gamePhase === 'betting' && !killSwitchActive && handBetCount > 0} />
             <div className="flex-1 min-h-0 overflow-hidden">
               <RankBets
                 rankBets={pRankBets}
@@ -1422,6 +1425,7 @@ export default function MobileGameLayout({
             padding: '4px',
           }}
         >
+          <BoardShimmer isActive={gamePhase === 'betting'} />
           {displayOrder.map(hid => {
             const hand = FIXED_HANDS.find(h => h.id === hid);
             if (!hand) return null;
@@ -1634,6 +1638,7 @@ export default function MobileGameLayout({
             padding: '4px',
           }}
         >
+          <BoardShimmer isActive={gamePhase === 'betting'} />
           {displayOrder.map(hid => {
             const hand = FIXED_HANDS.find(h => h.id === hid);
             if (!hand) return null;
@@ -1672,6 +1677,7 @@ export default function MobileGameLayout({
 
           {/* Rank board */}
           <div className="flex-1 min-h-0 flex flex-col rounded-xl overflow-hidden" style={{ background: 'rgba(0,0,0,0.45)', padding: '6px', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)' }}>
+            <BoardShimmer isActive={gamePhase === 'betting' && !killSwitchActive && handBetCount > 0} />
             <div className="flex-1 min-h-0 overflow-hidden">
               <RankBets
                 rankBets={pRankBets}

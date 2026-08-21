@@ -478,6 +478,16 @@ export default function RapidFireGame() {
   const sideBetGateOpen = !killSwitchActive && isSideBetGateOpen(pHandBets, pRankBets);
 
   // Unlock flash state
+// Gold shimmer that traces a board's border while it's active/bettable.
+function BoardShimmer({ isActive }) {
+  if (!isActive) return null;
+  return (
+    <div className="board-shimmer-ring" aria-hidden="true">
+      <div className="board-shimmer-spin" />
+    </div>
+  );
+}
+
   const [showUnlockFlash, setShowUnlockFlash] = useState(false);
   const prevGateRef = useRef(false);
   const unlockFlashTimerRef = useRef(null);
@@ -2037,6 +2047,7 @@ export default function RapidFireGame() {
               boxSizing: 'border-box',
               position: 'relative',
             }}>
+            <BoardShimmer isActive={gamePhase === 'betting'} />
             <DealerAnnouncement message={dealerMessage} phase={gamePhase} />
           </div>
 
@@ -2171,6 +2182,7 @@ export default function RapidFireGame() {
         <div className="flex-shrink-0 flex flex-col gap-1.5" style={{ width: 263, overflow: 'visible' }}>
           {/* Rank Bets panel */}
           <div className="rounded-xl p-2 flex flex-col" style={{ flex: '6.5 1 0', background: 'rgba(0,0,0,0.45)', border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', overflow: 'visible' }}>
+            <BoardShimmer isActive={gamePhase === 'betting' && !killSwitchActive && handBetCount > 0} />
             <RankBets
               rankBets={pRankBets}
               allRankBets={rankBets}

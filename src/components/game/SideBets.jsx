@@ -29,6 +29,16 @@ const goldEmbossText = {
 // Low ranks: 2,3,4,5,6,7  High ranks: 8,9,10,J,Q,K,A
 const LOW_RANKS = new Set(['2','3','4','5','6','7']);
 
+// Gold shimmer that traces a board's border while it's active/bettable.
+function BoardShimmer({ isActive }) {
+  if (!isActive) return null;
+  return (
+    <div className="board-shimmer-ring" aria-hidden="true">
+      <div className="board-shimmer-spin" />
+    </div>
+  );
+}
+
 /**
  * Derive the river board-state key from the 4 community cards visible after the turn.
  * Returns e.g. '3L1H', '2L2H', etc.
@@ -294,6 +304,7 @@ export default function SideBets({
     <div className="flex flex-col h-full gap-1.5">
       {/* Color Board */}
       <div className="relative flex flex-col min-h-0 p-2" style={{ flex: '2 1 47px', border: '3px solid #e8b84b', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.45)', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', order: riverFirst ? 2 : 1 }}>
+        <BoardShimmer isActive={canBetRB} />
         {/* Header row — label left, Match Cap pill right, same flex row */}
         {!compactLandscape && (
           <div className="flex items-center justify-between flex-shrink-0 mb-1">
@@ -388,6 +399,7 @@ export default function SideBets({
 
       {/* River — Low / High */}
       <div className="relative flex flex-col min-h-0 p-2" style={{ flex: '1 1 44px', border: '3px solid #e8b84b', borderRadius: '0.75rem', background: 'rgba(0,0,0,0.45)', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)', order: riverFirst ? 1 : 2 }}>
+        <BoardShimmer isActive={canBetLH} />
         {/* Header row — label left, Match Cap pill right, same flex row */}
         {!compactLandscape && (
           <div className={`flex items-center justify-between flex-shrink-0 mb-1 ${canBetLH && !hoveredRiverType ? 'animate-pulse' : ''}`}>
