@@ -138,13 +138,13 @@ export default function GameVersionsModal({ isOpen, onClose }) {
                   <div className="space-y-4">
                     <Row step="1" label="How many card hands allowed to bet on"
                       description="Maximum number of card hands a player can select per round. Once this limit is reached, all remaining hands lock automatically.">
-                      <NumInput value={v.maxCardHands} onChange={val => set('maxCardHands', val)} min={1} max={10} />
+                      <NumInput value={v.maxCardHands} onChange={val => set('maxCardHands', val)} min={1} max={11} />
                       <span className="text-gray-500 text-xs">hands</span>
                     </Row>
 
                     <Row step="2" label="How many card hands before rank is locked"
                       description={`If a player selects ${v.rankLockThreshold} or more card hand${v.rankLockThreshold !== 1 ? 's' : ''}, the Rank board locks and rank bets are unavailable.`}>
-                      <NumInput value={v.rankLockThreshold} onChange={val => set('rankLockThreshold', val)} min={1} max={10} />
+                      <NumInput value={v.rankLockThreshold} onChange={val => set('rankLockThreshold', val)} min={1} max={11} />
                       <span className="text-gray-500 text-xs">hands</span>
                     </Row>
                   </div>
