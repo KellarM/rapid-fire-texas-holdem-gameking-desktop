@@ -10,88 +10,123 @@ const DEFAULT_TIMING = {
   endOfRound: 14,
   dealerMode: true, // default: Dealer Button mode (safe)
   mobileLayout: 'A', // default: Layout A (current mobile portrait arrangement)
+  desktopLayout: '1', // default: Layout 1 (original desktop arrangement)
+  suitVariation: true, // default: ON — matches game behavior since launch
+  positionRotation: true, // default: ON — matches game behavior since launch
 };
 
 const DEALER_MODE_KEY = 'rfth_dealerMode';
 const MOBILE_LAYOUT_KEY = 'rfth_mobileLayout';
+const DESKTOP_LAYOUT_KEY = 'rfth_desktop_layout';
+const SUIT_VARIATION_KEY = 'rfth_suitVariation';
+const POSITION_ROTATION_KEY = 'rfth_positionRotation';
 
-function readLocalDealerMode() {
+function readLocal(key, fallback) {
   try {
-    const v = localStorage.getItem(DEALER_MODE_KEY);
-    return v === null ? true : v === 'true';
-  } catch { return true; }
+    const v = localStorage.getItem(key);
+    return v !== null ? v : fallback;
+  } catch { return fallback; }
 }
 
-function writeLocalDealerMode(v) {
-  try { localStorage.setItem(DEALER_MODE_KEY, String(v)); } catch {}
-}
-
-function readLocalMobileLayout() {
+function readLocalBool(key, fallback) {
   try {
-    const v = localStorage.getItem(MOBILE_LAYOUT_KEY);
-    return v || null;
-  } catch { return null; }
+    const v = localStorage.getItem(key);
+    if (v === null) return fallback;
+    return v === 'true';
+  } catch { return fallback; }
 }
 
-function writeLocalMobileLayout(v) {
-  try { localStorage.setItem(MOBILE_LAYOUT_KEY, String(v)); } catch {}
+function writeLocal(key, v) {
+  try { localStorage.setItem(key, typeof v === 'boolean' ? String(v) : v); } catch {}
 }
 
 export function useGameTiming() {
   const [timing, setTiming] = useState(DEFAULT_TIMING);
   const [recordId, setRecordId] = useState(null);
   const timerRef = useRef(null);
-  const [dealerMode, setDealerModeState] = useState(() => readLocalDealerMode());
-  const [mobileLayout, setMobileLayoutState] = useState(() => {
-    // Start from localStorage so there's no flash of wrong layout on mobile
-    return readLocalMobileLayout() || 'A';
-  });
-  const pendingLayoutRef = useRef(null); // stores layout value if set before recordId is ready
 
-  // Load timing from DB on mount
+  // All settings start from localStorage for instant render with no flash
+  const [dealerMode, setDealerModeState] = useState(() => readLocalBool(DEALER_MODE_KEY, true));
+  const [mobileLayout, setMobileLayoutState] = useState(() => readLocal(MOBILE_LAYOUT_KEY, 'A'));
+  const [desktopLayout, setDesktopLayoutState] = useState(() => readLocal(DESKTOP_LAYOUT_KEY, '1'));
+  const [suitVariation, setSuitVariationState] = useState(() => readLocalBool(SUIT_VARIATION_KEY, true));
+  const [positionRotation, setPositionRotationState] = useState(() => readLocalBool(POSITION_ROTATION_KEY, true));
+
+  const pendingRef = useRef({}); // stash values set before recordId is ready
+
+  // Load from DB on mount — but DON'T overwrite localStorage values that are already set.
+  // localStorage is the most recent change on this device; DB may be stale if a previous write failed.
   useEffect(() => {
     base44.entities.GameTiming.list().then(records => {
       if (records && records.length > 0) {
         const rec = records[0];
         setRecordId(rec.id);
         setTiming({ ...DEFAULT_TIMING, ...rec });
-        // If DB has dealerMode, use it; otherwise keep localStorage value
+
+        // For each setting: only update from DB if localStorage doesn't already have a user-set value.
+        // This prevents stale DB data from clobbering a change the user just made.
+
         if (rec.dealerMode !== undefined && rec.dealerMode !== null) {
-          setDealerModeState(!!rec.dealerMode);
-          writeLocalDealerMode(!!rec.dealerMode);
+          const localDealer = readLocalBool(DEALER_MODE_KEY, null);
+          if (localDealer === null) {
+            // First visit — no localStorage value yet, use DB
+            setDealerModeState(!!rec.dealerMode);
+            writeLocal(DEALER_MODE_KEY, !!rec.dealerMode);
+          }
         }
-        // DB is the source of truth for mobileLayout — but don't overwrite
-        // if the user already set a new value while we were loading
-        if (rec.mobileLayout && !pendingLayoutRef.current) {
-          setMobileLayoutState(rec.mobileLayout);
-          writeLocalMobileLayout(rec.mobileLayout);
+
+        if (rec.mobileLayout) {
+          const localMobile = readLocal(MOBILE_LAYOUT_KEY, null);
+          if (localMobile === null) {
+            setMobileLayoutState(rec.mobileLayout);
+            writeLocal(MOBILE_LAYOUT_KEY, rec.mobileLayout);
+          }
         }
-        // If user set a layout before recordId was ready, persist it now
-        if (pendingLayoutRef.current && rec.id) {
-          const v = pendingLayoutRef.current;
-          pendingLayoutRef.current = null;
-          base44.entities.GameTiming.update(rec.id, { mobileLayout: v }).catch(() => {});
+
+        if (rec.desktopLayout) {
+          const localDesktop = readLocal(DESKTOP_LAYOUT_KEY, null);
+          if (localDesktop === null) {
+            setDesktopLayoutState(rec.desktopLayout);
+            writeLocal(DESKTOP_LAYOUT_KEY, rec.desktopLayout);
+          }
+        }
+
+        if (rec.suitVariation !== undefined && rec.suitVariation !== null) {
+          const localSuit = readLocalBool(SUIT_VARIATION_KEY, null);
+          if (localSuit === null) {
+            setSuitVariationState(!!rec.suitVariation);
+            writeLocal(SUIT_VARIATION_KEY, !!rec.suitVariation);
+          }
+        }
+
+        if (rec.positionRotation !== undefined && rec.positionRotation !== null) {
+          const localPos = readLocalBool(POSITION_ROTATION_KEY, null);
+          if (localPos === null) {
+            setPositionRotationState(!!rec.positionRotation);
+            writeLocal(POSITION_ROTATION_KEY, !!rec.positionRotation);
+          }
+        }
+
+        // Flush any pending writes (values set before recordId was ready)
+        const pending = pendingRef.current;
+        if (Object.keys(pending).length > 0 && rec.id) {
+          pendingRef.current = {};
+          base44.entities.GameTiming.update(rec.id, pending).catch(() => {});
         }
       }
     }).catch(() => {});
   }, []);
 
   // Listen for timing updates saved from GameTimingModal
-  // NOTE: This reloads TIMING fields only. It must NOT overwrite mobileLayout,
-  // because the layout is managed independently and a timing save could race
-  // with a layout change, reverting it to the stale DB value.
+  // NOTE: This reloads TIMING fields only. It must NOT overwrite layout/control settings,
+  // because those are managed independently and a timing save could race with a setting change.
   const reloadTiming = useCallback(() => {
     base44.entities.GameTiming.list().then(records => {
       if (records && records.length > 0) {
         const rec = records[0];
         setRecordId(rec.id);
         setTiming({ ...DEFAULT_TIMING, ...rec });
-        if (rec.dealerMode !== undefined && rec.dealerMode !== null) {
-          setDealerModeState(!!rec.dealerMode);
-          writeLocalDealerMode(!!rec.dealerMode);
-        }
-        // Deliberately NOT touching mobileLayout here — it has its own
-        // persistence path and reloading timing shouldn't clobber it.
+        // Deliberately NOT touching layout/control settings here
       }
     }).catch(() => {});
   }, []);
@@ -121,30 +156,78 @@ export function useGameTiming() {
     }
   }, []);
 
+  // Generic setter factory — writes to localStorage (instant) + DB (backup)
+  const makeSetter = useCallback((key, stateSetter, dbField) => {
+    return (v) => {
+      stateSetter(v);
+      writeLocal(key, v);
+      const payload = { [dbField]: v };
+      if (recordId) {
+        base44.entities.GameTiming.update(recordId, payload).catch(() => {});
+      } else {
+        // recordId not loaded yet — stash and persist when DB loads
+        pendingRef.current = { ...pendingRef.current, ...payload };
+      }
+    };
+  }, [recordId]);
+
   const setDealerMode = useCallback((v) => {
     setDealerModeState(v);
-    writeLocalDealerMode(v);
-  }, []);
-
-  const setMobileLayout = useCallback(async (v) => {
-    // Update in-memory state immediately so the modal reflects the choice
-    setMobileLayoutState(v);
-    // Cache to localStorage so mobile doesn't flash the wrong layout on load
-    writeLocalMobileLayout(v);
-
-    try {
-      if (recordId) {
-        await base44.entities.GameTiming.update(recordId, { mobileLayout: v });
-      } else {
-        // recordId not loaded yet — stash the value and persist when DB loads
-        pendingLayoutRef.current = v;
-      }
-    } catch (e) {
-      // DB write failed — localStorage still has the value, and in-memory
-      // state is correct. Next page load will try DB first, then localStorage.
-      console.warn('mobileLayout not persisted to DB:', e.message);
+    writeLocal(DEALER_MODE_KEY, v);
+    if (recordId) {
+      base44.entities.GameTiming.update(recordId, { dealerMode: v }).catch(() => {});
+    } else {
+      pendingRef.current = { ...pendingRef.current, dealerMode: v };
     }
   }, [recordId]);
 
-  return { timing, recordId, dealerMode, setDealerMode, mobileLayout, setMobileLayout, startTimer, stopTimer, reloadTiming };
+  const setMobileLayout = useCallback((v) => {
+    setMobileLayoutState(v);
+    writeLocal(MOBILE_LAYOUT_KEY, v);
+    if (recordId) {
+      base44.entities.GameTiming.update(recordId, { mobileLayout: v }).catch(() => {});
+    } else {
+      pendingRef.current = { ...pendingRef.current, mobileLayout: v };
+    }
+  }, [recordId]);
+
+  const setDesktopLayout = useCallback((v) => {
+    setDesktopLayoutState(v);
+    writeLocal(DESKTOP_LAYOUT_KEY, v);
+    if (recordId) {
+      base44.entities.GameTiming.update(recordId, { desktopLayout: v }).catch(() => {});
+    } else {
+      pendingRef.current = { ...pendingRef.current, desktopLayout: v };
+    }
+  }, [recordId]);
+
+  const setSuitVariation = useCallback((v) => {
+    setSuitVariationState(v);
+    writeLocal(SUIT_VARIATION_KEY, v);
+    if (recordId) {
+      base44.entities.GameTiming.update(recordId, { suitVariation: v }).catch(() => {});
+    } else {
+      pendingRef.current = { ...pendingRef.current, suitVariation: v };
+    }
+  }, [recordId]);
+
+  const setPositionRotation = useCallback((v) => {
+    setPositionRotationState(v);
+    writeLocal(POSITION_ROTATION_KEY, v);
+    if (recordId) {
+      base44.entities.GameTiming.update(recordId, { positionRotation: v }).catch(() => {});
+    } else {
+      pendingRef.current = { ...pendingRef.current, positionRotation: v };
+    }
+  }, [recordId]);
+
+  return {
+    timing, recordId,
+    dealerMode, setDealerMode,
+    mobileLayout, setMobileLayout,
+    desktopLayout, setDesktopLayout,
+    suitVariation, setSuitVariation,
+    positionRotation, setPositionRotation,
+    startTimer, stopTimer, reloadTiming
+  };
 }

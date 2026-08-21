@@ -34,7 +34,22 @@
     "mobileLayout": {
       "type": "string",
       "default": "A",
-      "description": "Mobile portrait layout variant (\"A\" or \"B\")"
+      "description": "Mobile portrait layout variant"
+    },
+    "desktopLayout": {
+      "type": "string",
+      "default": "1",
+      "description": "Desktop layout variant (\"1\" or \"2\")"
+    },
+    "suitVariation": {
+      "type": "boolean",
+      "default": true,
+      "description": "Toggle card suit variation each round"
+    },
+    "positionRotation": {
+      "type": "boolean",
+      "default": true,
+      "description": "Toggle card position rotation each round"
     },
     "description": {
       "type": "string",

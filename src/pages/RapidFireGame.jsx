@@ -165,7 +165,6 @@ export default function RapidFireGame() {
   const [showGameTiming, setShowGameTiming] = useState(false);
   const [showMobileLayout, setShowMobileLayout] = useState(false);
   const [showDesktopLayout, setShowDesktopLayout] = useState(false);
-  const [desktopLayout, setDesktopLayout] = useState(() => { try { return localStorage.getItem('rfth_desktop_layout') || '1'; } catch { return '1'; } });
   const [showVersions, setShowVersions] = useState(false);
   const [showBellCurve, setShowBellCurve] = useState(false);
   const [showControl, setShowControl] = useState(false);
@@ -213,7 +212,7 @@ export default function RapidFireGame() {
   }, [boardTheme]);
 
   // Game timing
-  const { timing, dealerMode, setDealerMode, mobileLayout, setMobileLayout, startTimer, stopTimer, reloadTiming } = useGameTiming();
+  const { timing, dealerMode, setDealerMode, mobileLayout, setMobileLayout, desktopLayout, setDesktopLayout, suitVariation, setSuitVariation, positionRotation, setPositionRotation, startTimer, stopTimer, reloadTiming } = useGameTiming();
 
   // ── Mode: true (default) = Dealer Button, false = Timing Feature ──────────
   // Dealer mode = current live behaviour (player-controlled via DealerButton).
@@ -1903,10 +1902,10 @@ function BoardShimmer({ isActive }) {
         <MobileLayoutModal current={mobileLayout} onSelect={(v) => { setMobileLayout(v); setShowMobileLayout(false); }} onClose={() => setShowMobileLayout(false)} />
       )}
       {showDesktopLayout && (
-        <DesktopLayoutModal current={desktopLayout} onSelect={(v) => { setDesktopLayout(v); try { localStorage.setItem('rfth_desktop_layout', v); } catch {} setShowDesktopLayout(false); }} onClose={() => setShowDesktopLayout(false)} />
+        <DesktopLayoutModal current={desktopLayout} onSelect={(v) => { setDesktopLayout(v); setShowDesktopLayout(false); }} onClose={() => setShowDesktopLayout(false)} />
       )}
       <GameVersionsModal isOpen={showVersions} onClose={() => setShowVersions(false)} />
-      <ControlPanel isOpen={showControl} onClose={() => setShowControl(false)} />
+      <ControlPanel isOpen={showControl} onClose={() => setShowControl(false)} suitVariation={suitVariation} setSuitVariation={setSuitVariation} positionRotation={positionRotation} setPositionRotation={setPositionRotation} />
       {showBellCurve && (
         <BellCurveModal
           onClose={() => setShowBellCurve(false)}

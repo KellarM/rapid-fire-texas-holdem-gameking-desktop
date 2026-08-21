@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
 import { X, RefreshCw, Shuffle, Layers } from 'lucide-react';
 
-const STORAGE_KEY = 'rfth_control_settings';
+const SUIT_KEY = 'rfth_suitVariation';
+const POS_KEY = 'rfth_positionRotation';
 
 // Defaults: both ON — matches the game's behavior since launch
 const DEFAULT_SETTINGS = {
@@ -9,57 +9,42 @@ const DEFAULT_SETTINGS = {
   positionRotation: true,
 };
 
-function loadSettings() {
+// Exported so RapidFireGame can read the current toggles during round setup.
+// Reads from the same localStorage keys that useGameTiming writes to.
+export function getControlSettings() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_SETTINGS;
-    const parsed = JSON.parse(raw);
+    const suit = localStorage.getItem(SUIT_KEY);
+    const pos = localStorage.getItem(POS_KEY);
     return {
-      suitVariation: typeof parsed.suitVariation === 'boolean' ? parsed.suitVariation : true,
-      positionRotation: typeof parsed.positionRotation === 'boolean' ? parsed.positionRotation : true,
+      suitVariation: suit !== null ? suit === 'true' : DEFAULT_SETTINGS.suitVariation,
+      positionRotation: pos !== null ? pos === 'true' : DEFAULT_SETTINGS.positionRotation,
     };
   } catch {
     return DEFAULT_SETTINGS;
   }
 }
 
-function saveSettings(settings) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  } catch {
-    // localStorage unavailable — settings apply for this session only
-  }
-}
-
-// Exported so RapidFireGame can read the current toggles without re-reading localStorage each round
-export function getControlSettings() {
-  return loadSettings();
-}
-
 export function setControlSettings(settings) {
-  saveSettings(settings);
+  try {
+    localStorage.setItem(SUIT_KEY, String(settings.suitVariation));
+    localStorage.setItem(POS_KEY, String(settings.positionRotation));
+  } catch {}
 }
 
-export default function ControlPanel({ isOpen, onClose }) {
-  const [settings, setSettings] = useState(loadSettings);
-
-  // Sync from localStorage when panel opens (in case it changed elsewhere)
-  useEffect(() => {
-    if (isOpen) setSettings(loadSettings());
-  }, [isOpen]);
-
+export default function ControlPanel({ isOpen, onClose, suitVariation, setSuitVariation, positionRotation, setPositionRotation }) {
   if (!isOpen) return null;
 
-  function toggle(key) {
-    const next = { ...settings, [key]: !settings[key] };
-    setSettings(next);
-    saveSettings(next);
+  function toggleSuit() {
+    setSuitVariation(!suitVariation);
+  }
+
+  function togglePosition() {
+    setPositionRotation(!positionRotation);
   }
 
   function resetDefaults() {
-    const defaults = { ...DEFAULT_SETTINGS };
-    setSettings(defaults);
-    saveSettings(defaults);
+    setSuitVariation(true);
+    setPositionRotation(true);
   }
 
   return (
@@ -105,8 +90,8 @@ export default function ControlPanel({ isOpen, onClose }) {
               </div>
             </div>
             <ToggleSwitch
-              isOn={settings.suitVariation}
-              onToggle={() => toggle('suitVariation')}
+              isOn={suitVariation}
+              onToggle={toggleSuit}
               label="Suit Variation"
             />
           </div>
@@ -128,8 +113,8 @@ export default function ControlPanel({ isOpen, onClose }) {
               </div>
             </div>
             <ToggleSwitch
-              isOn={settings.positionRotation}
-              onToggle={() => toggle('positionRotation')}
+              isOn={positionRotation}
+              onToggle={togglePosition}
               label="Position Rotation"
             />
           </div>

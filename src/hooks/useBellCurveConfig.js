@@ -41,9 +41,27 @@ export function useBellCurveConfig() {
           handReductions: rec.handReductions || DEFAULT_CONFIG.handReductions,
           rankReductions: rec.rankReductions || DEFAULT_CONFIG.rankReductions,
         };
-        setConfig(loaded);
-        // Keep localStorage in sync for instant next load
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(loaded)); } catch {}
+        // Check if localStorage already has a user-set value (most recent on this device)
+        let localConfig = null;
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.handReductions && parsed.rankReductions) localConfig = parsed;
+          }
+        } catch {}
+
+        if (localConfig) {
+          // localStorage has values — keep them (most recent change on this device)
+          // Sync back to DB in case DB was stale
+          if (JSON.stringify(localConfig) !== JSON.stringify(loaded)) {
+            base44.entities.BellCurveConfig.update(rec.id, localConfig).catch(() => {});
+          }
+        } else {
+          // First visit — use DB values
+          setConfig(loaded);
+          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(loaded)); } catch {}
+        }
       }
       setLoading(false);
     }).catch(() => {

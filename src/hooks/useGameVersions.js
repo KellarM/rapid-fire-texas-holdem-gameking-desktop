@@ -101,15 +101,29 @@ export function useGameVersions() {
   const [recordId, setRecordId] = useState(null);
   const [dbLoaded, setDbLoaded] = useState(false);
 
-  // On mount: load from DB (authoritative source)
+  // On mount: load from DB, but DON'T overwrite localStorage if it already has a user-set value.
+  // localStorage is the most recent change on this device; DB may be stale if a previous write failed.
   useEffect(() => {
     loadVersionsFromDB().then(({ config, recordId: rid }) => {
-      setVersions(config);
-      setRecordId(rid);
-      setDbLoaded(true);
-      // Always write confirmed DB values to localStorage so next load starts with correct settings
-      writeLocal(config);
-      window.dispatchEvent(new CustomEvent('gameVersions:updated', { detail: config }));
+      const local = readLocal();
+      if (local) {
+        // localStorage has values — use them (most recent on this device)
+        setVersions(local);
+        setRecordId(rid);
+        setDbLoaded(true);
+        // Sync localStorage values back to DB in case DB was stale
+        if (rid && JSON.stringify(local) !== JSON.stringify(config)) {
+          saveVersionsToDB(local, rid).catch(() => {});
+        }
+        window.dispatchEvent(new CustomEvent('gameVersions:updated', { detail: local }));
+      } else {
+        // First visit — no localStorage, use DB values
+        setVersions(config);
+        setRecordId(rid);
+        setDbLoaded(true);
+        writeLocal(config);
+        window.dispatchEvent(new CustomEvent('gameVersions:updated', { detail: config }));
+      }
     });
   }, []);
 
