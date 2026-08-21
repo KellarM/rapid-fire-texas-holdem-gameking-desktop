@@ -4,9 +4,10 @@ import GameRulesModal from '@/components/game/GameRulesModal';
 import PlayExamplesModal from '@/components/game/PlayExamplesModal';
 
 const COLORS = [
-  { id: 'red',   label: 'Red',   dot: '#dc2626' },
-  { id: 'blue',  label: 'Blue',  dot: '#2563eb' },
-  { id: 'green', label: 'Green', dot: '#16a34a' },
+  { id: 'red',     label: 'Red',     dot: '#dc2626' },
+  { id: 'blue',    label: 'Blue',    dot: '#2563eb' },
+  { id: 'green',   label: 'Green',   dot: '#16a34a' },
+  { id: 'american',label: 'American',dot: '#b22234' },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════

@@ -327,6 +327,35 @@ body.theme-blue .velvet-board {
 body.theme-green .velvet-board {
   background: radial-gradient(circle at center, #0d6e2e 0%, #074a1c 60%, #022610 100%);
 }
+/* AMERICAN — full flag as the board felt */
+body.theme-american .velvet-board {
+  background:
+    /* Darkening overlay for legibility */
+    linear-gradient(rgba(8,12,28,0.55), rgba(8,12,28,0.55)),
+    /* 13 horizontal stripes (red/white) */
+    repeating-linear-gradient(180deg,
+      #b22234 0%, #b22234 7.692%,
+      #f2f2f2 7.692%, #f2f2f2 15.385%
+    );
+}
+
+/* Navy canton with white stars — upper-left, covers ~46% × 44% (7 stripes) */
+body.theme-american .velvet-board::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 46%; height: 44%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    /* Slight darkening on canton for text legibility */
+    linear-gradient(rgba(6,10,22,0.35), rgba(6,10,22,0.35)),
+    /* White stars (tiled within canton only) */
+    radial-gradient(circle, rgba(255,255,255,0.8) 1.5px, transparent 2px) 4px 4px / 16px 14px,
+    /* Navy blue */
+    #0a2456;
+}
 /* ── No-scrollbar utility (used by mobile gear/settings dropdown) ── */
 .no-scrollbar {
   scrollbar-width: none;       /* Firefox */
