@@ -75,10 +75,9 @@ const PLAYER_COUNT_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 const MIN_BET = 0.01;
 
 const LOGO_URLS = {
-  red:     'https://media.base44.com/images/public/69f3a45ad82dff5b772d4de2/2667063a3_image.png',
-  blue:    'https://base44.app/api/apps/69fbe99a6a81578f42265ae6/files/mp/public/69fbe99a6a81578f42265ae6/f79922844_12cba61b1_RapidFireBlueLogo.png',
-  green:   'https://base44.app/api/apps/69fbe99a6a81578f42265ae6/files/mp/public/69fbe99a6a81578f42265ae6/1c8b70f1a_864b277e3_RapidFireGreenLogo.png',
-  american:'https://media.base44.com/images/public/69f3a45ad82dff5b772d4de2/2667063a3_image.png',
+  red:   'https://media.base44.com/images/public/69f3a45ad82dff5b772d4de2/2667063a3_image.png',
+  blue:  'https://base44.app/api/apps/69fbe99a6a81578f42265ae6/files/mp/public/69fbe99a6a81578f42265ae6/f79922844_12cba61b1_RapidFireBlueLogo.png',
+  green: 'https://base44.app/api/apps/69fbe99a6a81578f42265ae6/files/mp/public/69fbe99a6a81578f42265ae6/1c8b70f1a_864b277e3_RapidFireGreenLogo.png',
 };
 
 // Must match PLAYER_CHIP_COLORS in child components
@@ -207,7 +206,7 @@ export default function RapidFireGame() {
     return () => window.removeEventListener('rfth:themechange', h);
   }, []);
   useEffect(() => {
-    document.body.classList.remove('theme-red','theme-blue','theme-green','theme-american');
+    document.body.classList.remove('theme-red','theme-blue','theme-green');
     document.body.classList.add('theme-'+boardTheme);
     try { localStorage.setItem('rfth_theme', boardTheme); } catch {}
   }, [boardTheme]);

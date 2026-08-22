@@ -35,7 +35,7 @@ function HandSlot({ cards }) {
 export default function HistoryRail({ history }) {
   return (
     <div className="flex flex-col gap-1.5 h-full overflow-hidden">
-      <div className="rounded-xl flex-1 min-h-0 flex flex-col overflow-hidden" style={{ background: "#0a2456", border: "3px solid #e8b84b", boxShadow: "0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)" }}>
+      <div className="rounded-xl bg-black/30 flex-1 min-h-0 flex flex-col overflow-hidden" style={{ border: '3px solid #e8b84b', boxShadow: '0 0 0 1px #000 inset, 0 0 8px rgba(232,184,75,0.3), 0 2px 8px rgba(0,0,0,0.6)' }}>
         <div className="text-yellow-400 text-xs font-bold tracking-wider uppercase py-1.5 text-center border-b border-yellow-700/30">
           Previous Hands
         </div>

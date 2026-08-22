@@ -23,10 +23,9 @@ import VolumeControl from './VolumeControl';
 const CHIP_VALUES = [0.25, 0.05, 0.02, 0.01];
 
 const LOGO_URLS = {
-  red:      'https://media.base44.com/images/public/69f3a45ad82dff5b772d4de2/2667063a3_image.png',
-  blue:     'https://media.base44.com/images/public/69fbe99a6a81578f42265ae6/864b277e3_RapidFireGreenLogo.png',
-  green:    'https://media.base44.com/images/public/69fbe99a6a81578f42265ae6/864b277e3_RapidFireGreenLogo.png',
-  american: 'https://media.base44.com/images/public/69f3a45ad82dff5b772d4de2/2667063a3_image.png',
+  red:   'https://media.base44.com/images/public/69f3a45ad82dff5b772d4de2/2667063a3_image.png',
+  blue:  'https://media.base44.com/images/public/69fbe99a6a81578f42265ae6/864b277e3_RapidFireGreenLogo.png',
+  green: 'https://media.base44.com/images/public/69fbe99a6a81578f42265ae6/864b277e3_RapidFireGreenLogo.png',
 };
 
 // ── Portrait-optimised hand card ─────────────────────────────────────────
@@ -2013,10 +2012,9 @@ export default function MobileGameLayout({
                 </div>
                 <div style={{ display: 'flex', gap: 7 }}>
                   {[
-                    { id: 'red',      label: 'Red',      dot: '#dc2626' },
-                    { id: 'blue',     label: 'Blue',     dot: '#2563eb' },
-                    { id: 'green',    label: 'Green',    dot: '#16a34a' },
-                    { id: 'american', label: 'American', dot: '#b22234' },
+                    { id: 'red',   label: 'Red',   dot: '#dc2626' },
+                    { id: 'blue',  label: 'Blue',  dot: '#2563eb' },
+                    { id: 'green', label: 'Green', dot: '#16a34a' },
                   ].map(t => {
                     const selected = boardTheme === t.id;
                     return (
